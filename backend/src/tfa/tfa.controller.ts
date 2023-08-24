@@ -1,15 +1,21 @@
-import { Controller, Get, UseGuards, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Req } from '@nestjs/common';
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 
 @Controller('tfa')
-//@UseGuards(AuthGuard('42')) create guard to check if user is logged in
 export class TfaController {
     
     @Get('enable')
-    enableTfa(){
-        return {msg: 'hi'};
+    enableTfa(@Req() req: Request){
+        if(req.isAuthenticated())
+        {
+            return {msg: 'hi'};
+        }
+        else{
+            return {msg: 'bye'}
+        }
     }
 
     @Post('disable')
@@ -19,7 +25,7 @@ export class TfaController {
 
     @Post('verify')
     verifyTfa(){
-
+        
     }
 
 }
