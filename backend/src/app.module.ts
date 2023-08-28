@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     autoLoadEntities: true, // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   })
-    ,AuthModule, TfaModule],
+    ,AuthModule, TfaModule,],
   controllers: [AppController, TfaController],
   providers: [AppService, TfaService],
 })
