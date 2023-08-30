@@ -20,7 +20,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // You can customize the validation logic here
     // Profile will contain user information from 42
     const user: User = await this.authService.findOrCreateUser(profile); // Function which interacts with DB
-    user.tfa_enabled = true;
+    user.tfa_enabled = false;
     //if(user.tfa_enabled == true)
       //return undefined;
     return user;

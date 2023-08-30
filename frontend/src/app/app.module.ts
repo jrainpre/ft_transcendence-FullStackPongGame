@@ -7,6 +7,10 @@ import { LoginModule } from './login/login.module';
 import { LoginComponent } from './login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { FormsModule } from '@angular/forms';
+import { GameComponent } from './game/game.component';
+import { ProfileComponent } from './profile/profile.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -14,12 +18,16 @@ import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.compon
     HeaderComponent,
     LoginComponent,
     TwoFactorAuthComponent,
+    GameComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     LoginModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

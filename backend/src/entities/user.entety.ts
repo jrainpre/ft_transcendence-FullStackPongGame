@@ -16,4 +16,7 @@ export class User {
 
   @Column()
   tfa_secret: string;
+
+  @Column()
+  tfa_ourl: string;
 }

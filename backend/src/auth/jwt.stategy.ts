@@ -23,4 +23,6 @@ export class JwtStrategty extends PassportStrategy(Strategy){
             username: payload.username,
         }
     }
+
+    
 }
