@@ -1,35 +1,29 @@
+import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
-@Component({
-  selector: 'app-two-factor-auth',
-  templateUrl: './two-factor-auth.component.html',
-  styleUrls: ['./two-factor-auth.component.css']
-})
-export class TwoFactorAuthComponent implements OnInit {
-  userId: string = ''; // Initialize with a default value
-  inputCode: string = '';
-  errorMessage: string = '';
 
+@Component({
+  selector: 'app-enable-tfa',
+  templateUrl: './enable-tfa.component.html',
+  styleUrls: ['./enable-tfa.component.css']
+})
+export class EnableTFAComponent {
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
-  ngOnInit(): void {
-    console.log('hello');
-    this.route.queryParams.subscribe(params => {
-      this.userId = params['user'];
-      console.log(this.userId);
-    });
-  }
+  qrCodeUrl: string = '';
+  userId: string = '';
+  inputCode: string = '';
+  errorMessage: string = '';
 
-  // loadQRCode(): void {
-  //   // Make API call to get QR code image URL
-  //     this.http.get<{ qrCodeDataUri: string }>(`http://localhost:3001/api/auth/42/get-qr-code/${this.userId}`, { withCredentials: true }).subscribe(data => {
-  //       this.qrCodeUrl = data.qrCodeDataUri;
-  //       console.log(this.qrCodeUrl);
-  // });
-// }
+  loadQRCode(): void {
+    // Make API call to get QR code image URL
+      this.http.get<{ qrCodeDataUri: string }>(`http://localhost:3001/api/auth/42/get-qr-code/${this.userId}`, { withCredentials: true }).subscribe(data => {
+        this.qrCodeUrl = data.qrCodeDataUri;
+        console.log(this.qrCodeUrl);
+  });
+}
+
 verify2FA(){
   this.http.post(`http://localhost:3001/api/auth/42/verify-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
   .subscribe(

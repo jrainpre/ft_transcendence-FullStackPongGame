@@ -1,14 +1,14 @@
 <div class="container">
     <div class="main-body">
-        <button class="verify-button" (click)="routGamePage()">Game Page</button>
+        <button class="btn btn-info " (click)="routGamePage()">Game Page</button>
           <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex flex-column align-items-center text-center">
-                    <img src="https://cdn.intra.42.fr/users/880dba143f9cf67a22b80efd4ecd4aba/jklocker.jpg" alt="Admin" class="rounded-circle" width="150">
+                    <img [src]="profileUrl" alt="Picture" class="rounded-circle" width="150">
                     <div class="mt-3">
-                      <h4>John Doe</h4>
+                      <h4>{{username}}</h4>
                       <p class="text-secondary mb-1">42 User</p>
                     </div>
                   </div>
@@ -22,15 +22,15 @@
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                     <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins</h6>
-                    <span class="text-secondary">Wins</span>
+                    <span class="text-secondary">{{wins}}</span>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                     <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Losses</h6>
-                    <span class="text-secondary">Losses</span>
+                    <span class="text-secondary">{{losses}}</span>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                     <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins/Loss Ratio</h6>
-                    <span class="text-secondary">Wins/Loss Ratio</span>
+                    <span class="text-secondary">{{win_loss_ratio}}%</span>
                   </li>
                 </ul>
               </div>
@@ -46,7 +46,7 @@
                       <h6 class="mb-0">42 ID</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      42 id
+                      {{id}}
                     </div>
                   </div>
                   <hr>
@@ -55,7 +55,7 @@
                       <h6 class="mb-0">Username</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      username
+                      {{username}}
                     </div>
                   </div>
                   <hr>
@@ -64,13 +64,13 @@
                       <h6 class="mb-0">Two Factor Authentication</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        Two Factor Authentication
+                        {{tfa_enabled}}
                     </div>
                   </div>
                   <hr>
                   <div class="row">
                     <div class="col-sm-12">
-                      <a class="btn btn-info " target="__blank" href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+                      <button class="btn btn-info " (click)="routEditPage()">Edit</button>
                     </div>
                   </div>
                 </div>

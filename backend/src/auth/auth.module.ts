@@ -6,7 +6,7 @@ import { AuthService } from './auth.service'; // Create this service
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategty } from './jwt.stategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entety';
+import { User } from 'src/entities/user.entity';
 
 
 @Module({

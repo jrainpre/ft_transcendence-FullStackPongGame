@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { AuthService } from './auth.service'; // Replace with your auth service
-import { User } from 'src/entities/user.entety';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -20,9 +20,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // You can customize the validation logic here
     // Profile will contain user information from 42
     const user: User = await this.authService.findOrCreateUser(profile); // Function which interacts with DB
-    user.tfa_enabled = false;
-    //if(user.tfa_enabled == true)
-      //return undefined;
     return user;
   }
 }

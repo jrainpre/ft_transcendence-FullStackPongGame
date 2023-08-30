@@ -11,7 +11,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   const corsOptions: CorsOptions = {
-    origin: '*', // Allow requests from your Angular app
+    origin: 'http://localhost:4200', // Allow requests from your Angular app
     credentials: true, // Allow sending cookies and other credentials
   };
 

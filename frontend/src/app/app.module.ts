@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game/game.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditComponent } from './edit/edit.component';
+import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     TwoFactorAuthComponent,
     GameComponent,
     ProfileComponent,
+    EditComponent,
+    EnableTFAComponent,
   ],
   imports: [
     BrowserModule,
