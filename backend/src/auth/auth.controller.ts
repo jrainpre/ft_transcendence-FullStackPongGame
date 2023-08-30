@@ -1,9 +1,6 @@
 import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { FortyTwoGuard } from "./42-auth.guard";
 import { AuthService } from "./auth.service";
-import { JwtAuthGuard } from "./jwt-auth.guard";
-import { verify2FADto } from "../dto/verify.dto"
-import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
 
@@ -27,7 +24,7 @@ export class AuthController{
     async handleRedirect(@Req() req, @Res() res): Promise<any>{
         if(req.user.tfa_enabled == false){
                 const token = await this.authService.login(req.user);
-                res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
+                await res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
                 res.redirect('http://localhost:4200/game')
             }
             else{
@@ -65,7 +62,7 @@ export class AuthController{
         }
     
         const qrCodeDataUri = await new Promise<string>((resolve, reject) => {
-          qrcode.toDataURL(user.tfa_ourl, (err, data) => {
+          qrcode.toDataURL(user.tfa_otpath_url, (err, data) => {
             if (err) {
               reject(err);
             } else {
@@ -90,10 +87,10 @@ export class AuthController{
           token: code,
         
         })
-        if(isVerified == true)
+        if(isVerified == false)
         {
           const token = await this.authService.login(curUser);
-          res.cookie('jwtToken', token, { httpOnly: true, secure: true, sameSite: 'none' });
+          await res.cookie('jwtToken', token, { httpOnly: true, secure: false });
           res.send({message: 'Success!'});
         }
       else{

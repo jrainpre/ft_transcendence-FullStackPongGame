@@ -1,0 +1,14 @@
+<body>
+    <div class="container">
+        <div class="center-content">
+            <img [src]="qrCodeUrl" alt="QR Code">
+        </div>
+        <div class="center-content">
+            <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+            <div class="center-content">
+                <input type="text" [(ngModel)]="inputCode" placeholder="Enter Code">
+                <button class="verify-button" (click)="verify2FA()">Verify</button>
+            </div>
+        </div>
+    </div>
+  </body>

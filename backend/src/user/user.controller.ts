@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 
 @Controller('user')
@@ -10,13 +10,14 @@ export class UserController {
     //localhost:3001/api/user/id
     //@UseGuards(JwtAuthGuard)
     @Get(':id')
-    async getProfileInfo(@Param() params: any): Promise<any> {
+    async getProfileInfo(@Param() params: any, @Res() res): Promise<any> {
         const searchedUser = await this.AuthService.findUserById(params.id);
         if(!searchedUser)
         {
             throw new NotFoundException('User not found');
         }
-        return {searchedUser};
+        //return {searchedUser};
+        res.send(searchedUser);
     }
 
 }

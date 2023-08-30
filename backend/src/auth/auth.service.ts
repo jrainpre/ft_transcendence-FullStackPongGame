@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entety';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
@@ -22,14 +22,16 @@ export class AuthService {
       const secret = speakeasy.generateSecret({lenght : 20, name: 'The Boyzs Transcendence'});
       user = this.userRepository.create({
         id_42: profile.id,
+        name: profile.username,
+        socket_id: '0',
         tfa_enabled: true,
-        username: profile.username,
         tfa_secret: secret.base32,
-        tfa_ourl: secret.otpauth_url,
+        tfa_otpath_url: secret.otpauth_url,
+        profile_picture: profile._json.image.link,
       });
-      user.tfa_enabled = true;
       await this.userRepository.save(user);
     }
+    user.tfa_enabled = true;
     return user;
   }
 
@@ -76,5 +78,10 @@ export class AuthService {
       console.log('Couldnt get user from Cookie', error);
     }
     return null;
+  }
+
+  async compareUserToId(id_42: string, user: any): Promise<any>{
+    if(id_42 != user.id_42)
+    throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
   }
 }

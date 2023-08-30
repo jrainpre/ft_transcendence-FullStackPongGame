@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../api.service';
 
 @Component({
   selector: 'app-login',
@@ -7,7 +6,7 @@ import { AuthService } from '../api.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private authApi: AuthService) {}
+  constructor() {}
 
   login42(){
     window.location.href = 'https://api.intra.42.fr/oauth/authorize' +
