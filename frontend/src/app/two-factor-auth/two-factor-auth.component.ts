@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NotFoundError, throwError } from 'rxjs';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 @Component({
   selector: 'app-two-factor-auth',
   templateUrl: './two-factor-auth.component.html',
@@ -11,8 +10,11 @@ import { NotFoundError, throwError } from 'rxjs';
 export class TwoFactorAuthComponent implements OnInit {
   userId: string = ''; // Initialize with a default value
   qrCodeUrl: string = '';
+  inputCode: string = '';
+  errorMessage: string = '';
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     console.log('hello');
@@ -30,5 +32,25 @@ export class TwoFactorAuthComponent implements OnInit {
         console.log(this.qrCodeUrl);
   });
 }
-
+verify2FA(){
+  this.http.post(`http://localhost:3001/api/auth/42/verify-2FA`, { id: this.userId, code: this.inputCode })
+  .subscribe(
+    (response: any) => {
+      console.log('Response:', response); // Log the response to see its structure
+      if (response.message === 'Success!') {
+        console.log('Verification successful');
+        this.router.navigate(['/game']); // Redirect to the game page
+      }
+    },
+    (error: HttpErrorResponse) => {
+      if (error.status === 400) {
+        console.log('Verification failed: Wrong code');
+        this.errorMessage = 'Wrong code. Please try again.';
+      } else {
+        console.log('An error occurred during verification');
+        this.errorMessage = 'An error occurred during verification. Please try again later.';
+      }
+    }
+  );
+}
 }

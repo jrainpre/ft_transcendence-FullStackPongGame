@@ -6,6 +6,8 @@ import { TfaController } from './tfa/tfa.controller';
 import { TfaService } from './tfa/tfa.service';
 import { TfaModule } from './tfa/tfa.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { UserController } from './user/user.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -18,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     autoLoadEntities: true, // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   })
-    ,AuthModule, TfaModule,],
+    ,AuthModule, TfaModule, UserModule,],
   controllers: [AppController, TfaController],
   providers: [AppService, TfaService],
 })

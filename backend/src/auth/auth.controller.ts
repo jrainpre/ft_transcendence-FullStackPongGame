@@ -1,10 +1,12 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { FortyTwoGuard } from "./42-auth.guard";
 import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { verify2FADto } from "../dto/verify.dto"
 import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 import * as speakeasy from 'speakeasy';
+import * as qrcode from 'qrcode';
+
 
 
 @Controller('auth')
@@ -22,13 +24,15 @@ export class AuthController{
     //localhost:3001/api/auth/42/redirect
     @Get('42/redirect')
     @UseGuards(FortyTwoGuard)
-    async handleRedirect(@Req() req, @Res() res){
+    async handleRedirect(@Req() req, @Res() res): Promise<any>{
         if(req.user.tfa_enabled == false){
                 const token = await this.authService.login(req.user);
-                res.cookie('jwtToken', token, { httpOnly: true, secure: true }); // Set the cookie
+                res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
                 res.redirect('http://localhost:4200/game')
             }
-            res.redirect(`http://localhost:4200/2fa?user=${req.user.id_42}`);
+            else{
+              res.redirect(`http://localhost:4200/2fa?user=${req.user.id_42}`);
+            }
             }
 
     // @Post('42/2fa-verify')
@@ -45,10 +49,10 @@ export class AuthController{
     //         return { sucess: false, message: "Invalid 2FA"};
     // }
 
-    @UseGuards(JwtAuthGuard)
+    //@UseGuards(JwtAuthGuard)
     @Get ('42/hello')
-    check(@Req() req){
-        return {msg: 'hello'}
+    async check(@Req() req): Promise<any>{
+      const user = await this.authService.getUserFromJwtCookie(req);
     }
 
     @Get ('42/get-qr-code/:userId')
@@ -60,15 +64,40 @@ export class AuthController{
           throw new NotFoundException('User not found');
         }
     
-        // Generate the secret key (you can use any logic for this)
-        const secret = speakeasy.generateSecret({ length: 20 }).base32;
-    
-        // Generate the QR code data URI
-        const qrCodeDataUri = await this.authService.generateQRCodeDataUri(
-          secret,
-          '42-leet-Project',
-          'The JJ Gang',
-        );
+        const qrCodeDataUri = await new Promise<string>((resolve, reject) => {
+          qrcode.toDataURL(user.tfa_ourl, (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        });
         return { qrCodeDataUri };
+      }
+
+      @Post ('42/verify-2FA')
+      async verifyQrCode(@Req() req, @Res() res, @Body() qrInfo: any): Promise<any>{
+        console.log(qrInfo.id);
+        console.log(qrInfo.code);
+        const id = qrInfo.id;
+        const code = qrInfo.code;
+        const curUser = await this.authService.findUserById(id);
+
+        const isVerified = speakeasy.totp.verify({
+          secret: curUser.tfa_secret,
+          encoding: 'base32',
+          token: code,
+        
+        })
+        if(isVerified == true)
+        {
+          const token = await this.authService.login(curUser);
+          res.cookie('jwtToken', token, { httpOnly: true, secure: true, sameSite: 'none' });
+          res.send({message: 'Success!'});
+        }
+      else{
+        throw new BadRequestException('Code wrong');
+      }
       }
     }

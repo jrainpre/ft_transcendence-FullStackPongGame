@@ -17,6 +17,7 @@ import { User } from 'src/entities/user.entety';
                                 TypeOrmModule.forFeature([User])],
     providers: [FortyTwoStrategy,
     AuthService, JwtStrategty],
+    exports: [AuthService]
 
 })
 export class AuthModule {}
