@@ -3,20 +3,18 @@ import { FortyTwoGuard } from "./42-auth.guard";
 import { AuthService } from "./auth.service";
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
+import { JwtAuthGuard } from "./jwt-auth.guard";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/entities/user.entity";
+import { Repository } from "typeorm";
 
 
 
 @Controller('auth')
 export class AuthController{
-    constructor(private readonly authService: AuthService,) {}
-
-    //localhost:3001/api/auth/42/login
-    // @Get('42/login')
-    //@UseGuards(FortyTwoGuard)
-    //async handleLogin(@Res() res){
-        //res.redirect('https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-9904fa10768d1a760e5ff38e9647bde2c6b9431a9c32b5269fe17946f41a414a&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fapi%2Fauth%2F42%2Fredirect&response_type=code')
-        //this is never called, but below 42/redirect
-    //}
+    constructor(private readonly authService: AuthService,
+      @InjectRepository(User)
+    private readonly userRepository: Repository<User>,) {}
 
     //localhost:3001/api/auth/42/redirect
     @Get('42/redirect')
@@ -32,30 +30,20 @@ export class AuthController{
             }
             }
 
-    // @Post('42/2fa-verify')
-    // async verify2FA(@Req() req, @Res() res, @Body() verifyDto: verify2FADto){
-    //     const user = this.authService.findUserById(verifyDto.id);
-
-
-    //     if(this.authService.verify2FA(key, verifyDto.code)){
-    //         const token = await this.authService.login(req.user);
-    //         res.cookie('jwtToken', token, { httpOnly: true, secure: true }); // Set the cookie
-    //         res.redirect('http://localhost:4200/game')
-    //     }
-    //     else
-    //         return { sucess: false, message: "Invalid 2FA"};
-    // }
-
-    //@UseGuards(JwtAuthGuard)
     @Get ('42/hello')
     async check(@Req() req): Promise<any>{
       const user = await this.authService.getUserFromJwtCookie(req);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get ('42/get-qr-code/:userId')
-    async getQrCode(@Param('userId') userIdStr: string): Promise<{ qrCodeDataUri: string }> {
-        const userId = parseInt(userIdStr, 10);
+    async getQrCode(@Req() req, @Param('userId')  userIdStr: string): Promise<{ qrCodeDataUri: string }> {
+      const userFromCookie = await this.authService.getUserFromJwtCookie(req);
+      await this.authService.compareUserToId(userIdStr, userFromCookie);
+      const userId = parseInt(userIdStr, 10);
+
         const user = await this.authService.findUserById(userId);
+        
     
         if (!user) {
           throw new NotFoundException('User not found');
@@ -87,7 +75,7 @@ export class AuthController{
           token: code,
         
         })
-        if(isVerified == false)
+        if(isVerified == true)
         {
           const token = await this.authService.login(curUser);
           await res.cookie('jwtToken', token, { httpOnly: true, secure: false });
@@ -97,4 +85,51 @@ export class AuthController{
         throw new BadRequestException('Code wrong');
       }
       }
+
+      @UseGuards(JwtAuthGuard)
+      @Post ('42/enable-2FA')
+      async enableQrCode(@Req() req, @Res() res, @Body() qrInfo: any): Promise<any>{
+        console.log(qrInfo.id);
+        console.log(qrInfo.code);
+        const userFromCookie = await this.authService.getUserFromJwtCookie(req);
+        await this.authService.compareUserToId(qrInfo.id, userFromCookie);
+        const id =  parseInt(qrInfo.id, 10);
+        const code = qrInfo.code;
+        const curUser = await this.authService.findUserById(id);
+
+        const isVerified = speakeasy.totp.verify({
+          secret: curUser.tfa_secret,
+          encoding: 'base32',
+          token: code,
+        
+        })
+        if(isVerified == true)
+        {
+            //enable TFA, rerout to profile page
+            curUser.tfa_enabled = true;
+            await this.userRepository.save(curUser);
+            res.send({message: "Success!"});
+        }
+      else{
+        throw new BadRequestException('Code wrong');
+      }
+      }
+
+      @UseGuards(JwtAuthGuard)
+      @Post ('42/disable')
+      async disableTFA(@Res() res,  @Req() req): Promise<any>{
+        const userFromCookie = await this.authService.getUserFromJwtCookie(req);
+        const curUser = await this.authService.findUserById(userFromCookie.id_42);
+        if(curUser)
+        {
+          curUser.tfa_enabled = false;
+          await this.userRepository.save(curUser);
+          res.send({message: "Success!"});
+        }
+      else{
+        throw new BadRequestException('User not Found');
+      }
+      }
     }
+
+    

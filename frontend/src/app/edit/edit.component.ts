@@ -10,7 +10,7 @@ import { ApiService } from '../api.service';
 
 export class EditComponent {
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router,) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
   id: string = '';
   profileUrl: string = '';
 
@@ -38,28 +38,30 @@ export class EditComponent {
   async setParamId(): Promise<any>{
   }
 
-  changeUsername(){
+  async changeUsername():Promise<any>{
     const changedInfo ={
       id_42: this.id,
       TFA: this.inputTFA,
       name: this.inputUsername
     }
-    this.api.postEditUsername(changedInfo);
-    console.log(changedInfo)
+    await this.api.postEditUsername(changedInfo);
+    this.router.navigate([`/profile/${this.id}`]);
   }
 
-  changeTFA(){
+  async changeTFA() : Promise<any>{
+    console.log(this.inputTFA);
     if(this.curTFA == true && this.inputTFA == 'Enable'){
       this.errorMessage = 'Two Factor Authentication is already Enabled';
     }
     else if(this.curTFA == false && this.inputTFA == 'Disable'){
       this.errorMessage = 'Two Factor Authentication is already Disabled';
     }
-    else if(this.curTFA == false && this.inputTFA == 'Enabled'){
-      //redirect to activate TFA
+    else if(this.curTFA == false && this.inputTFA == 'Enable'){
+      this.router.navigate([`/enable-tfa/${this.id}`]);
     }
     else if(this.curTFA == true && this.inputTFA == 'Disable'){
-      //disable TFA
+      await this.api.postDisableTFA(this.id);
+      this.router.navigate([`/profile/${this.id}`]);
     }
     else{
 
