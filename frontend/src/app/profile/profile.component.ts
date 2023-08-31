@@ -18,9 +18,10 @@ export class ProfileComponent {
   win_loss_ratio: string = '';
 
   async ngOnInit(): Promise<any>{
-    this.route.queryParams.subscribe(params => {
+    this.route.params.subscribe(params => {
       this.id = params['id'];
     })
+    console.log("test:", this.id);
    const user = await this.api.getProfileInfo(this.id);
    this.setProfileVars(user);
   }

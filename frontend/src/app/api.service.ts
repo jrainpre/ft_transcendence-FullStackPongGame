@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 export class ApiService {
   private apiUrl = 'http://localhost:3001/api/'; // Replace with your backend URL
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
   loginWith42(): Observable<any> {
     const headers = new HttpHeaders({
@@ -50,6 +50,24 @@ export class ApiService {
     this.http.post(`${this.apiUrl}edit`, changedInfo, { withCredentials: true }).subscribe(
       (response) => {
         console.log('POST request successful', response);
+        // Handle the response here
+      },
+      (error) => {
+        console.error('Error making POST request', error);
+        // Handle the error here
+      }
+    );
+  }
+
+  async postDisableTFA(userId : string): Promise<any>{
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    this.http.post(`${this.apiUrl}auth/42/disable`, undefined , { withCredentials: true }).subscribe(
+      (response: any) => {
+        if(response.message == 'Success!')
+        this.router.navigate([`/profile/${userId}`])
         // Handle the response here
       },
       (error) => {

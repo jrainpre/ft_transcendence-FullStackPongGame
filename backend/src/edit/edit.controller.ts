@@ -8,7 +8,7 @@ export class EditController {
 
     constructor(private readonly auth: AuthService, private readonly edit: EditService) {}
 
-    //@UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post()
     async editProfile(@Body() changedInfo: any, @Req() req): Promise<any>{
         console.log('In Function');

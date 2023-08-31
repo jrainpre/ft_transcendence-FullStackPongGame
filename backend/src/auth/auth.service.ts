@@ -84,4 +84,5 @@ export class AuthService {
     if(id_42 != user.id_42)
     throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
   }
+
 }
