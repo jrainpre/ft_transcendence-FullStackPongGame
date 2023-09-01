@@ -12,6 +12,8 @@ import { EditController } from './edit/edit.controller';
 import { EditService } from './edit/edit.service';
 import { EditModule } from './edit/edit.module';
 import { User } from './entities/user.entity';
+import { UploadController } from './upload/upload.controller';
+import { UploadService } from './upload/upload.service';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -26,7 +28,7 @@ import { User } from './entities/user.entity';
   }),
   TypeOrmModule.forFeature([User])
     ,AuthModule, TfaModule, UserModule, EditModule,],
-  controllers: [AppController, TfaController, EditController],
-  providers: [AppService, TfaService, EditService,],
+  controllers: [AppController, TfaController, EditController, UploadController],
+  providers: [AppService, TfaService, EditService, UploadService,],
 })
 export class AppModule {}

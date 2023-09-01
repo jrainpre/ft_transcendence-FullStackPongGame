@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
@@ -40,7 +40,7 @@ export class ApiService {
   });
   }
 
-  async postEditUsername(changedInfo: any): Promise<any>{
+  async postEditUsername(changedInfo: any, id: string): Promise<any>{
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
@@ -48,9 +48,9 @@ export class ApiService {
 
     // Make the POST request
     this.http.post(`${this.apiUrl}edit`, changedInfo, { withCredentials: true }).subscribe(
-      (response) => {
-        console.log('POST request successful', response);
-        // Handle the response here
+      (response: any) => {
+        if(response.success == true)
+        this.router.navigate([`/profile/${id}`]);
       },
       (error) => {
         console.error('Error making POST request', error);
@@ -75,5 +75,38 @@ export class ApiService {
         // Handle the error here
       }
     );
+  }
+
+  async postUploadFile(file : any, userId : string): Promise<any>{
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+    console.log(file, userId);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    this.http.post(`${this.apiUrl}upload/avatar`, formData , { withCredentials: true }).subscribe(
+      (response: any) => {
+        if(response.success == true)
+        this.router.navigate([`/profile/${userId}`])
+      },
+      (error) => {
+        console.error('Error making POST request', error);
+      }
+    );
+  }
+
+  async isUser(id: string): Promise<boolean> {
+    const response = await firstValueFrom<any>(
+      this.http.get(`${this.apiUrl}user/is-user/${id}`, { withCredentials: true })
+    );
+
+    console.log(response);
+    return response.message === 'true';
+  }
+
+  async setFirstLoginFalse() : Promise<any>{
+    console.log('called');
+    this.http.get(`${this.apiUrl}user/first-login-false`, { withCredentials: true }).subscribe();
   }
 }

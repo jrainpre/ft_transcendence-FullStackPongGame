@@ -23,7 +23,10 @@ export class AuthController{
         if(req.user.tfa_enabled == false){
                 const token = await this.authService.login(req.user);
                 await res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
-                res.redirect('http://localhost:4200/game')
+                if(req.user.first_login == true)
+                res.redirect(`http://localhost:4200/edit/${req.user.id_42}`);
+                else
+                res.redirect('http://localhost:4200/game');
             }
             else{
               res.redirect(`http://localhost:4200/2fa?user=${req.user.id_42}`);

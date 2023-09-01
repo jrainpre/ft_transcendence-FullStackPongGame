@@ -15,9 +15,14 @@ export class EditComponent {
   profileUrl: string = '';
 
   curTFA: boolean = true;
+  first_login: boolean = false;
+
+  username: string = '';
 
   inputTFA: string = '';
   inputUsername: string = '';
+
+  isUsersProfile: boolean = false;
 
   errorMessage: string = '';
 
@@ -25,17 +30,22 @@ export class EditComponent {
     this.route.params.subscribe(params => {
       this.id = params['id'];
     });
-    //await this.setParamId();
+
     const user = await this.api.getProfileInfo(this.id);
+    this.username = user.name;
     if(user.tfa_enabled == true){
       this.curTFA = true;
     }
-   else{
+    else{
      this.curTFA = false;
    }
     this.profileUrl = user.profile_picture;
-  }
-  async setParamId(): Promise<any>{
+    console.log(user.first_login);
+    if(user.first_login == true)
+    {
+      this.first_login = true;
+      await this.api.setFirstLoginFalse();
+    }
   }
 
   async changeUsername():Promise<any>{
@@ -44,8 +54,7 @@ export class EditComponent {
       TFA: this.inputTFA,
       name: this.inputUsername
     }
-    await this.api.postEditUsername(changedInfo);
-    this.router.navigate([`/profile/${this.id}`]);
+    await this.api.postEditUsername(changedInfo, this.id);
   }
 
   async changeTFA() : Promise<any>{
@@ -68,9 +77,9 @@ export class EditComponent {
     }
   }
 
-  onFileSelected(event: any) {
+  async onFileSelected(event: any): Promise<any> {
     console.log('Called');
     const file: File = event.target.files[0]; // Get the selected file
-    console.log(file);
+    await this.api.postUploadFile(file, this.id);
   }
 }

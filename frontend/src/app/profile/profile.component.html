@@ -58,10 +58,10 @@
                       {{username}}
                     </div>
                   </div>
-                  <hr>
-                  <div class="row">
+                  <hr [hidden]="!isUsersProfile">
+                  <div class="row" [hidden]="!isUsersProfile">
                     <div class="col-sm-3">
-                      <h6 class="mb-0">Two Factor Authentication</h6>
+                      <h6 class="mb-0"  >Two Factor Authentication</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                         {{tfa_enabled}}
@@ -70,7 +70,10 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-12">
-                      <button class="btn btn-info " (click)="routEditPage()">Edit</button>
+                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
+                    </div>
+                    <div class="col-sm-12">
+                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="isUsersProfile">Add Friend</button>
                     </div>
                   </div>
                 </div>

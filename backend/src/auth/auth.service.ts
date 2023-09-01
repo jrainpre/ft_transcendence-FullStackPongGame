@@ -24,14 +24,13 @@ export class AuthService {
         id_42: profile.id,
         name: profile.username,
         socket_id: '0',
-        tfa_enabled: true,
+        tfa_enabled: false,
         tfa_secret: secret.base32,
         tfa_otpath_url: secret.otpauth_url,
         profile_picture: profile._json.image.link,
       });
       await this.userRepository.save(user);
     }
-    user.tfa_enabled = true;
     return user;
   }
 
