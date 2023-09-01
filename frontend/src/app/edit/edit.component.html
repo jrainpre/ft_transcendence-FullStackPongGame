@@ -1,5 +1,5 @@
 <div class="container bootstrap snippets bootdey">
-    <h1 class="text-primary">Edit Profile</h1>
+    <h1 class="text-danger" [hidden]="!first_login" >First Login, you can set/change your info below</h1>
       <hr>
 	<div class="row">
       <!-- left column -->
@@ -14,18 +14,13 @@
       
       <!-- edit form column -->
       <div class="col-md-9 personal-info">
-        <div class="alert alert-info alert-dismissable">
-          <a class="panel-close close" data-dismiss="alert">×</a> 
-          <i class="fa fa-coffee"></i>
-          If you're <strong>allowed</strong>. to change the Users info is checked in the backend.
-        </div>
         <h3>Personal info</h3>
         
         <form class="form-horizontal" role="form">
           <div class="form-group">
             <label class="col-lg-3 control-label">Username:</label>
             <div class="col-lg-8">
-              <input class="form-control" type="text" value=""  [(ngModel)]="inputUsername" name="inputUsername">
+              <input class="form-control" type="text" value="{{username}}"  [(ngModel)]="inputUsername" name="inputUsername">
             </div>
           </div>
           <div class="form-group">

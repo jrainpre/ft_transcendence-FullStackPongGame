@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, booleanAttribute } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
 
@@ -16,6 +16,8 @@ export class ProfileComponent {
   wins: string = '';
   losses: string = '';
   win_loss_ratio: string = '';
+  isUsersProfile: boolean = false;
+
 
   async ngOnInit(): Promise<any>{
     this.route.params.subscribe(params => {
@@ -24,6 +26,9 @@ export class ProfileComponent {
     console.log("test:", this.id);
    const user = await this.api.getProfileInfo(this.id);
    this.setProfileVars(user);
+
+   this.isUsersProfile  =  await this.api.isUser(this.id);
+   console.log('IsUser= ', this.isUsersProfile);
   }
 
   setProfileVars(user: any){

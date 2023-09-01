@@ -34,6 +34,9 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   profile_picture: string;
 
+  @Column({ type: 'boolean', default: true })
+  first_login: boolean;
+
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ONLINE })
   status: UserStatus;
 
