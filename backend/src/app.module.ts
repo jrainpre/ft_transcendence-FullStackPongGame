@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { TfaController } from './tfa/tfa.controller';
-import { TfaService } from './tfa/tfa.service';
-import { TfaModule } from './tfa/tfa.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { UserController } from './user/user.controller';
@@ -28,8 +25,8 @@ import { ConfigModule } from '@nestjs/config';
     synchronize: true, // Auto-create database schema (in development)
   }),
   TypeOrmModule.forFeature([User])
-    ,AuthModule, TfaModule, UserModule, EditModule,],
-  controllers: [AppController, TfaController, EditController, UploadController],
-  providers: [AppService, TfaService, EditService, UploadService,],
+    ,AuthModule, UserModule, EditModule,],
+  controllers: [AppController, EditController, UploadController],
+  providers: [AppService, EditService, UploadService,],
 })
 export class AppModule {}
