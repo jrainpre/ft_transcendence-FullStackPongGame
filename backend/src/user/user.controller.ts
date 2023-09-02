@@ -13,7 +13,7 @@ export class UserController {
     ) {}
 
 
-    //@UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('first-login-false')
     async setFirstLoginFalse(@Req() req) : Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
@@ -21,8 +21,7 @@ export class UserController {
         await this.userRepository.save(jwtUser);
     }
 
-    //localhost:3001/api/user/id
-    //@UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getProfileInfo(@Param() params: any, @Res() res): Promise<any> {
         const searchedUser = await this.AuthService.findUserById(+params.id);
@@ -30,7 +29,6 @@ export class UserController {
         {
             throw new NotFoundException('User not found');
         }
-        //return {searchedUser};
         res.send(searchedUser);
     }
 
@@ -39,13 +37,9 @@ export class UserController {
     async isUser(@Req() req, @Res() res, @Param('id')id: string ): Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         if(jwtUser && id == jwtUser.id_42)
-        {
             res.status(200).json({ message: 'true' });
-        }
         else
-        {
             res.status(200).json({ message: 'false' });
-        }
     }
 
 }

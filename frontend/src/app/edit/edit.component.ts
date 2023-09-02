@@ -45,12 +45,12 @@ export class EditComponent {
   }
 
   async changeUsername():Promise<any>{
-    const changedInfo ={
+    const UsernameId ={
       id_42: this.id,
       TFA: this.inputTFA,
       name: this.inputUsername
     }
-    ;(await this.api.postEditUsername(changedInfo, this.id)).subscribe(
+    ;(await this.api.postEditUsername(UsernameId, this.id)).subscribe(
       (response: any) =>{
         this.router.navigate([`/profile/${this.id}`]);
       },
@@ -76,7 +76,7 @@ export class EditComponent {
       this.router.navigate([`/profile/${this.id}`]);
     }
     else{
-
+      this.errorMessage = "Nothing Selected"
     }
   }
 
