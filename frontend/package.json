@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-host": "ng serve --host 0.0.0.0 --port 4200 --disable-host-check",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -24,6 +25,7 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "rxjs": "~7.8.0",
+    "socket.io-client": "^4.7.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
