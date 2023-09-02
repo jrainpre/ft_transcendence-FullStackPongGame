@@ -23,7 +23,6 @@ export class ProfileComponent {
     this.route.params.subscribe(params => {
       this.id = params['id'];
     })
-    console.log("test:", this.id);
    const user = await this.api.getProfileInfo(this.id);
    this.setProfileVars(user);
 

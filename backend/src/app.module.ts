@@ -14,15 +14,16 @@ import { EditModule } from './edit/edit.module';
 import { User } from './entities/user.entity';
 import { UploadController } from './upload/upload.controller';
 import { UploadService } from './upload/upload.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
+  imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
     type: 'postgres', // Replace with your database type
-    host: '10.12.200.86', // Replace with your database host
-    port: 5432, // Replace with your database port
-    username: 'jakob',
-    password: 'pass123',
-    database: 'my_db',
+    host: process.env.dbHost, // Replace with your database host
+    port: parseInt(process.env.dbPort, 10), // Replace with your database port
+    username: process.env.dbUser,
+    password: process.env.dbPass,
+    database: process.env.dbName,
     entities: ['dist/**/*.entity.js'], // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   }),

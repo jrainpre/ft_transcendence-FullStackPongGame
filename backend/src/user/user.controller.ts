@@ -13,7 +13,7 @@ export class UserController {
     ) {}
 
 
-    @UseGuards(JwtAuthGuard)
+    //@UseGuards(JwtAuthGuard)
     @Get('first-login-false')
     async setFirstLoginFalse(@Req() req) : Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);

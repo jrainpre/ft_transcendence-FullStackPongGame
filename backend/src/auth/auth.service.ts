@@ -7,6 +7,7 @@ import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import * as randomstring from 'randomstring';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +21,19 @@ export class AuthService {
     if(user == undefined)
     {
       const secret = speakeasy.generateSecret({lenght : 20, name: 'The Boyzs Transcendence'});
+      let newName: string =  '';
+      if(this.findUserByName(profile.username))
+      {
+        newName = randomstring.generate({
+          length: 12,
+          charset: 'alphabetic',
+        })
+      }
+      else
+        newName = profile.username;
       user = this.userRepository.create({
         id_42: profile.id,
-        name: profile.username,
+        name: newName,
         socket_id: '0',
         tfa_enabled: false,
         tfa_secret: secret.base32,
@@ -37,6 +48,11 @@ export class AuthService {
   async findUserById (id: number): Promise<User | undefined> {
     const user = await this.userRepository.find({where: {id_42: id}}); //42_id or id?
     return user.length > 0 ? user[0] : undefined;
+  }
+
+  async findUserByName (name: string): Promise<boolean | undefined> {
+    const user = await this.userRepository.find({where: {name: name}});
+    return user.length > 0 ? true : false;
   }
   
   async login(user: any){
@@ -69,7 +85,7 @@ export class AuthService {
   async getUserFromJwtCookie(req: Request): Promise<any>{
     const jwtCookie = req.cookies.jwtToken;
     try{
-      const decodeToken = jwt.verify(jwtCookie, '1337Secret') as any;// Use ENV Variable Later
+      const decodeToken = jwt.verify(jwtCookie, process.env.jwtSecret) as any;// Use ENV Variable Later
       const user = await this.findUserById(decodeToken.id);
       return user;
     } catch (error)

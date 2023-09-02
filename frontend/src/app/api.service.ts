@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable, catchError, firstValueFrom, map, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
@@ -40,22 +40,25 @@ export class ApiService {
   });
   }
 
-  async postEditUsername(changedInfo: any, id: string): Promise<any>{
+  async postEditUsername(changedInfo: any, id: string): Promise<Observable<any>>{
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
     // Make the POST request
-    this.http.post(`${this.apiUrl}edit`, changedInfo, { withCredentials: true }).subscribe(
-      (response: any) => {
+    return this.http.post(`${this.apiUrl}edit`, changedInfo, { withCredentials: true }).pipe(
+      map((response: any) => {
         if(response.success == true)
-        this.router.navigate([`/profile/${id}`]);
-      },
-      (error) => {
+          return response;
+        else
+          throw new Error('Useranme Exists');
+        
+      }),
+      catchError((error) => {
         console.error('Error making POST request', error);
-        // Handle the error here
-      }
+        return throwError(() => new Error('Useranme Exists'));
+      })
     );
   }
 
