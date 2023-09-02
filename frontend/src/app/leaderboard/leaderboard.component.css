@@ -1,0 +1,29 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.container {
+    display: flex; /* Use flexbox for layout */
+}
+
+.app-sidebar {
+    flex: 1; /* Sidebar takes 1/3 of available width (adjust as needed) */
+    background-color: #f0f0f0; /* Example background color */
+    padding: 20px; /* Example padding */
+}
+
+.content {
+    flex: 2; /* Content takes 2/3 of available width (adjust as needed) */
+    padding: 20px; /* Example padding */
+}

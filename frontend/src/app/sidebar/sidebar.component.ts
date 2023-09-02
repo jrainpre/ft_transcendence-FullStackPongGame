@@ -15,4 +15,16 @@ export class SidebarComponent {
     const id = await this.api.getIdByJwt();
     this.router.navigate([`/profile/${id}`]);
   }
+
+  routGame(): void{
+    this.router.navigate(['/game']);
+  }
+  
+  routChat(): void{
+    this.router.navigate(['/chat']);
+  }
+
+  routLeaderboard(): void{
+    this.router.navigate(['/leaderboard']);
+  }
 }
