@@ -1,0 +1,44 @@
+<div class="container bootstrap snippets bootdey">
+    <h1 class="text-danger" [hidden]="!first_login" >First Login, you can set/change your info below</h1>
+      <hr>
+	<div class="row">
+      <!-- left column -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <img [src]="profileUrl" class="avatar img-circle img-thumbnail" alt="avatar">
+          <h6>Upload a different photo...</h6>
+          
+          <input type="file" class="form-control" (change)="onFileSelected($event)">
+        </div>
+      </div>
+      
+      <!-- edit form column -->
+      <div class="col-md-9 personal-info">
+        <h3>Personal info</h3>
+        
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Username:</label>
+            <div class="col-lg-8">
+              <input class="form-control" type="text" value="{{username}}"  [(ngModel)]="inputUsername" name="inputUsername">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Two Factor Authentication:</label>
+            <div class="col-lg-8">
+              <div class="ui-select">
+                <select id="twoFactorAuth" class="form-control" [(ngModel)]="inputTFA" name="inputTFA">
+                  <option value="Enable">Enable</option>
+                  <option value="Disable">Disable</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-dark " style="margin-top: 30px; margin-right: 10px;" (click)="changeUsername()">Change Username</button>
+            <button class="btn btn-dark " style="margin-top: 30px;"  (click)="changeTFA()">Change Two Factor Authentication</button>
+            <div *ngIf="errorMessage" class="error-message"  style="margin-top: 10px; color: red; font-weight: bold;" >{{ errorMessage }}</div>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+<hr>
