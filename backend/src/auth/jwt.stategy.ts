@@ -13,7 +13,7 @@ export class JwtStrategty extends PassportStrategy(Strategy){
                 },
             ]),
             ignoreExpiration: false,
-            secretOrKey: '1337Secret'
+            secretOrKey: process.env.jwtSecret,
         })
     }
 

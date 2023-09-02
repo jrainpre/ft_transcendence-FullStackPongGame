@@ -13,17 +13,12 @@ export class EditComponent {
   constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
   id: string = '';
   profileUrl: string = '';
-
   curTFA: boolean = true;
   first_login: boolean = false;
-
   username: string = '';
-
   inputTFA: string = '';
   inputUsername: string = '';
-
   isUsersProfile: boolean = false;
-
   errorMessage: string = '';
 
   async ngOnInit(): Promise<any>{
@@ -33,6 +28,7 @@ export class EditComponent {
 
     const user = await this.api.getProfileInfo(this.id);
     this.username = user.name;
+    this.inputUsername = this.username;
     if(user.tfa_enabled == true){
       this.curTFA = true;
     }
@@ -54,7 +50,14 @@ export class EditComponent {
       TFA: this.inputTFA,
       name: this.inputUsername
     }
-    await this.api.postEditUsername(changedInfo, this.id);
+    ;(await this.api.postEditUsername(changedInfo, this.id)).subscribe(
+      (response: any) =>{
+        this.router.navigate([`/profile/${this.id}`]);
+      },
+      (error) =>{
+        this.errorMessage = 'User already Exists.';
+      }
+    )
   }
 
   async changeTFA() : Promise<any>{

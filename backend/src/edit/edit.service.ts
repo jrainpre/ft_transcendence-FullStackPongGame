@@ -8,11 +8,7 @@ export class EditService {
 
     constructor(    
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-    ) {}
-
-    changeTFA(){
-
-    }
+    ) {}AuthService
 
     async changeUsername(id_42: string, newName: string): Promise<any>{
         if(newName == '')
