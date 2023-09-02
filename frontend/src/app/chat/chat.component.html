@@ -1,0 +1,110 @@
+<div class="chat-app-container">
+
+    <!-- Sidebar for chat list -->
+    <!-- <div class="chat-sidebar"> -->
+      <!-- Assuming you have a channels array in your component -->
+      <!-- <button *ngFor="let channel of channelList" [class.private-chat]="channel.privatChat" (click)="setCurrentChannel(channel.name)"> -->
+        <!-- {{ channel.name }} -->
+        <!-- </button> -->
+      <!-- </div>  -->
+  
+    <!-- Main chat display area -->
+    <div class="chat-display">
+  <div class="chat-app">
+   <div *ngIf="!isRegistered">
+      <div class="registration">
+          <h3>Register</h3>
+          <input [(ngModel)]="user.name" placeholder="Enter your name"/>
+          <input [(ngModel)]="user.id_42" placeholder="Enter your username" (keyup.enter)="registerUser()" />
+          <button (click)="registerUser()">Register</button>
+      </div>
+  </div>
+  
+  <div *ngIf="isRegistered"> 
+      <div class="Block User">
+          <h3>Block User</h3>
+          <input [(ngModel)]="toBlock" placeholder="Enter user you want to block" (keyup.enter)="blockUser()" />
+          <button (click)="blockUser()">Block User</button>
+      </div>
+  </div>
+  
+  <div *ngIf="isRegistered">
+      <div class="Unblock User">
+          <h3>Unblock User</h3>
+          <input [(ngModel)]="toUnblock" placeholder="Enter user you want to unblock" (keyup.enter)="unblockUser()" />
+          <button (click)="unblockUser()">Unblock User</button>
+      </div>
+  </div>
+  
+      <!-- Channel Creation UI -->
+      <div *ngIf="isRegistered">
+          <h3>Create Channel</h3>
+          <input [(ngModel)]="channelName" placeholder="Enter channel name" (keyup.enter)="createChannel()" />
+          <button (click)="createChannel()">Create</button>
+      </div>
+
+    <!-- private Channel Creation UI -->
+    <div *ngIf="isRegistered">
+        <h3>Create Private Chat</h3>
+        <input [(ngModel)]="newPrvtchat" placeholder="Enter User name" (keyup.enter)="createPrivateChannel()" />
+        <button (click)="createPrivateChannel()">Create</button>
+    </div>
+  
+  <!-- Leave Channel -->
+  <div *ngIf="channel.id !== 0" class="leave-channel">
+      <button (click)="leaveChannel()">Leave Channel</button>
+  </div>
+  
+      <!-- Channels the User has Joined -->
+  <div *ngIf="isRegistered" class="channels-container">
+    <h3>Your Channels</h3>
+    <button *ngFor="let channel of channelList" (click)="setCurrentChannel(channel)">
+        {{ channel.name }}
+    </button>
+  </div>
+  
+  
+  <!-- Main chat container -->
+  <div class="chat-container">
+  
+      <!-- Messages Display Area -->
+      <div *ngIf="channel.id !== 0" class="messages-area" #messagesContainer>
+          <!-- Messages loop -->
+          <div class="message" *ngFor="let message of messages"  
+          [ngClass]="{
+              'outgoing': message.owner_id === user.id_42 && !message.isSystemMessage, 
+              'incoming': message.owner_id !== user.id_42 && !message.isSystemMessage, 
+              'system': message.isSystemMessage 
+          }">
+         <div class="message-header">
+             <span *ngIf="message.owner_id !== user.id_42 && !message.isSystemMessage" class="message-author">{{ message.author }}</span>
+             <span *ngIf="message.isSystemMessage" class="message-author">{{ 'System' }}</span>
+  
+         </div>
+         <div class="message-content">
+             {{ message.content }}
+         </div>
+     </div> 
+          
+          <!-- Typing Indicator -->
+          <!-- <div class="typing-indicator" *ngIf="typingDisplay">
+              {{typingDisplay}}<span class="ellipsis">...</span>
+          </div>
+      </div> -->
+  
+
+      <!-- <input [(ngModel)]="message.content" (keyup)="emitTyping()" placeholder="Type a message..." (keyup.enter)="sendMessage(message.content, user.name, false)"   /> -->
+
+      <!-- Chat Input Area -->
+      <div *ngIf="channel.id !== 0" class="input-area">
+          <input [(ngModel)]="message.content"  placeholder="Type a message..." (keyup.enter)="sendMessage()"   />
+          <button (click)="sendMessage()">Send</button>
+      </div>
+      
+  </div>
+  
+  
+  </div>
+  
+    </div>
+  <!-- </div> -->

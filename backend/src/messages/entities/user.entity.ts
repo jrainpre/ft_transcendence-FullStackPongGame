@@ -27,16 +27,10 @@ export class User {
   tfa_enabled: boolean;
 
   @Column({ type: 'varchar', nullable: true })
-  tfa_secret: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  tfa_otpath_url: string;
+  tfa_method: string;
 
   @Column({ type: 'varchar', nullable: true })
   profile_picture: string;
-
-  @Column({ type: 'boolean', default: true })
-  first_login: boolean;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ONLINE })
   status: UserStatus;
@@ -92,4 +86,8 @@ export class User {
   @OneToMany(() => Message, message => message.owner)
   messages: Message[];
 
+
+
+
 }
+

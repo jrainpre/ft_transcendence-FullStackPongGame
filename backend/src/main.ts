@@ -12,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:4200', // Allow requests from your Angular app
+    origin: '*', // Allow requests from your Angular app
     credentials: true, // Allow sending cookies and other credentials
   };
   app.use('/img', express.static('img'));

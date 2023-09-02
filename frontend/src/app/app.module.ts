@@ -13,6 +13,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditComponent } from './edit/edit.component';
 import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
+import { ChatComponent} from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,8 @@ import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
     ProfileComponent,
     EditComponent,
     EnableTFAComponent,
+    ChatComponent,
+    
   ],
   imports: [
     BrowserModule,

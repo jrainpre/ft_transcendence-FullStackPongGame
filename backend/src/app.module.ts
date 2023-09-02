@@ -15,6 +15,7 @@ import { User } from './entities/user.entity';
 import { UploadController } from './upload/upload.controller';
 import { UploadService } from './upload/upload.service';
 import { ConfigModule } from '@nestjs/config';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
     synchronize: true, // Auto-create database schema (in development)
   }),
   TypeOrmModule.forFeature([User])
-    ,AuthModule, TfaModule, UserModule, EditModule,],
+    ,AuthModule, TfaModule, UserModule, EditModule, MessagesModule],
   controllers: [AppController, TfaController, EditController, UploadController],
   providers: [AppService, TfaService, EditService, UploadService,],
 })
