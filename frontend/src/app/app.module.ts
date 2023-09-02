@@ -14,6 +14,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditComponent } from './edit/edit.component';
 import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { ChatComponent } from './chat/chat.component';
+import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     EditComponent,
     EnableTFAComponent,
     SidebarComponent,
+    ChatComponent,
+    LeaderboardComponent,
   ],
   imports: [
     BrowserModule,

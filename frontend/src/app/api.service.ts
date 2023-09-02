@@ -133,6 +133,27 @@ export class ApiService {
   });
   }
 
+  // get all the players from the database, name and win/loss ratio
+  async getPlayers(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}user/all-users`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
 }
 
 

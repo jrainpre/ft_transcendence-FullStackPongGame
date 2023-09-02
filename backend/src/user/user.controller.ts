@@ -29,8 +29,25 @@ export class UserController {
         res.status(200).json({ message: jwtUser.id_42 })
     }
 
-    //localhost:3001/api/user/id
-    //@UseGuards(JwtAuthGuard)
+    // get all the users from the database, but only send back name 
+    @Get('all-users')
+    async getAllUsers(@Res() res): Promise<any> {
+        try {
+          // Fetch all users from the database
+          const allUsers = await this.userRepository.find();
+    
+          // Map the user data to include only the required properties
+          const simplifiedUsers = allUsers.map(user => ({
+            name: user.name,
+            win_ranked: user.win_ranked,
+            loss_ranked: user.loss_ranked,
+          }));
+    
+          res.status(200).json(simplifiedUsers);
+        } catch (error) {
+          res.status(500).json({ error: 'An error occurred while fetching users.' });
+        }
+      }
 
 
     @UseGuards(JwtAuthGuard)
