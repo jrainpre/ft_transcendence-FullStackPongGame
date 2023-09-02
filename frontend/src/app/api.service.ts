@@ -112,4 +112,27 @@ export class ApiService {
     console.log('called');
     this.http.get(`${this.apiUrl}user/first-login-false`, { withCredentials: true }).subscribe();
   }
+
+  async getIdByJwt() : Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}user/get-id-by-jwt`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response.message); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
 }
+
+

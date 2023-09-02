@@ -1,0 +1,39 @@
+/* Define the styles for the sidebar */
+.sidebar {
+    position: fixed;
+    top: 5.5%;
+    left: 0;
+    height: 100%;
+    width: 200px;
+    background-color: #b1abab;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Style the buttons */
+.sidebar button {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+/* Style the buttons on hover */
+.sidebar button:hover {
+    background-color: #777;
+}
+
+/* Add some spacing at the bottom of the sidebar */
+.sidebar .bottom-space {
+    margin-top: auto;
+}
+
+/* Style the content area */
+.content {
+    margin-left: 220px; /* Adjust this value to match the sidebar width */
+    padding: 20px;
+}
