@@ -11,9 +11,12 @@ import { Game } from './entities/games.entity';
 import { Friend } from './entities/friends.entity';
 import { Socket } from 'dgram';
 import { MessagesController } from './messages.controller';
+import { AuthController } from 'src/auth/auth.controller';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message, Channel, User, ChannelUser, BlockedUser, Game, Friend])],
+  imports: [TypeOrmModule.forFeature([Message, Channel, User, ChannelUser, BlockedUser, Game, Friend, ]), AuthModule],
   providers: [MessagesGateway, MessagesService, ],
   exports: [MessagesService],
   controllers: [MessagesController],

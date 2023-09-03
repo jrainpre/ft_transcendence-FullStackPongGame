@@ -19,6 +19,7 @@ import { SendChannelDto } from './dto/send-channel.dto';
 import { mapChannelToDto, mapUserToDto } from './helpers/helpers';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Message } from 'src/entities/message.entity';
 
 
 
@@ -90,18 +91,18 @@ import { InjectRepository } from '@nestjs/typeorm';
       // }
       
 
-      @SubscribeMessage('createOrJoinChannel')
-      async createChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket,) {
-        if (this.messagesService.isPrivateChannel(channelDto)) {
-        let channel = await this.messagesService.getChannel(channelDto);
-        const user = await this.messagesService.getClientBySocketId(client.id);
-        await this.messagesService.addUserToChannel(user, channel, client);
-        await this.messagesService.getChannelMessages(channel, client);
-        channelDto = mapChannelToDto(channel);
-        client.emit('channelInfo', channelDto);
-        await this.messagesService.sendUserChannels(user, client);
-        }
-      }
+      // @SubscribeMessage('createOrJoinChannel')
+      // async createChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket,) {
+      //   if (this.messagesService.isPrivateChannel(channelDto)) {
+      //   let channel = await this.messagesService.getChannel(channelDto);
+      //   const user = await this.messagesService.getClientBySocketId(client.id);
+      //   await this.messagesService.addUserToChannel(user, channel, client);
+      //   await this.messagesService.getChannelMessages(channel, client);
+      //   channelDto = mapChannelToDto(channel);
+      //   client.emit('channelInfo', channelDto);
+      //   await this.messagesService.sendUserChannels(user, client);
+      //   }
+      // }
 
       @SubscribeMessage('createPrivateChannel')
       async createPrivateChat(@MessageBody('user') userDto: SendUserDto, @ConnectedSocket() client: Socket,) {
@@ -123,6 +124,13 @@ import { InjectRepository } from '@nestjs/typeorm';
         await this.messagesService.removeUserFromBlockList(user, toUnblockUserDto);
         await this.messagesService.sendBlockedUsers(user, client);
       }
+
+      @SubscribeMessage('updateSocketId')
+      async updateSocketId(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+        const user = await this.messagesService.updateSocketId(userDto, client.id);
+        const channel = await this.messagesService.joinChannels(user, client);
+      }
+
 
       
       
