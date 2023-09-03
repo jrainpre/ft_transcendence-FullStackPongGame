@@ -21,6 +21,7 @@ export function mapChannelToDto(channel: Channel): SendChannelDto {
 		id: channel.id,
 		name: channel.name,
 		private_channel: channel.private_channel,
+		password: channel.pw_hashed,
 	};
   }
 

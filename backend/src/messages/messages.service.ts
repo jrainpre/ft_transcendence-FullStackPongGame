@@ -18,6 +18,7 @@ import { SendChannelDto } from './dto/send-channel.dto';
 import { BlockedUser } from './entities/blocked_user.entity';
 import { MessagesGateway } from './messages.gateway';
 import e from 'express';
+import { get } from 'http';
 
 
 @Injectable()
@@ -51,6 +52,148 @@ export class MessagesService {
 
 
 
+
+    async getPuplicChannelsDto(): Promise<SendChannelDto[]> {
+      const channels = await this.channelRepository.find({ where: { private_channel: false }, });
+      const channelsDto = channels.map(mapChannelToDto);
+      return channelsDto;
+    }
+
+    async getUserChannelsDto(user: User): Promise<SendChannelDto[]> {
+      const channels = await this.getUserChannels(user);
+      const channelsDto = channels.map(mapChannelToDto);
+      return channelsDto;
+    }
+
+    async getBlockedUsersDto(user: User): Promise<SendUserDto[]> {
+      const blockedUsers = await this.getBlockedUsers(user);
+      const blockedUsersDto = blockedUsers.map(mapUserToDto);
+      return blockedUsersDto;
+    }
+
+    async updateSocketId(user: SendUserDto, socket_id: string) {
+      let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations:["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"]});
+      if (userOut) {
+        userOut.socket_id = socket_id;
+        await this.userRepository.save(userOut);
+      }
+      return userOut;
+    }
+
+    validateChannelName(channel: SendChannelDto): boolean {
+      const channelName = channel.name.trim();
+      if (channelName === '' || !channel) {
+          throw new Error('Channel name cannot be empty');
+      }
+      if (channelName.length > 10) {
+          throw new Error('Channel name cannot be longer than 10 characters');
+      }
+  
+      const lettersOnlyRegex = /^[A-Za-z]+$/;
+      if (!lettersOnlyRegex.test(channelName)) {
+          throw new Error('Channel name can only contain letters');
+      }
+      return true;
+  }
+
+
+async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel> {
+  let channel = await this.channelRepository.findOne({ where: { name: channelDto.name } });
+  if (channel) {
+    throw new Error('Channel already exists');
+  }
+  channel = this.channelRepository.create({ name: channelDto.name });
+  await this.channelRepository.save(channel);
+  channel = await this.channelRepository.findOne({ where: { name: channel.name },
+    relations: ["channelUsers", "channelUsers.user", "channelUsers.channel", ],});
+ return channel;
+  }
+
+
+  getSocketForUser(user: User, server: Server): Socket {
+    // const socket = server.sockets.sockets[user.socket_id];
+    const socket = server.sockets.sockets.get(user.socket_id);
+    return socket;
+  }
+
+
+  async addUserToChannel(user: User, channel: Channel, server: Server){
+  let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
+  if (newInChannel) {
+    const channelUser = this.channelUserRepository.create({ user: user, channel: channel,  });
+    if (channel.channelUsers.length === 0)//first user in channel
+    {
+      channelUser.owner = true;
+      channelUser.admin = true;
+    }
+    await this.channelUserRepository.save(channelUser);
+    const client = this.getSocketForUser(user, server);
+    if (!client) {
+      throw new Error('Client not found');
+    }
+    client.join(channel.name);
+    this.sendJoinedChannelMessage(channel, user, client);
+  }
+
+  }
+
+  // async addUserToChannel(user: User, channel: Channel, client: Socket) {
+  //   let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
+  //   if (newInChannel) {
+  //     const channelUser = this.channelUserRepository.create({ user: user, channel: channel,  });
+  //     if (channel.channelUsers.length === 0)//first user in channel
+  //     {
+  //       channelUser.owner = true;
+  //       channelUser.admin = true;
+  //     }
+  //     await this.channelUserRepository.save(channelUser);
+  //     channel.channelUsers.push(channelUser);
+  //       await this.channelRepository.save(channel);
+  //       client.join(channel.name);
+  //       this.sendJoinedChannelMessage(channel, user, client);
+  //    }
+  //   }
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    async createNewMessage(messageDto: SendMessageDto, server: Server ): Promise<Message> {
     const user = await this.userRepository.findOne({ where: { id_42: messageDto.owner_id } });
     const channel = await this.channelRepository.findOne({ where: { id: messageDto.channel_id } });
@@ -78,7 +221,7 @@ export class MessagesService {
     await this.userRepository.save(user);   
     user = await this.userRepository.findOne({ where: { id_42: userIn.id_42 },
        relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"],});
-    return user; 
+    return user;
   }
   
 
@@ -149,22 +292,22 @@ async addUsersToPrivateChat(user: User, toChatUser: User, channel: Channel, clie
   }
   
 
-async addUserToChannel(user: User, channel: Channel, client: Socket) {
-  let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
-  if (newInChannel) {
-    const channelUser = this.channelUserRepository.create({ user: user, channel: channel,  });
-    if (channel.channelUsers.length === 0)//first user in channel
-    {
-      channelUser.owner = true;
-      channelUser.admin = true;
-    }
-    await this.channelUserRepository.save(channelUser);
-    channel.channelUsers.push(channelUser);
-      await this.channelRepository.save(channel);
-      client.join(channel.name);
-      this.sendJoinedChannelMessage(channel, user, client);
-   }
-  }
+// async addUserToChannel(user: User, channel: Channel, client: Socket) {
+//   let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
+//   if (newInChannel) {
+//     const channelUser = this.channelUserRepository.create({ user: user, channel: channel,  });
+//     if (channel.channelUsers.length === 0)//first user in channel
+//     {
+//       channelUser.owner = true;
+//       channelUser.admin = true;
+//     }
+//     await this.channelUserRepository.save(channelUser);
+//     channel.channelUsers.push(channelUser);
+//       await this.channelRepository.save(channel);
+//       client.join(channel.name);
+//       this.sendJoinedChannelMessage(channel, user, client);
+//    }
+//   }
 
 async getChannelMessages(channel: Channel, client: Socket)  {
     const messages = await this.messageRepository.find({ where: { channel: { id: channel.id } }, relations: ['channel'],   order: {created_at: 'ASC'} });
@@ -219,14 +362,14 @@ async sendChannelInfo(channel: Channel, client: Socket) {
   client.emit('channelInfo', channelDto);
 }
 
-async getUserChannels(user: User, client: Socket) : Promise<Channel[]> {
+async getUserChannels(user: User) : Promise<Channel[]> {
   let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
   const channels = userOut?.channelUsers.map(cu => cu.channel);
   return channels;
 }
 
 async sendUserChannels(user: User, client: Socket) : Promise<SendChannelDto[]> {
-  const channels = await this.getUserChannels(user, client);
+  const channels = await this.getUserChannels(user);
   const channelsDto = channels.map(mapChannelToDto);
   client.emit('userChannels', channelsDto);
   return channelsDto;
@@ -263,16 +406,15 @@ async removeUserFromBlockList(user: User, toUnblockUserDto: SendUserDto) {
 }
 }
 
-async getBlockedUsers(user: User, client: Socket): Promise<User[]>{
+async getBlockedUsers(user: User): Promise<User[]>{
   user = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["blockedUsers", "blockedByUser"],  });
   const blockedUsersList = user?.blockedByUser.map(blockedUserEntry => blockedUserEntry.blockedUser);
   return blockedUsersList;
 }
 
 async sendBlockedUsers(user: User, client: Socket) {
-  const blockedUser = await this.getBlockedUsers(user, client);
+  const blockedUser = await this.getBlockedUsers(user);
   const blockedUserDto = blockedUser.map(mapUserToDto);
   client.emit('blockedUsers', blockedUserDto);
 }
-
 }
