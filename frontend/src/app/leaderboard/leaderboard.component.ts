@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
 
 interface Player {
+  id_42: number;
   name: string;
   win_ranked: number;
   loss_ranked: number;
@@ -32,6 +33,7 @@ export class LeaderboardComponent {
       console.log(playersData);
       // Map the data to extract only the needed properties
       this.players = playersData.map((player: Player) => ({ // Annotate the type here
+        id_42: player.id_42,
         name: player.name,
         wins: player.win_ranked,
         losses: player.loss_ranked,
@@ -80,5 +82,9 @@ export class LeaderboardComponent {
     }
     this.currentPage = 1;
     this.updateDisplayedPlayers();
+  }
+
+  goToProfile(id_42: number) {
+    this.router.navigate(['/profile', id_42]);
   }
 }

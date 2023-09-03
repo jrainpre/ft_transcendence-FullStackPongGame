@@ -7,10 +7,7 @@ th, td {
     border: 1px solid #ddd;
     text-align: left;
     padding: 8px;
-}
-
-th {
-    background-color: #f2f2f2;
+    background-color: #f2f2f2; /* Apply the background color to both th and td */
 }
 
 .app-sidebar {
@@ -29,8 +26,8 @@ th {
 .container {
     display: flex;
     flex-direction: column; /* Stack child elements vertically */
+    position: relative; /* Make it a relative positioning context */
 }
-
 .table-controls {
     position: absolute;
     bottom: -40px;
@@ -45,3 +42,10 @@ th {
 .pagination {
     margin-right: 10px; /* Add some spacing between controls */
 }
+
+/* Add hover effect to the clickable name */
+.name-clickable:hover {
+    color: #007bff; /* Change the color to your desired hover color */
+    cursor: pointer;
+  }
+  

@@ -3,6 +3,8 @@
 <div class="container">
     <div class="content">
         <h1>Leaderboard</h1>
+
+        <!-- Pagination Controls -->
         <div class="table-controls">
             <div class="page-size-selector">
                 <label for="pageSize"></label>
@@ -19,23 +21,31 @@
                 <button (click)="nextPage()" [disabled]="currentPage * playersPerPage >= players.length">Next</button>
             </div>
         </div>
-        <table>
-            <thead>
+        <div class="table-container">
+            <table>
+              <thead>
                 <tr>
-                    <th>Player</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Win/Loss Ratio</th>
+                  <th>Player</th>
+                  <th>Wins</th>
+                  <th>Losses</th>
+                  <th>Win/Loss Ratio</th>
                 </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let player of displayedPlayers">
-                    <td>{{ player.name }}</td>
+              </thead>
+              <tbody>
+                <!-- Use ngFor to loop through players -->
+                <ng-container *ngFor="let player of displayedPlayers">
+                  <tr>
+                    <!-- Make only the name clickable -->
+                    <td (click)="goToProfile(player.id_42)" class="name-clickable">{{ player.name }}</td>
                     <td>{{ player.win_ranked }}</td>
                     <td>{{ player.loss_ranked }}</td>
                     <td>{{ player.winLossRatio | number:'1.2-2' }}</td>
-                </tr>
-            </tbody>
-        </table>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
     </div>
+    <app-match-history></app-match-history>
 </div>
+

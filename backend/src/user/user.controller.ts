@@ -38,6 +38,7 @@ export class UserController {
     
           // Map the user data to include only the required properties
           const simplifiedUsers = allUsers.map(user => ({
+            id_42: user.id_42,
             name: user.name,
             win_ranked: user.win_ranked,
             loss_ranked: user.loss_ranked,

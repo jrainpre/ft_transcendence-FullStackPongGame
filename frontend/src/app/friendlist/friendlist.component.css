@@ -50,3 +50,18 @@
     color: #666;
   }
   
+  .online-status {
+    color: green;
+  }
+  
+  .offline-status {
+    color: red;
+  }
+
+  .inqueue-status {
+    color: orange;
+  }
+
+  .ingame-status {
+    color: blue;
+  }

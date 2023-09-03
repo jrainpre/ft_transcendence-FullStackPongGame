@@ -19,6 +19,10 @@ import { Friend } from 'src/entities/friends.entity';
 import { FriendsModule } from 'src/friends/friends.module'
 import { FriendsController } from 'src/friends/friends.controller';
 import { FriendsService } from 'src/friends/friends.service';
+import { Game } from 'src/entities/games.entity';
+import { HistoryModule } from './history/history.module';
+import { HistoryController } from './history/history.controller';
+import { HistoryService } from './history/history.service';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -31,10 +35,10 @@ import { FriendsService } from 'src/friends/friends.service';
     entities: ['dist/**/*.entity.js'], // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   }),
-  TypeOrmModule.forFeature([User, Friend])
-    ,AuthModule, TfaModule, UserModule, EditModule, FriendsModule,],
-  controllers: [AppController, TfaController, EditController, UploadController, FriendsController],
-  providers: [AppService, TfaService, EditService, UploadService, FriendsService],
+  TypeOrmModule.forFeature([User, Friend, Game])
+    ,AuthModule, TfaModule, UserModule, EditModule, FriendsModule, HistoryModule],
+  controllers: [AppController, TfaController, EditController, UploadController, FriendsController, HistoryController],
+  providers: [AppService, TfaService, EditService, UploadService, FriendsService, HistoryService],
 
 })
 export class AppModule {}
