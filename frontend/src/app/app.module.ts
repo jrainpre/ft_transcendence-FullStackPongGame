@@ -16,6 +16,7 @@ import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { FriendlistComponent } from './friendlist/friendlist.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
     SidebarComponent,
     ChatComponent,
     LeaderboardComponent,
+    FriendlistComponent,
   ],
   imports: [
     BrowserModule,

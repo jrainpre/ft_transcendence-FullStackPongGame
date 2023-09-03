@@ -89,3 +89,5 @@ export class User {
   gamesPlayerTwo: Game[];
 
 }
+
+export { Friend };

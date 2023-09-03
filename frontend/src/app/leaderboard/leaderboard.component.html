@@ -1,7 +1,24 @@
+<app-sidebar></app-sidebar>
+<app-friendlist></app-friendlist>
 <div class="container">
-    <app-sidebar></app-sidebar>
     <div class="content">
         <h1>Leaderboard</h1>
+        <div class="table-controls">
+            <div class="page-size-selector">
+                <label for="pageSize"></label>
+                <select id="pageSize" [(ngModel)]="playersPerPage" (change)="changePageSize($event)">
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="all">All</option>
+                </select>
+            </div>
+            <div class="pagination">
+                <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+                <button (click)="nextPage()" [disabled]="currentPage * playersPerPage >= players.length">Next</button>
+            </div>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -12,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let player of players">
+                <tr *ngFor="let player of displayedPlayers">
                     <td>{{ player.name }}</td>
                     <td>{{ player.win_ranked }}</td>
                     <td>{{ player.loss_ranked }}</td>
