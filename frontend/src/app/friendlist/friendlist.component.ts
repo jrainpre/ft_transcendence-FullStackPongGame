@@ -41,12 +41,27 @@ export class FriendlistComponent {
         }
       }
       // Split the sorted friends into online and offline arrays
-      this.onlineFriends = this.friends.filter(friend => friend.status === 'online');
+      this.onlineFriends = this.friends.filter(friend => (friend.status === 'online' || friend.status === 'ingame' || friend.status === 'inqueue'));
       this.offlineFriends = this.friends.filter(friend => friend.status === 'offline');
     });
   }
 
   goToProfile(id_42: string) {
-    this.router.navigate(['/profile', id_42], { queryParams: { reload: 'true'}});
+    this.router.navigate(['/profile', id_42],);
+  }
+
+  getStatusClass(status: string): string {
+    if (status === 'offline') {
+      return 'offline-status';
+    }
+    else if (status === 'ingame') {
+      return 'ingame-status';
+    }
+    else if (status === 'inqueue') {
+      return 'inqueue-status';
+    }
+    else {
+      return 'online-status';
+    }
   }
 }  
