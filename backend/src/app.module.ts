@@ -15,6 +15,10 @@ import { User } from './entities/user.entity';
 import { UploadController } from './upload/upload.controller';
 import { UploadService } from './upload/upload.service';
 import { ConfigModule } from '@nestjs/config';
+import { Friend } from 'src/entities/friends.entity';
+import { FriendsModule } from 'src/friends/friends.module'
+import { FriendsController } from 'src/friends/friends.controller';
+import { FriendsService } from 'src/friends/friends.service';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -27,9 +31,10 @@ import { ConfigModule } from '@nestjs/config';
     entities: ['dist/**/*.entity.js'], // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   }),
-  TypeOrmModule.forFeature([User])
-    ,AuthModule, TfaModule, UserModule, EditModule,],
-  controllers: [AppController, TfaController, EditController, UploadController],
-  providers: [AppService, TfaService, EditService, UploadService,],
+  TypeOrmModule.forFeature([User, Friend])
+    ,AuthModule, TfaModule, UserModule, EditModule, FriendsModule,],
+  controllers: [AppController, TfaController, EditController, UploadController, FriendsController],
+  providers: [AppService, TfaService, EditService, UploadService, FriendsService],
+
 })
 export class AppModule {}

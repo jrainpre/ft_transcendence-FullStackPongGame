@@ -18,6 +18,10 @@ interface Player {
 
 export class LeaderboardComponent {
   players: any[] = [];
+  displayedPlayers: any[] = [];
+  currentPage = 1;
+  playersPerPage = 3;
+
   constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
 
   // get all the players from the database
@@ -43,15 +47,38 @@ export class LeaderboardComponent {
     } catch (error) {
       console.error('Error fetching players:', error);
     }
-
-    
+    this.updateDisplayedPlayers();
   }
 
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayedPlayers();
+    }
+  }
 
-  /* //fake player data for testing
-  players = [
-    { name: 'Player 1', wins: 10, losses: 5 },
-    { name: 'Player 2', wins: 8, losses: 7 },
-    { name: 'Player 3', wins: 12, losses: 3 },
-  ]; */
+  nextPage() {
+    const totalPages = Math.ceil(this.players.length / this.playersPerPage);
+    if (this.currentPage < totalPages) {
+      this.currentPage++;
+      this.updateDisplayedPlayers();
+    }
+  }
+
+  updateDisplayedPlayers() {
+    const startIndex = (this.currentPage - 1) * this.playersPerPage;
+    const endIndex = startIndex + this.playersPerPage;
+    this.displayedPlayers = this.players.slice(startIndex, endIndex);
+  }
+
+  changePageSize(event: any) {
+    const size = event.target.value;
+    if (size === 'all') {
+      this.playersPerPage = this.players.length;
+    } else {
+      this.playersPerPage = parseInt(size, 10);
+    }
+    this.currentPage = 1;
+    this.updateDisplayedPlayers();
+  }
 }
