@@ -1,6 +1,7 @@
 import { Component, booleanAttribute } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profile',
@@ -8,7 +9,7 @@ import { ApiService } from '../api.service';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar) {}
   id: string = '';
   profileUrl:string = '';
   username: string = '';
@@ -17,15 +18,25 @@ export class ProfileComponent {
   losses: string = '';
   win_loss_ratio: string = '';
   isUsersProfile: boolean = false;
+  isFriend: boolean = false;
 
   async loadData() {
-    const user = await this.api.getProfileInfo(this.id);
+    let user;
+    try{
+      user = await this.api.getProfileInfo(this.id);
+    }
+    catch(error){
+      console.log("error, wrong ID");
+      return;
+    }
+    this.isFriend = await this.api.isFriend(this.id);
+    console.log("isFriend ", this.isFriend);
     this.setProfileVars(user);
   
     this.isUsersProfile = await this.api.isUser(this.id);
     console.log('IsUser= ', this.isUsersProfile);
   }
-
+  
   async ngOnInit(): Promise<any>{
     this.route.params.subscribe(params => {
       const newId = params['id'];
@@ -56,6 +67,7 @@ export class ProfileComponent {
    this.wins = user.win_ranked.toString();
    this.losses = user.loss_ranked.toString();
    this.win_loss_ratio = (user.win_ranked / user.loss_ranked).toString();
+
   }
 
   setParamId(){
@@ -72,7 +84,17 @@ export class ProfileComponent {
     this.router.navigate([`/edit/`, this.id]);
   }
 
-  addFriend(){
-    
+  async addFriend(): Promise<any>{
+    try{
+      const added = await this.api.addFriend(this.id);
+      if(added == true)
+        this.snackBar.open("Added Friend", "close", {duration: 3000,})
+      else
+      this.snackBar.open("Already a Friend", "close", {duration: 3000,})
+    }
+    catch(error){
+      console.log("addFriend error");
+      return;
+    }
   }
 }

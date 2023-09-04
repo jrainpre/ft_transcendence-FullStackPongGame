@@ -71,7 +71,10 @@
                       <button class="btn btn-info " (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
                     </div>
                     <div class="col-sm-12">
-                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="isUsersProfile">Add Friend</button>
+                      <button class="btn btn-info " (click)="addFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Add Friend</button>
+                    </div>
+                    <div class="col-sm-12">
+                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="!(isUsersProfile == false && isFriend == false)">Remove Friend</button>
                     </div>
                   </div>
                 </div>

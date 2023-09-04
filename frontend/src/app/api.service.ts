@@ -190,6 +190,64 @@ export class ApiService {
         );
   });
   }
+
+  async isFriend(id: string): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}friends/is-friend/${id}`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  async addFriend(id: string): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}friends/add-friend/${id}`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('Cant add friend');
+            } else {
+              console.log('Cant add friend');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  async logout(): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.post(`${this.apiUrl}user/logout`, undefined, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('Cant add friend');
+            } else {
+              console.log('Cant add friend');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
 }
 
 

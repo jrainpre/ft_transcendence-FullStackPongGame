@@ -9,7 +9,25 @@ import { Repository } from 'typeorm';
 
 @Controller('friends')
 export class FriendsController {
-    constructor(private readonly friendsService: FriendsService) {}
+    constructor(private readonly friendsService: FriendsService,
+      private AuthService: AuthService,
+      ) {}
+
+    @UseGuards(JwtAuthGuard)
+    @Get('is-friend/:id')
+    async isFriend(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<any>{
+        const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
+        var isFriend = await this.friendsService.areUsersFriends(jwtUser.id_42, id);
+        return true;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('add-friend/:id')
+    async addFriend(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<any>{
+        const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
+        var isFriend = await this.friendsService.areUsersFriends(jwtUser.id_42, id);
+        return true;
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')

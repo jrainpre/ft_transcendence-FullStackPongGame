@@ -16,8 +16,8 @@
 .sidebar button {
     margin-bottom: 10px;
     padding: 10px;
-    background-color: #555;
-    color: #fff;
+    /* background-color: #555;
+    color: #fff; */
     border: none;
     cursor: pointer;
 }

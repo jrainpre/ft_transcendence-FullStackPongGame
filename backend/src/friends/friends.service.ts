@@ -27,9 +27,19 @@ export class FriendsService {
   }
   
   
-  
-  
-  
-
+  async areUsersFriends(userId: number, friendId: number) : Promise<any>{
+    const areFriends = await this.friendRepository.findOne({
+        where: [{
+            userOne: { id_42: userId },
+            userTwo: { id_42 :friendId},
+        },
+    {
+        userOne: { id_42 :friendId},
+        userTwo: { id_42: userId },
+    }
+    ]
+    })
+    return !!areFriends;
+}
   // Implement other methods as needed
 }

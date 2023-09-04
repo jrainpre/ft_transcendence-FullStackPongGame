@@ -18,6 +18,8 @@ import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { FriendlistComponent } from './friendlist/friendlist.component';
 import { MatchHistoryComponent } from './match-history/match-history.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,9 @@ import { MatchHistoryComponent } from './match-history/match-history.component';
     LoginModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
