@@ -59,12 +59,6 @@ import { Message } from 'src/entities/message.entity';
         await this.messagesService.sendUserChannels(user, client);
       }
 
-      @SubscribeMessage('leaveChannel')
-      async leaveChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket, ) {
-        const user = await this.messagesService.getClientBySocketId(client.id);
-        await this.messagesService.leaveChannel(user, channelDto, client);
-      }
-
       @SubscribeMessage('selectChannel')
       async selectChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket, ) {
         const channel = await this.messagesService.getChannel(channelDto);
@@ -104,13 +98,7 @@ import { Message } from 'src/entities/message.entity';
       //   }
       // }
 
-      @SubscribeMessage('createPrivateChannel')
-      async createPrivateChat(@MessageBody('user') userDto: SendUserDto, @ConnectedSocket() client: Socket,) {
-        const user = await this.messagesService.getClientBySocketId(client.id);
-        const channel = await this.messagesService.createPrivateChat(user, userDto, client);
-      }
-
-
+    
       @SubscribeMessage('blockUser')
       async blockUser(@MessageBody("toBlockUser") toBlockUserDto: SendUserDto, @ConnectedSocket() client: Socket ){
         const user = await this.messagesService.getClientBySocketId(client.id);

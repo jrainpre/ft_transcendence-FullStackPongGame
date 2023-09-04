@@ -58,8 +58,27 @@ export class ChatComponent implements AfterViewChecked {
     toUnblock: string = '';
 
 
+    userToBlock: User = {
+        id_42: 0,
+        name: ''
+    }
 
+    userToUnblock: User = {
+        id_42: 0,
+        name: ''
+    }
 
+    userPrvtchat: User = {
+        id_42: 0,
+        name: ''
+    }
+
+    channelToJoin: Channel = {
+        id: 0,
+        name: '',
+        private_channel: false,
+        password: ''
+    }
 
     channelToCreate: Channel = {
         id: 0,
@@ -80,7 +99,7 @@ export class ChatComponent implements AfterViewChecked {
 
     constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {
 
-        this.socket = io('http://10.12.1.1:3001');
+        this.socket = io('http://10.11.2.1:3001');
 
         this.socket.on('message', (message: Message) => {
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
@@ -165,6 +184,15 @@ export class ChatComponent implements AfterViewChecked {
     }
 
 
+    private saveJoinedChannel(data: { channel: Channel; }) {
+        this.flushChannelToJoin();
+        this.flushChannel();
+        this.channel = data.channel;
+        this.userChannels.push(this.channel);
+        this.snackBar.open('Channel joined successfully', 'Close', { duration: 5000, });
+    }
+
+
     loadUserData(): void {
         console.log('loadUserData');
         this.http.get<{ user: User, publicCannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
@@ -203,6 +231,103 @@ export class ChatComponent implements AfterViewChecked {
                 }
             })
     }
+
+    joinChannel(): void {
+        console.log(JSON.stringify(this.channelToJoin));
+        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.flushChannelToJoin();
+                    this.snackBar.open('Error joining channel: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                })
+            )
+            .subscribe(data => {
+                if (data) {
+                    this.saveJoinedChannel(data);
+                }
+            })
+    }
+
+    leaveChannel(): void {
+        this.http.post<{userChannels: Channel[]}>(`http://localhost:3001/api/chat/leave-channel`, { channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error leaving channel: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                })
+            )
+            .subscribe(data => {
+                if (data) {
+                    this.flushChannel();
+                    if (data.userChannels)
+                        this.userChannels = data.userChannels;
+                        console.log(JSON.stringify(this.publicChannels));
+                    this.snackBar.open('Channel left successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    blockUser(): void {
+        this.http.post<{ blockedUsers: User[] }>(`http://localhost:3001/api/chat/block-user`, { user: this.userToBlock }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error blocking user: ' + error.error.message, 'Close', { duration: 5000, });
+                    this.flushUserBlock();
+                    return throwError(error);
+                })
+            )
+            .subscribe(data => {
+                if (data) {
+                    this.flushUserBlock();
+                    this.blockedUsers = data.blockedUsers;
+                    this.snackBar.open('User blocked successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    unblockUser(): void {
+        console.log(JSON.stringify(this.toUnblock));
+        this.http.post<{ blockedUsers: User[] }>(`http://localhost:3001/api/chat/unblock-user`, { user: this.userToUnblock }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error unblocking user: ' + error.error.message, 'Close', { duration: 5000, });
+                    this.flushUserBlock();
+                    return throwError(error);
+                })
+            )
+            .subscribe(data => {
+                if (data) {
+                    this.flushUserBlock();
+                    this.blockedUsers = data.blockedUsers;
+                    this.snackBar.open('User unblocked successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    startPrivateChat(): void {
+        console.log(JSON.stringify(this.userPrvtchat));
+        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error starting private chat: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.flushChannel();
+                    this.channel = data.channel;
+                    this.userChannels.push(this.channel);
+                    this.snackBar.open('Private chat started successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
 
 
 
@@ -298,30 +423,15 @@ export class ChatComponent implements AfterViewChecked {
     //     }, 2000);
     // };
 
-    leaveChannel() {
-        this.socket.emit('leaveChannel', { channel: this.channel });
-        this.flushChannel();
-    }
+    // leaveChannel() {
+    //     this.socket.emit('leaveChannel', { channel: this.channel });
+    //     this.flushChannel();
+    // }
 
 
 
-    blockUser() {
-        let userToBlock: User = {
-            id_42: 0,
-            name: this.toBlock
-        }
-        this.socket.emit('blockUser', { toBlockUser: userToBlock });
-        this.toBlock = '';
-    }
 
-    unblockUser() {
-        let userToUnblock: User = {
-            name: this.toUnblock,
-            id_42: 0
-        }
-        this.socket.emit('unblockUser', { toUnblockUser: userToUnblock });
-        this.toUnblock = '';
-    }
+
 
     updateSocketId() {
         this.socket.emit('updateSocketId', { user: this.user });
@@ -348,6 +458,13 @@ export class ChatComponent implements AfterViewChecked {
         this.channelToCreate.password = '';
     }
 
+    flushChannelToJoin() {
+        this.channelToJoin.id = 0;
+        this.channelToJoin.name = '';
+        this.channelToJoin.private_channel = false;
+        this.channelToJoin.password = '';
+    }
+
     flushMessage() {
         this.message.author = '';
         this.message.content = '';
@@ -356,4 +473,12 @@ export class ChatComponent implements AfterViewChecked {
         this.message.isSystemMessage = false;
         this.message.created_at = new Date();
     }
+
+    flushUserBlock() {
+        this.userToBlock.id_42 = 0;
+        this.userToBlock.name = '';
+        this.userToUnblock.id_42 = 0;
+        this.userToUnblock.name = '';
+    }
+
 }
