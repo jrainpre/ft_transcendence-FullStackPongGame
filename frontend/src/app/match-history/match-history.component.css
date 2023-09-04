@@ -1,0 +1,63 @@
+/* match-history.component.css */
+
+.match-history {
+  margin: 20px;
+  position: relative; /* Make it a positioning context */
+}
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Style the winner column with green for Player One and red for Player Two */
+  td:nth-child(7) {
+    font-weight: bold;
+  }
+  
+  td:nth-child(7):empty::before {
+    content: 'N/A';
+    color: #888;
+  }
+  
+  /* Center-align the N/A text in the winner column */
+  td:nth-child(7):empty {
+    text-align: center;
+  }
+  
+  .table-controls {
+    position: absolute;
+    bottom: -40px;
+    right: 0;
+    display: flex; /* Make controls flex items */
+    justify-content: flex-end; /* Align controls to the right */
+    align-items: center; /* Center controls vertically */
+    margin-top: 10px; /* Example margin for spacing */
+}
+
+.page-size-selector,
+.pagination {
+    margin-right: 0px; /* Add some spacing between controls */
+    padding-right: 10px; /* Add some spacing between controls */
+}
+
+/* Add hover effect to the clickable name */
+.name-clickable:hover {
+  color: #007bff; /* Change the color to your desired hover color */
+  cursor: pointer;
+}
