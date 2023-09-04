@@ -11,7 +11,7 @@ import { User } from 'src/entities/user.entity';
 export class UploadController {
 
     constructor(private upload: UploadService, private auth: AuthService) {}
-    
+
     @UseGuards(JwtAuthGuard)
     @Post('/avatar')
     @UseInterceptors(FileInterceptor('avatar', {
