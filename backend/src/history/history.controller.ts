@@ -9,12 +9,20 @@ import { Game } from 'src/entities/games.entity';
 
 @Controller('history')
 export class HistoryController {
-    constructor(private readonly historyService: HistoryService) {}
+    constructor(private readonly historyService: HistoryService, private readonly AuthService: AuthService) {}
 
     @UseGuards(JwtAuthGuard)
     @Get('all')
     async getFullHistory(): Promise<Game[]> {
         const history = await this.historyService.getFullHistory();
         return history;
+    }
+
+    // this has input now, fix it michael
+    @UseGuards(JwtAuthGuard) // Add the JwtAuthGuard
+    @Get('user/:id')
+    async getGamesByUserId(@Param('id', ParseIntPipe) id: number): Promise<Game[]> {
+        const friends = await this.historyService.getGamesByUserId(id);
+        return friends;
     }
 }
