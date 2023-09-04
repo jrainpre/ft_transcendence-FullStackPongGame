@@ -8,7 +8,8 @@ import { Game } from './games.entity';
 export enum UserStatus {
     ONLINE = 'online',
     OFFLINE = 'offline',
-    INGAME = 'ingame'
+    INGAME = 'ingame',
+    INQUE = 'inqueue'
 }
 
 @Entity('users')
@@ -89,3 +90,5 @@ export class User {
   gamesPlayerTwo: Game[];
 
 }
+
+export { Friend };

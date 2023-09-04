@@ -1,0 +1,50 @@
+<!-- match-history.component.html -->
+
+<div class="match-history">
+  <div class="content">
+    <h2>Match History</h2>
+    
+    <!-- Pagination Controls -->
+    <div class="table-controls">
+      <div class="page-size-selector">
+          <label for="pageSize"></label>
+          <select id="pageSize" [(ngModel)]="gamesPerPage" (change)="changePageSize($event)">
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="all">All</option>
+          </select>
+      </div>
+      <div class="pagination">
+          <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+          <button (click)="nextPage()" [disabled]="currentPage * gamesPerPage >= matches.length">Next</button>
+      </div>
+  </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Winner</th>
+            <th>Player One</th>
+            <th>Player Two</th>
+            <th>Score</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Use displayedGames for ngFor to loop through paginated matches -->
+          <tr *ngFor="let match of displayedGames">
+            <td>{{ match.type }}</td>
+            <td (click)="goToProfile(match.winnerId)" class="name-clickable">{{ match.winner ? match.winner : 'N/A' }}</td>
+            <td (click)="goToProfile(match.playerOneId)" class="name-clickable">{{ match.playerOne }}</td>
+            <td (click)="goToProfile(match.playerTwoId)" class="name-clickable">{{ match.playerTwo }}</td>
+            <td>{{ match.player_one_score + ':' + match.player_two_score }}</td>
+            <td>{{ match.created_at | date }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
