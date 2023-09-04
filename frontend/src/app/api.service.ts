@@ -40,14 +40,13 @@ export class ApiService {
   });
   }
 
-  async postEditUsername(changedInfo: any, id: string): Promise<Observable<any>>{
+  async postEditUsername(UsernameId: any, id: string): Promise<Observable<any>>{
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    // Make the POST request
-    return this.http.post(`${this.apiUrl}edit`, changedInfo, { withCredentials: true }).pipe(
+    return this.http.post(`${this.apiUrl}edit`, UsernameId, { withCredentials: true }).pipe(
       map((response: any) => {
         if(response.success == true)
           return response;
@@ -56,7 +55,6 @@ export class ApiService {
         
       }),
       catchError((error) => {
-        console.error('Error making POST request', error);
         return throwError(() => new Error('Useranme Exists'));
       })
     );
@@ -71,11 +69,9 @@ export class ApiService {
       (response: any) => {
         if(response.message == 'Success!')
         this.router.navigate([`/profile/${userId}`])
-        // Handle the response here
       },
       (error) => {
         console.error('Error making POST request', error);
-        // Handle the error here
       }
     );
   }

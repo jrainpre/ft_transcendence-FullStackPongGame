@@ -7,6 +7,7 @@ import { JwtAuthGuard } from "./jwt-auth.guard";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/entities/user.entity";
 import { Repository } from "typeorm";
+import { verify2FADto } from "src/dto/verify2FADto";
 
 
 
@@ -32,11 +33,6 @@ export class AuthController{
               res.redirect(`http://localhost:4200/2fa?user=${req.user.id_42}`);
             }
             }
-
-    @Get ('42/hello')
-    async check(@Req() req): Promise<any>{
-      const user = await this.authService.getUserFromJwtCookie(req);
-    }
 
     @UseGuards(JwtAuthGuard)
     @Get ('42/get-qr-code/:userId')
@@ -66,8 +62,6 @@ export class AuthController{
 
       @Post ('42/verify-2FA')
       async verifyQrCode(@Req() req, @Res() res, @Body() qrInfo: any): Promise<any>{
-        console.log(qrInfo.id);
-        console.log(qrInfo.code);
         const id = qrInfo.id;
         const code = qrInfo.code;
         const curUser = await this.authService.findUserById(id);
@@ -91,9 +85,7 @@ export class AuthController{
 
       @UseGuards(JwtAuthGuard)
       @Post ('42/enable-2FA')
-      async enableQrCode(@Req() req, @Res() res, @Body() qrInfo: any): Promise<any>{
-        console.log(qrInfo.id);
-        console.log(qrInfo.code);
+      async enableQrCode(@Req() req, @Res() res, @Body() qrInfo: verify2FADto): Promise<any>{
         const userFromCookie = await this.authService.getUserFromJwtCookie(req);
         await this.authService.compareUserToId(qrInfo.id, userFromCookie);
         const id =  parseInt(qrInfo.id, 10);
@@ -108,7 +100,6 @@ export class AuthController{
         })
         if(isVerified == true)
         {
-            //enable TFA, rerout to profile page
             curUser.tfa_enabled = true;
             await this.userRepository.save(curUser);
             res.send({message: "Success!"});

@@ -11,10 +11,8 @@ export class UserController {
     constructor(private readonly AuthService: AuthService,  
         @InjectRepository(User) private readonly userRepository: Repository<User>,
     ) {}
-
-    
-
-    //@UseGuards(JwtAuthGuard)
+ 
+    @UseGuards(JwtAuthGuard)
     @Get('first-login-false')
     async setFirstLoginFalse(@Req() req) : Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
@@ -56,13 +54,9 @@ export class UserController {
     async isUser(@Req() req, @Res() res, @Param('id')id: string ): Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         if(jwtUser && id == jwtUser.id_42)
-        {
             res.status(200).json({ message: 'true' });
-        }
         else
-        {
             res.status(200).json({ message: 'false' });
-        }
     }
 
     @Get(':id')
@@ -75,5 +69,4 @@ export class UserController {
         //return {searchedUser};
         res.send(searchedUser);
     }
-
 }
