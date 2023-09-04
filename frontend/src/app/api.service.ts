@@ -112,4 +112,88 @@ export class ApiService {
     console.log('called');
     this.http.get(`${this.apiUrl}user/first-login-false`, { withCredentials: true }).subscribe();
   }
+
+  async getIdByJwt() : Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}user/get-id-by-jwt`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response.message); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  // get all the players from the database, name and win/loss ratio
+  async getPlayers(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}user/all-users`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  async getFriends(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}friends/${id}`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+
+  async loadAllMatches(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}history/all`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('cant load matches');
+            } else {
+              console.log('cant load matches');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
 }
+
+
