@@ -53,7 +53,9 @@ export class PersonalMatchHistoryComponent {
   async loadMatches() {
     const currentUrl = window.location.href; // Get the current URL
     const id = this.extractIdFromUrl(currentUrl);
-  
+    
+    // clear matches array
+    this.matches = [];
     if (id !== null) {
       // Only call api.loadUserMatches(id) if 'id' is not null
       await this.api.loadUserMatches(id).then((response: any) => {
