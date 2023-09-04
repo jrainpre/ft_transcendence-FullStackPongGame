@@ -18,18 +18,34 @@ export class ProfileComponent {
   win_loss_ratio: string = '';
   isUsersProfile: boolean = false;
 
+  async loadData() {
+    const user = await this.api.getProfileInfo(this.id);
+    this.setProfileVars(user);
+  
+    this.isUsersProfile = await this.api.isUser(this.id);
+    console.log('IsUser= ', this.isUsersProfile);
+  }
 
   async ngOnInit(): Promise<any>{
     this.route.params.subscribe(params => {
-      this.id = params['id'];
-    })
-   const user = await this.api.getProfileInfo(this.id);
-   this.setProfileVars(user);
+      const newId = params['id'];
+      if(newId != this.id){
+        this.id = newId;
+        this.reloadPage();
+      }
 
-   this.isUsersProfile  =  await this.api.isUser(this.id);
-   console.log('IsUser= ', this.isUsersProfile);
+    this.loadData();
+
+    });
   }
 
+  reloadPage() {
+    // Reload the page by navigating to the current URL
+    this.router.navigateByUrl('/profile/' + this.id, { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/profile/' + this.id]);
+    });
+  }
+  
   setProfileVars(user: any){
    this.profileUrl = user.profile_picture;
    this.username = user.name;

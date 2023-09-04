@@ -1,0 +1,51 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+    background-color: #f2f2f2; /* Apply the background color to both th and td */
+}
+
+.app-sidebar {
+    flex: 1; /* Sidebar takes 1/3 of available width (adjust as needed) */
+    background-color: #f0f0f0; /* Example background color */
+    padding: 20px; /* Example padding */
+}
+
+.content {
+    flex: 2; /* Content takes 2/3 of available width (adjust as needed) */
+    padding: 20px; /* Example padding */
+    position: relative; /* Make it a relative positioning context */
+}
+
+/* New styles for container and table controls */
+.container {
+    display: flex;
+    flex-direction: column; /* Stack child elements vertically */
+    position: relative; /* Make it a relative positioning context */
+}
+.table-controls {
+    position: absolute;
+    bottom: -40px;
+    right: 0;
+    display: flex; /* Make controls flex items */
+    justify-content: flex-end; /* Align controls to the right */
+    align-items: center; /* Center controls vertically */
+    margin: 10px; /* Example margin for spacing */
+}
+
+.page-size-selector,
+.pagination {
+    margin-right: 10px; /* Add some spacing between controls */
+}
+
+/* Add hover effect to the clickable name */
+.name-clickable:hover {
+    color: #007bff; /* Change the color to your desired hover color */
+    cursor: pointer;
+  }
+  

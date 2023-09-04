@@ -1,0 +1,28 @@
+<!-- friend-list.component.html -->
+<div class="friend-list-container">
+  <h2>Friend List</h2>
+  <ul>
+    <li class="bar">ONLINE</li>
+    <ng-container *ngFor="let friend of onlineFriends">
+      <li>
+        <button class="user-button" (click)="goToProfile(friend.id_42)">
+          <span class="username" [ngClass]="getStatusClass(friend.status)">
+            {{ friend.username }}
+          </span>
+          <span class="status">{{ friend.status }}</span>
+        </button>
+      </li>
+    </ng-container>
+    <li class="bar">OFFLINE</li>
+    <ng-container *ngFor="let friend of offlineFriends">
+      <li>
+        <button class="user-button" (click)="goToProfile(friend.id_42)">
+          <span class="username" [ngClass]="getStatusClass(friend.status)">
+            {{ friend.username }}
+          </span>
+          <span class="status">{{ friend.status }}</span>
+        </button>
+      </li>
+    </ng-container>
+  </ul>
+</div>
