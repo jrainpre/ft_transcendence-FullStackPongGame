@@ -194,6 +194,27 @@ export class ApiService {
         );
   });
   }
+
+
+  async loadUserMatches(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}history/user/${id}`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            console.log(response);
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('cant load matches');
+            } else {
+              console.log('cant load matches');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
 }
 
 

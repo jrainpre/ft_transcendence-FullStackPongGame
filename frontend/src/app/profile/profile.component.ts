@@ -1,6 +1,7 @@
 import { Component, booleanAttribute } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -17,6 +18,7 @@ export class ProfileComponent {
   losses: string = '';
   win_loss_ratio: string = '';
   isUsersProfile: boolean = false;
+  public reloadPersonalMatchHistory$ = new Subject<void>();
 
   async loadData() {
     const user = await this.api.getProfileInfo(this.id);
@@ -43,7 +45,13 @@ export class ProfileComponent {
     // Reload the page by navigating to the current URL
     this.router.navigateByUrl('/profile/' + this.id, { skipLocationChange: true }).then(() => {
       this.router.navigate(['/profile/' + this.id]);
+
+      this.reloadPersonalMatchHistory();
     });
+  }
+
+  reloadPersonalMatchHistory() {
+    this.reloadPersonalMatchHistory$.next();
   }
   
   setProfileVars(user: any){
