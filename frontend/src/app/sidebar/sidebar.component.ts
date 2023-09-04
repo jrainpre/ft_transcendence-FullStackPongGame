@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,7 +9,7 @@ import { ApiService } from '../api.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(private router: Router, private api: ApiService, private cookie: CookieService) {}
 
 
   async routProfile(): Promise<any>{
@@ -27,4 +28,16 @@ export class SidebarComponent {
   routLeaderboard(): void{
     this.router.navigate(['/leaderboard']);
   }
+
+  async logOut(): Promise<any> {
+    console.log("Logout");
+    this.cookie.delete("jwtToken");
+    this.router.navigate(['/login']);
+      // try{
+      //   await this.api.logout();
+      // }
+      // catch(error){
+
+      // }
+    }
 }

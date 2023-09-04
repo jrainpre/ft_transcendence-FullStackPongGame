@@ -1,15 +1,17 @@
-import { Body, Controller, Get, NotFoundException, Param, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
 
     constructor(private readonly AuthService: AuthService,  
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private user: UserService,
     ) {}
  
     @UseGuards(JwtAuthGuard)
@@ -59,6 +61,13 @@ export class UserController {
             res.status(200).json({ message: 'false' });
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('logout')
+    logout(@Res() res){
+        res.clearCookie('jwtToken');
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getProfileInfo(@Param() params: any, @Res() res): Promise<any> {
         const searchedUser = await this.AuthService.findUserById(+params.id);
@@ -66,7 +75,6 @@ export class UserController {
         {
             throw new NotFoundException('User not found');
         }
-        //return {searchedUser};
         res.send(searchedUser);
     }
 }

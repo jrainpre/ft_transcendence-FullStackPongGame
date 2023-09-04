@@ -23,7 +23,7 @@ export class AuthController{
     async handleRedirect(@Req() req, @Res() res): Promise<any>{
         if(req.user.tfa_enabled == false){
                 const token = await this.authService.login(req.user);
-                await res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
+                await res.cookie('jwtToken', token, { httpOnly: false, secure: false }); // Set the cookie
                 if(req.user.first_login == true)
                 res.redirect(`http://localhost:4200/edit/${req.user.id_42}`);
                 else
@@ -75,7 +75,7 @@ export class AuthController{
         if(isVerified == true)
         {
           const token = await this.authService.login(curUser);
-          await res.cookie('jwtToken', token, { httpOnly: true, secure: false });
+          await res.cookie('jwtToken', token, { httpOnly: false, secure: false });
           res.send({message: 'Success!'});
         }
       else{
