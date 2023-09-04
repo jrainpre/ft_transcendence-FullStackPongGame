@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { TfaController } from './tfa/tfa.controller';
-import { TfaService } from './tfa/tfa.service';
-import { TfaModule } from './tfa/tfa.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { UserController } from './user/user.controller';
@@ -35,10 +32,12 @@ import { HistoryService } from './history/history.service';
     entities: ['dist/**/*.entity.js'], // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   }),
+
   TypeOrmModule.forFeature([User, Friend, Game])
-    ,AuthModule, TfaModule, UserModule, EditModule, FriendsModule, HistoryModule],
-  controllers: [AppController, TfaController, EditController, UploadController, FriendsController, HistoryController],
-  providers: [AppService, TfaService, EditService, UploadService, FriendsService, HistoryService],
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule],
+  controllers: [AppController, EditController, UploadController, FriendsController, HistoryController],
+  providers: [AppService, EditService, UploadService, FriendsService, HistoryService],
+
 
 })
 export class AppModule {}

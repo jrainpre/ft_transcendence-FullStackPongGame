@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { EditService } from './edit.service';
+import { UsernameIdDTO } from 'src/dto/UsernameId.dto';
 
 @Controller('edit')
 export class EditController {
@@ -10,7 +11,7 @@ export class EditController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async editProfile(@Body() changedInfo: any, @Req() req, @Res() res): Promise<any>{
+    async editProfile(@Body() changedInfo: UsernameIdDTO, @Req() req, @Res() res): Promise<any>{
         console.log('In Function');
         const user = await this.auth.getUserFromJwtCookie(req);
         await this.auth.compareUserToId(changedInfo.id_42, user);
