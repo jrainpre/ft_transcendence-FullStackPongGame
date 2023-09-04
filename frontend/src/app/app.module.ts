@@ -18,6 +18,7 @@ import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { FriendlistComponent } from './friendlist/friendlist.component';
 import { MatchHistoryComponent } from './match-history/match-history.component';
+import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { MatchHistoryComponent } from './match-history/match-history.component';
     LeaderboardComponent,
     FriendlistComponent,
     MatchHistoryComponent,
+    PersonalMatchHistoryComponent,
   ],
   imports: [
     BrowserModule,

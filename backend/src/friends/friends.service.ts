@@ -26,10 +26,5 @@ export class FriendsService {
       .getMany();
   }
   
-  
-  
-  
-  
-
   // Implement other methods as needed
 }
