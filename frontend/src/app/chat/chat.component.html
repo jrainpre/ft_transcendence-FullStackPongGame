@@ -40,42 +40,6 @@
 
 
 
-
-  
-  <div *ngIf="isRegistered"> 
-      <div class="Block User">
-          <h3>Block User</h3>
-          <input [(ngModel)]="toBlock" placeholder="Enter user you want to block" (keyup.enter)="blockUser()" />
-          <button (click)="blockUser()">Block User</button>
-      </div>
-  </div>
-  
-  <div *ngIf="isRegistered">
-      <div class="Unblock User">
-          <h3>Unblock User</h3>
-          <input [(ngModel)]="toUnblock" placeholder="Enter user you want to unblock" (keyup.enter)="unblockUser()" />
-          <button (click)="unblockUser()">Unblock User</button>
-      </div>
-  </div>
-  
-      <!-- Channel Creation UI -->
-      <div *ngIf="isRegistered">
-          <h3>Create Channel</h3>
-          <input [(ngModel)]="channelName" placeholder="Enter channel name" (keyup.enter)="createChannel()" />
-          <button (click)="createChannel()">Create</button>
-      </div>
-
-    <!-- private Channel Creation UI -->
-    <div *ngIf="isRegistered">
-        <h3>Create Private Chat</h3>
-        <input [(ngModel)]="newPrvtchat" placeholder="Enter User name" (keyup.enter)="createPrivateChannel()" />
-        <button (click)="createPrivateChannel()">Create</button>
-    </div>
-  
-  <!-- Leave Channel -->
-  <div *ngIf="channel.id !== 0" class="leave-channel">
-      <button (click)="leaveChannel()">Leave Channel</button>
-  </div>
   
       <!-- Channels the User has Joined -->
   <div *ngIf="isRegistered" class="channels-container">
@@ -88,7 +52,36 @@
   
 
 
+  <div class="create-channel-container">
+    <h3>Block a User</h3>
+    <form (ngSubmit)="blockUser()">
+        <label>User to Block:
+            <input type="text" name="blockUserName" [(ngModel)]="userToBlock.name" required>
+        </label>
+        <button type="submit">Block User</button>
+    </form>
+</div>
 
+
+<div class="create-channel-container">
+    <h3>Block a User</h3>
+    <form (ngSubmit)="unblockUser()">
+        <label>User to Unblock:
+            <input type="text" name="unblockUserName" [(ngModel)]="userToUnblock.name" required>
+        </label>
+        <button type="submit">Block User</button>
+    </form>
+</div>
+
+<div class="create-channel-container">
+    <h3>Start private Chat</h3>
+    <form (ngSubmit)="startPrivateChat()">
+        <label>User to Unblock:
+            <input type="text" name="nameChatUser" [(ngModel)]="userPrvtchat.name" required>
+        </label>
+        <button type="submit">Start chat</button>
+    </form>
+</div>
 
 
 
@@ -112,6 +105,20 @@
             <input type="password" name="channelPassword" [(ngModel)]="channelToCreate.password" placeholder="Required if private channel is ticked">
         </label>
         <button type="submit">Create Channel</button>
+    </form>
+</div>
+
+
+<div class="create-channel-container">
+    <h3>Join a Channel</h3>
+    <form (ngSubmit)="joinChannel()">
+        <label>Channel Name:
+            <input type="text" name="channelName" [(ngModel)]="channelToJoin.name" required>
+        </label>
+        <label>Password:
+            <input type="password" name="channelPassword" [(ngModel)]="channelToJoin.password" placeholder="leave blank if the channel has no password">
+        </label>
+        <button type="submit">Join Channel</button>
     </form>
 </div>
 
@@ -156,6 +163,10 @@
          </div>
      </div> 
      </div>
+     <div *ngIf="channel.id !== 0" class="input-area">
+         <input [(ngModel)]="message.content"  placeholder="Type a message..." (keyup.enter)="sendMessage()"   />
+         <button (click)="sendMessage()">Send</button>
+     </div>
           
           <!-- Typing Indicator -->
           <!-- <div class="typing-indicator" *ngIf="typingDisplay">
@@ -164,13 +175,7 @@
       </div> -->
   
 
-      <!-- <input [(ngModel)]="message.content" (keyup)="emitTyping()" placeholder="Type a message..." (keyup.enter)="sendMessage(message.content, user.name, false)"   /> -->
 
-      <!-- Chat Input Area -->
-      <div *ngIf="channel.id !== 0" class="input-area">
-          <input [(ngModel)]="message.content"  placeholder="Type a message..." (keyup.enter)="sendMessage()"   />
-          <button (click)="sendMessage()">Send</button>
-      </div>
       
   </div>
   

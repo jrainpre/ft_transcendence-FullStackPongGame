@@ -53,26 +53,6 @@ export class MessagesController {
     }
 
 
-
-    // createChannel() {
-    //     if (this.channelToCreate.name.trim()) {
-    //         console.log(JSON.stringify(this.channelToCreate));
-    
-    //         this.http.post(`http://localhost:3001/api/chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
-    //         .pipe(
-    //             catchError((error) => {
-    //                 // Handle or display the error here
-    //                 console.error('Error from backend', error);
-    
-    //                 // Optionally, rethrow or handle the error differently
-    //                 return throwError(error);
-    //             })
-    //         )
-    //         .subscribe();
-    //     }
-    // }
-
-
 	@Post('create-channel')
 	async createChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
 		console.log(req.body);
@@ -86,9 +66,68 @@ export class MessagesController {
 		} catch (error) {
 			return res.status(400).json({ message: error.message });
 		}
-
-
 	}
+
+    @Post('join-channel')
+    async joinChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.findChannel(channelDto);
+            await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.server);
+            const channelDtoToSend = mapChannelToDto(channel);
+            res.status(200).json({ channel: channelDtoToSend });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('leave-channel')
+    async leaveChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            await this.messagesService.leaveChannel(user, channelDto, this.messagesGateway.server);
+            const userChannelsDto = await this.messagesService.getUserChannelsDto(user);
+            res.status(200).json({ userChannels: userChannelsDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('block-user')
+    async blockUser(@Body('user') toBlockUser: SendUserDto, @Req() req: any, @Res() res: Response) {
+        try {
+            let user = await this.AuthService.getUserFromJwtCookie(req);
+            user =  await this.messagesService.addUserToBlockList(user, toBlockUser);
+            const blockedUsersDto = await this.messagesService.getBlockedUsersDto(user);
+            res.status(200).json({ blockedUsers: blockedUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('unblock-user')
+    async unblockUser(@Body('user') toUnblockUser: SendUserDto, @Req() req: any, @Res() res: Response) {
+        try {
+            let user = await this.AuthService.getUserFromJwtCookie(req);
+            user = await this.messagesService.removeUserFromBlockList(user, toUnblockUser);
+            const blockedUsersDto = await this.messagesService.getBlockedUsersDto(user);
+            res.status(200).json({ blockedUsers: blockedUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('start-private-chat')
+    async createPrivateChat(@Body('user') userDto: SendUserDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.server);
+            const channelDto = mapChannelToDto(channel);
+            res.status(200).json({ channel: channelDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
 
 
 
