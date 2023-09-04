@@ -22,7 +22,7 @@ export class AuthService {
     {
       const secret = speakeasy.generateSecret({lenght : 20, name: 'The Boyzs Transcendence'});
       let newName: string =  '';
-      if(this.findUserByName(profile.username))
+      if(await this.findUserByName(profile.username) == true)
       {
         newName = randomstring.generate({
           length: 12,
@@ -50,8 +50,8 @@ export class AuthService {
     return user.length > 0 ? user[0] : undefined;
   }
 
-  async findUserByName (name: string): Promise<boolean | undefined> {
-    const user = await this.userRepository.find({where: {name: name}});
+  async findUserByName (nameSearch: string): Promise<boolean | undefined> {
+    const user = await this.userRepository.find({where: {name: nameSearch}});
     return user.length > 0 ? true : false;
   }
   

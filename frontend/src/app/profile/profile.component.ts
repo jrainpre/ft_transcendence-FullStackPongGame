@@ -71,4 +71,8 @@ export class ProfileComponent {
   routEditPage(){
     this.router.navigate([`/edit/`, this.id]);
   }
+
+  addFriend(){
+    
+  }
 }
