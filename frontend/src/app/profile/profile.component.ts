@@ -1,6 +1,7 @@
 import { Component, booleanAttribute } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -9,7 +10,7 @@ import { Subject } from 'rxjs';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar) {}
   id: string = '';
   profileUrl:string = '';
   username: string = '';
@@ -18,16 +19,29 @@ export class ProfileComponent {
   losses: string = '';
   win_loss_ratio: string = '';
   isUsersProfile: boolean = false;
+  isFriend: boolean = false;
+  isBlocked: boolean = false;
   public reloadPersonalMatchHistory$ = new Subject<void>();
 
   async loadData() {
-    const user = await this.api.getProfileInfo(this.id);
+    let user;
+    try{
+      user = await this.api.getProfileInfo(this.id);
+      this.isBlocked = await this.api.isBlocked(this.id);
+      console.log('Is Blocked: ', this.isBlocked);
+    }
+    catch(error){
+      console.log("error, wrong ID");
+      return;
+    }
+    this.isFriend = await this.api.isFriend(this.id);
+    console.log("isFriend ", this.isFriend);
     this.setProfileVars(user);
   
     this.isUsersProfile = await this.api.isUser(this.id);
     console.log('IsUser= ', this.isUsersProfile);
   }
-
+  
   async ngOnInit(): Promise<any>{
     this.route.params.subscribe(params => {
       const newId = params['id'];
@@ -80,7 +94,23 @@ export class ProfileComponent {
     this.router.navigate([`/edit/`, this.id]);
   }
 
-  addFriend(){
-    
+  async addFriend(): Promise<any>{
+    try{
+      const added = await this.api.addFriend(this.id);
+      this.ngOnInit();
+    }
+    catch(error){
+      this.snackBar.open("Already a Friend", "close", {duration: 3000,});
+    }
+  }
+
+  async removeFriend(): Promise<any>{
+    try{
+      const added = await this.api.removeFriend(this.id);
+      this.ngOnInit();
+    }
+    catch(error){
+      this.snackBar.open("Error", "close", {duration: 3000,});
+    }
   }
 }

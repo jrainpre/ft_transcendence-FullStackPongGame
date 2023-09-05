@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-edit',
@@ -10,7 +12,7 @@ import { ApiService } from '../api.service';
 
 export class EditComponent {
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar) {}
   id: string = '';
   profileUrl: string = '';
   curTFA: boolean = true;
@@ -83,6 +85,9 @@ export class EditComponent {
   async onFileSelected(event: any): Promise<any> {
     console.log('Called');
     const file: File = event.target.files[0]; // Get the selected file
-    await this.api.postUploadFile(file, this.id);
+    if(!file.type.startsWith('image/'))
+     this.snackBar.open("Invalid Image format", "close", {duration: 3000,})
+    else
+     await this.api.postUploadFile(file, this.id);
   }
 }

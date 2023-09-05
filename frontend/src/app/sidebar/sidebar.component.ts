@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../api.service';
+import {CookieService} from 'ngx-cookie-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -10,11 +11,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+  
   searchQuery: string = '';
   constructor(private router: Router, 
     private api: ApiService, 
     private snackBar: MatSnackBar, 
-    private browserAnimationsModule: BrowserAnimationsModule) {}
+    private browserAnimationsModule: BrowserAnimationsModule,
+    private cookie: CookieService) {}
 
 
   async routProfile(): Promise<any>{
@@ -34,6 +37,11 @@ export class SidebarComponent {
     this.router.navigate(['/leaderboard']);
   }
 
+  async logOut(): Promise<any> {
+    console.log("Logout");
+    this.cookie.delete("jwtToken");
+    this.router.navigate(['/login']);
+    }
   searchUsers(): void {
     // Call the backend API to search for a user by name
     if (this.searchQuery.length != 0)
@@ -57,5 +65,4 @@ export class SidebarComponent {
       );
     } 
   }
-  
 }
