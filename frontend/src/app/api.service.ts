@@ -208,8 +208,6 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}user/name/${name}`, { withCredentials: true });
   }
 
-}
-
   async isFriend(id: string): Promise<any>{
     return new Promise<any>((resolve, reject) => {
       this.http.get(`${this.apiUrl}friends/is-friend/${id}`, { withCredentials: true })
