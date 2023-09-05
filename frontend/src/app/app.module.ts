@@ -21,7 +21,6 @@ import { MatchHistoryComponent } from './match-history/match-history.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
@@ -53,7 +52,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     NgbModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
-    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
