@@ -300,17 +300,35 @@ export class ApiService {
   });
   }
 
-  async blockUser(userId : string): Promise<any>{
+  async blockUser(userToBlockDTO : any): Promise<any>{
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    this.http.post(`${this.apiUrl}user/block/${userId}`, undefined , { withCredentials: true }).subscribe(
-      () => {
-      },
-      (error) => {
-        console.error('Error making POST request', error);
-      }
-    );
+
+    try{
+      const response =  await firstValueFrom(this.http.post(`http://localhost:3001/api/chat/block-user`, 
+      { user: userToBlockDTO } , { withCredentials: true }));
+
+      return response;
+    }
+    catch(error){
+      throw error;
+    }
+  }
+
+  async unblockUser(userToBlockDTO : any): Promise<any>{
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    try{
+      const response =  await firstValueFrom(this.http.post(`http://localhost:3001/api/chat/unblock-user`, 
+      { user: userToBlockDTO } , { withCredentials: true }));
+      return response;
+    }
+    catch(error){
+      throw error;
+    }
   }
 }
