@@ -1,9 +1,10 @@
 // friends.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository} from 'typeorm';
 import { Friend } from 'src/entities/friends.entity';
 import { User } from 'src/entities/user.entity';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class FriendsService {
@@ -41,5 +42,34 @@ export class FriendsService {
     })
     return !!areFriends;
 }
+
+  async addFriend(user: User, friend: User){
+    const newFriend = new Friend;
+    newFriend.userOne = user;
+    newFriend.userTwo = friend;
+
+    await this.friendRepository.save(newFriend);
+    return;
+  }
+
+  async removeFriend(user: User, friend: User){
+    const friendship = await this.friendRepository.findOne({
+      where: [
+        {
+          userOne: {id_42: user.id_42},
+          userTwo: {id_42: friend.id_42}
+        },
+        {
+          userOne: {id_42: friend.id_42},
+          userTwo: {id_42: user.id_42}
+        }
+      ]
+    });
+
+    if(!friendship)
+      throw new NotFoundException('User not found');
+
+    await this.friendRepository.remove(friendship);
+  }
   // Implement other methods as needed
 }
