@@ -21,8 +21,8 @@ export class ChannelUser {
   @Column({ type: 'boolean', default: false })
   admin: boolean;
 
-  @Column({ type: 'timestamp', nullable: true })
-  banned: Date | null;
+  @Column({ type: 'boolean', default: false })
+  banned: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
   mute: Date | null;

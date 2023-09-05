@@ -1,206 +1,177 @@
 <app-sidebar></app-sidebar>
 <app-friendlist></app-friendlist>
 
-<div class="chat-app-container">
 
-    <!-- Sidebar for chat list -->
-    <!-- <div class="chat-sidebar"> -->
-      <!-- Assuming you have a channels array in your component -->
-      <!-- <button *ngFor="let channel of channelList" [class.private-chat]="channel.privatChat" (click)="setCurrentChannel(channel.name)"> -->
-        <!-- {{ channel.name }} -->
-        <!-- </button> -->
-      <!-- </div>  -->
-  
+<div class="test">
+
+
+<div class="chat-app-container">
     <!-- Main chat display area -->
     <div class="chat-display">
-  <div class="chat-app">
-   <div *ngIf="!isRegistered">
-      <div class="registration">
-          <h3>is the jwt token working????????????????</h3>
-      </div>
-  </div>
+        <div class="chat-app">
+            <div *ngIf="!isRegistered">
+                <div class="registration">
+                    <h3>is the jwt token working????????????????</h3>
+                </div>
+            </div>
 
+            <div class="create-channel-container">
+                <!-- Channels the User has Joined -->
+                <div *ngIf="isRegistered" class="channels-container">
+                    
+                    <h3>Your Channels</h3>
+                    <button *ngFor="let channel of userChannels"
+                    (click)="setCurrentChannel(channel)">
+                    {{ channel.name }}
+                </button>
+                </div>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Block a User</h3>
+                <form (ngSubmit)="blockUser()">
+                    <label>User to Block:
+                        <input type="text" name="blockUserName"
+                            [(ngModel)]="userToBlock.name" required>
+                    </label>
+                    <button type="submit">Block User</button>
+                </form>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Block a User</h3>
+                <form (ngSubmit)="unblockUser()">
+                    <label>User to Unblock:
+                        <input type="text" name="unblockUserName"
+                            [(ngModel)]="userToUnblock.name" required>
+                    </label>
+                    <button type="submit">Block User</button>
+                </form>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Start private Chat</h3>
+                <form (ngSubmit)="startPrivateChat()">
+                    <label>User to Chat with:
+                        <input type="text" name="nameChatUser"
+                            [(ngModel)]="userPrvtchat.name" required>
+                    </label>
+                    <button type="submit">Start chat</button>
+                </form>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Create a New Channel</h3>
+                <form (ngSubmit)="createChannel()">
+                    <label>Channel Name:
+                        <input type="text" name="channelName"
+                            [(ngModel)]="channelToCreate.name" required>
+                    </label>
+                    <div class="private-section">
+                        <label>
+                            <input type="checkbox" name="isPrivate"
+                                [(ngModel)]="channelToCreate.private_channel">
+                            Private Channel (Tick if private)
+                        </label>
+                    </div>
+                    <label>Password:
+                        <input type="password" name="channelPassword"
+                            [(ngModel)]="channelToCreate.password"
+                            placeholder="Required if private channel is ticked">
+                    </label>
+                    <button type="submit">Create Channel</button>
+                </form>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Join a Channel</h3>
+                <form (ngSubmit)="joinChannel()">
+                    <label>Channel Name:
+                        <input type="text" name="channelName"
+                            [(ngModel)]="channelToJoin.name" required>
+                    </label>
+                    <label>Password:
+                        <input type="password" name="channelPassword"
+                            [(ngModel)]="channelToJoin.password"
+                            placeholder="leave blank if the channel has no password">
+                    </label>
+                    <button type="submit">Join Channel</button>
+                </form>
+            </div>
 
+            <div class="create-channel-container">
+                <h3>Current Channel</h3>
 
+                <div *ngIf="channel.id !== 0; else noChannel">
+                    <p><strong>Channel Name:</strong> {{ channel.name }}</p>
+                    <p *ngIf="channel.private_channel"><strong>Type:</strong>
+                        Private</p>
+                    <p *ngIf="!channel.private_channel"><strong>Type:</strong>
+                        Public</p>
 
+                    <button (click)="leaveChannel()">Leave Channel</button>
+                </div>
+                <ng-template #noChannel>
+                    <p>You're not currently in any channel.</p>
+                </ng-template>
 
+                <h3>Set new channel password</h3>
+                <form (ngSubmit)="setPassword()">
+                    <label>New password:
+                        <input type="password" name="newPassword"
+                            [(ngModel)]="channel.password" required>
+                    </label>
+                    <button type="submit">Set new Password</button>
+                </form>
 
+                <h3>Promote user to admin</h3>
+                <form (ngSubmit)="promoteUser()">
+                    <label>user to promote:
+                        <input type="text" name="username"
+                            [(ngModel)]="userToPromote.name" required>
+                    </label>
+                    <button type="submit">Promote user</button>
+                </form>
 
+                <h3>Kick User</h3>
+                <form (ngSubmit)="kickUser()">
+                    <label>user to kick:
+                        <input type="text" name="username"
+                            [(ngModel)]="userToKick.name" required>
+                    </label>
+                    <button type="submit">Kick User</button>
+                </form>
+            </div>
+            <!-- Main chat container -->
+            <div class="chat-container">
+                <!-- Messages Display Area -->
+                <div *ngIf="channel.id !== 0" class="messages-area" #messagesContainer>
+                    <!-- Messages loop -->
+                    <div class="message" *ngFor="let message of messages"
+                        [ngClass]="{
+                                    'outgoing': message.owner_id === user.id_42 && !message.isSystemMessage, 
+                                    'incoming': message.owner_id !== user.id_42 && !message.isSystemMessage, 
+                                    'system': message.isSystemMessage }">
+                        <div class="message-header">
+                            <span
+                                *ngIf="message.owner_id !== user.id_42 && !message.isSystemMessage"
+                                class="message-author">{{ message.author }}</span>
+                            <span *ngIf="message.isSystemMessage"
+                                class="message-author">{{ 'System' }}</span>
 
-
-
-
-
-
-
-
-
-  
-      <!-- Channels the User has Joined -->
-  <div *ngIf="isRegistered" class="channels-container">
-    <h3>Your Channels</h3>
-    <button *ngFor="let channel of userChannels" (click)="setCurrentChannel(channel)">
-        {{ channel.name }}
-    </button>
-  </div>
-  
-  
-
-
-  <div class="create-channel-container">
-    <h3>Block a User</h3>
-    <form (ngSubmit)="blockUser()">
-        <label>User to Block:
-            <input type="text" name="blockUserName" [(ngModel)]="userToBlock.name" required>
-        </label>
-        <button type="submit">Block User</button>
-    </form>
-</div>
-
-
-<div class="create-channel-container">
-    <h3>Block a User</h3>
-    <form (ngSubmit)="unblockUser()">
-        <label>User to Unblock:
-            <input type="text" name="unblockUserName" [(ngModel)]="userToUnblock.name" required>
-        </label>
-        <button type="submit">Block User</button>
-    </form>
-</div>
-
-
-
-<div class="create-channel-container">
-    <h3>Start private Chat</h3>
-    <form (ngSubmit)="startPrivateChat()">
-        <label>User to Chat with:
-            <input type="text" name="nameChatUser" [(ngModel)]="userPrvtchat.name" required>
-        </label>
-        <button type="submit">Start chat</button>
-    </form>
-</div>
-
-
-
-
-
-
-
-
-  <div class="create-channel-container">
-    <h3>Create a New Channel</h3>
-    <form (ngSubmit)="createChannel()">
-        <label>Channel Name:
-            <input type="text" name="channelName" [(ngModel)]="channelToCreate.name" required>
-        </label>
-        <div class="private-section">
-            <label>
-                <input type="checkbox" name="isPrivate" [(ngModel)]="channelToCreate.private_channel"> Private Channel (Tick if private)
-            </label>
+                        </div>
+                        <div class="message-content">
+                            {{ message.content }}
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="channel.id !== 0" class="input-area">
+                    <input [(ngModel)]="message.content"
+                        placeholder="Type a message..."
+                        (keyup.enter)="sendMessage()" />
+                    <button (click)="sendMessage()">Send</button>
+                </div>
+            </div>
         </div>
-        <label>Password:
-            <input type="password" name="channelPassword" [(ngModel)]="channelToCreate.password" placeholder="Required if private channel is ticked">
-        </label>
-        <button type="submit">Create Channel</button>
-    </form>
-</div>
-
-
-<div class="create-channel-container">
-    <h3>Join a Channel</h3>
-    <form (ngSubmit)="joinChannel()">
-        <label>Channel Name:
-            <input type="text" name="channelName" [(ngModel)]="channelToJoin.name" required>
-        </label>
-        <label>Password:
-            <input type="password" name="channelPassword" [(ngModel)]="channelToJoin.password" placeholder="leave blank if the channel has no password">
-        </label>
-        <button type="submit">Join Channel</button>
-    </form>
-</div>
-
-
-<div class="create-channel-container">
-    <h3>Current Channel</h3>
-    
-    <div *ngIf="channel.id !== 0; else noChannel">
-        <p><strong>Channel Name:</strong> {{ channel.name }}</p>
-        <p *ngIf="channel.private_channel"><strong>Type:</strong> Private</p>
-        <p *ngIf="!channel.private_channel"><strong>Type:</strong> Public</p>
-        
-        <button (click)="leaveChannel()">Leave Channel</button>
     </div>
-    <ng-template #noChannel>
-        <p>You're not currently in any channel.</p>
-    </ng-template>
-
-        <h3>Set new channel password</h3>
-        <form (ngSubmit)="setPassword()">
-            <label>New password:
-                <input type="password" name="newPassword" [(ngModel)]="channel.password" required>
-            </label>
-            <button type="submit">Set new Password</button>
-        </form>
-
-
-        <h3>Promote user to admin</h3>
-        <form (ngSubmit)="promoteUser()">
-            <label>user to promote:
-                <input type="text" name="username" [(ngModel)]="userToPromote.name" required>
-            </label>
-            <button type="submit">Promote user</button>
-        </form>
-    
 </div>
-
-
-
-
-  <!-- Main chat container -->
-  <div class="chat-container">
-  
-      <!-- Messages Display Area -->
-      <div *ngIf="channel.id !== 0" class="messages-area" #messagesContainer>
-          <!-- Messages loop -->
-          <div class="message" *ngFor="let message of messages"  
-          [ngClass]="{
-              'outgoing': message.owner_id === user.id_42 && !message.isSystemMessage, 
-              'incoming': message.owner_id !== user.id_42 && !message.isSystemMessage, 
-              'system': message.isSystemMessage 
-          }">
-         <div class="message-header">
-             <span *ngIf="message.owner_id !== user.id_42 && !message.isSystemMessage" class="message-author">{{ message.author }}</span>
-             <span *ngIf="message.isSystemMessage" class="message-author">{{ 'System' }}</span>
-  
-         </div>
-         <div class="message-content">
-             {{ message.content }}
-         </div>
-     </div> 
-     </div>
-     <div *ngIf="channel.id !== 0" class="input-area">
-         <input [(ngModel)]="message.content"  placeholder="Type a message..." (keyup.enter)="sendMessage()"   />
-         <button (click)="sendMessage()">Send</button>
-     </div>
-          
-          <!-- Typing Indicator -->
-          <!-- <div class="typing-indicator" *ngIf="typingDisplay">
-              {{typingDisplay}}<span class="ellipsis">...</span>
-          </div>
-      </div> -->
-  
-
-
-      
-  </div>
-  
-  
-  </div>
-  
-    </div>
-  <!-- </div> -->
