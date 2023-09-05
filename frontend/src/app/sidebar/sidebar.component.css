@@ -12,6 +12,12 @@
     justify-content: space-between;
 }
 
+.sidebar input {
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+}
+
 /* Style the buttons */
 .sidebar button {
     margin-bottom: 10px;

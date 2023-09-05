@@ -1,9 +1,9 @@
 <div class="sidebar">
+    <input type="text" placeholder="Search Users" [(ngModel)]="searchQuery" (keyup.enter)="searchUsers()" />
     <button id="button1" class="btn btn-light"  (click)="routGame()" >General</button>
     <button id="button2" class="btn btn-light" (click)="routProfile()" >Profile</button>
     <button id="button3" class="btn btn-light" (click)="routChat()" >Chat</button>
     <button id="button4" class="btn btn-light" (click)="routLeaderboard()" >Leaderboard</button>
-    <input type="text" placeholder="Search Users" [(ngModel)]="searchQuery" (keyup.enter)="searchUsers()" />
     <button id="button5"class="btn btn-light"  (click)="logOut()" >Logout</button>
     <div class="bottom-space"></div>
   </div>
