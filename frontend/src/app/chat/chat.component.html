@@ -39,7 +39,7 @@
             </div>
 
             <div class="create-channel-container">
-                <h3>Block a User</h3>
+                <h3>Unblock a User</h3>
                 <form (ngSubmit)="unblockUser()">
                     <label>User to Unblock:
                         <input type="text" name="unblockUserName"
@@ -140,6 +140,14 @@
                             [(ngModel)]="userToKick.name" required>
                     </label>
                     <button type="submit">Kick User</button>
+                </form>
+                <h3>Ban User</h3>
+                <form (ngSubmit)="banUser()">
+                    <label>user to kick:
+                        <input type="text" name="username"
+                            [(ngModel)]="userToBan.name" required>
+                    </label>
+                    <button type="submit">Ban User</button>
                 </form>
             </div>
             <!-- Main chat container -->
