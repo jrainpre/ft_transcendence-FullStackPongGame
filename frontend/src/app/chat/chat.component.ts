@@ -141,20 +141,19 @@ export class ChatComponent implements AfterViewChecked {
 
         this.socket.on('blockedUsers', (users: User[]) => {
             this.blockedUsers = users;
-            //   console.log(JSON.stringify(this.blockedUsers));
-
         })
 
         this.socket.on('identifyDone', (user: User) => {
-
             this.user = user;
             this.isRegistered = true;
-            //   console.log(JSON.stringify(this.user));
         });
 
         this.socket.on('channelInfo', (channel: Channel) => {
             this.channel = channel;
-            //   console.log(JSON.stringify(this.channel.id));
+        });
+
+        this.socket.on('channelUsers', (channelUsers: ChannelUser[]) => {
+            this.channelUsers = channelUsers;
         });
 
 
@@ -365,6 +364,8 @@ export class ChatComponent implements AfterViewChecked {
             .subscribe(data => {
                 if (data) {
                     this.userToPromote = this.flushUser(this.userToPromote);
+                    this.channelUsers = data.channelUsers;
+                    console.log(JSON.stringify(this.channelUsers));
                     this.snackBar.open('User promoted successfully', 'Close', { duration: 5000, });
                 }
             })
