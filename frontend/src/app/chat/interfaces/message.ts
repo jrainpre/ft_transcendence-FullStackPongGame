@@ -18,3 +18,10 @@ export interface Channel {
 	private_channel: boolean;
 	password: string;
 }
+
+export interface ChannelUser {
+	id_42: number;
+	name: string;
+	admin: boolean;
+	owner: boolean;
+}

@@ -9,16 +9,17 @@ import { Repository } from 'typeorm';
 import { Logger } from '@nestjs/common';
 // import { mapMessageToDto } from './helpers/helpers';
 import { SendMessageDto } from './dto/send-message.dto';
-import { SendUserDto } from './dto/send-user.dto copy';
+import { SendUserDto } from './dto/send-user.dto';
 import { Game } from './entities/games.entity';
 import { Friend } from './entities/friends.entity';
-import { mapUserToDto, mapMessageToDto, mapChannelToDto } from './helpers/helpers';
+import { mapUserToDto, mapMessageToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
 import { Server, Socket } from 'socket.io';
 import { SendChannelDto } from './dto/send-channel.dto';
 import { BlockedUser } from './entities/blocked_user.entity';
 import { MessagesGateway } from './messages.gateway';
 import e from 'express';
 import { get } from 'http';
+import { SendChannelUserDto } from './dto/send-channelUser';
 
 
 @Injectable()
@@ -196,7 +197,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
      async sendLeftChannelMessage(channel: Channel, user: User, client: Socket) {
        let message = this.messageRepository.create({ content: `${user.name} left the channel`, owner: user, channel: channel, isSystemMessage: true });
        await this.messageRepository.save(message);
-       message = await this.messageRepository.findOne({ where: { id: message.id }, relations: ['owner'] });
        const dtoMessage = mapMessageToDto(message);
        client.to(channel.name).emit('message', dtoMessage); 
      }
@@ -288,7 +288,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
     if (channel && user) {
       let message = this.messageRepository.create({ content: messageDto.content, owner: user, channel: channel, isSystemMessage: messageDto.isSystemMessage });
       await this.messageRepository.save(message);
-      message = await this.messageRepository.findOne({ where: { id: message.id }, relations: ['owner'] });
       const dtoMessage = mapMessageToDto(message);
       server.to(message.channel.name).emit('message', dtoMessage);
       return message;
@@ -381,23 +380,96 @@ async addUsersToPrivateChat(user: User, toChatUser: User, channel: Channel, clie
   this.sendUserChannels(user, client);
 }
   
+async setPassword(user: User, channelDto: SendChannelDto, server: Server) {
+  const channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user",], });
+  if (!channel)
+    throw new Error('Channel not found');
+  const channelUser = channel.channelUsers.find(cu => cu.user.id_42 === user.id_42);
+  if (!channelUser)
+    throw new Error('User not in channel');
+  if (!channelUser.owner)
+    throw new Error('User not owner of channel');
+  if (channel.direct_message === true)
+    throw new Error('Cannot set password for direct message');
+  channel.pw_hashed = channelDto.password;
+  channel.private_channel = true;
+  await this.channelRepository.save(channel);
+  const client = this.getSocketForUser(user, server);
+  this.sendInfoMessage(channel, user, client, 'owner set new password');
+  return channel;
+}
 
-// async addUserToChannel(user: User, channel: Channel, client: Socket) {
-//   let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
-//   if (newInChannel) {
-//     const channelUser = this.channelUserRepository.create({ user: user, channel: channel,  });
-//     if (channel.channelUsers.length === 0)//first user in channel
-//     {
-//       channelUser.owner = true;
-//       channelUser.admin = true;
-//     }
-//     await this.channelUserRepository.save(channelUser);
-//     channel.channelUsers.push(channelUser);
-//       await this.channelRepository.save(channel);
-//       client.join(channel.name);
-//       this.sendJoinedChannelMessage(channel, user, client);
-//    }
-//   }
+async sendInfoMessage(channel: Channel, user: User, client: Socket, content: string) {
+let message = this.messageRepository.create({ content: content, owner: user, channel: channel, isSystemMessage: true });
+this.messageRepository.save(message);
+const dtoMessage = mapMessageToDto(message);
+client.to(channel.name).emit('message', dtoMessage);
+}
+
+
+async getChannelUsersDto(channel: Channel) {
+  channel = await this.channelRepository.findOne({ where: { name: channel.name }, relations: ["channelUsers", "channelUsers.user",], });
+  const channelUsersDto = channel.channelUsers.map(mapChannelUserToDto);
+  return channelUsersDto;
+}
+
+async promoteUser(user: User, toPromoteUserDto: SendUserDto, channelDto: SendChannelDto, server: Server) {
+  const channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user",], });
+  if (!channel)
+    throw new Error('Channel not found');
+  const channelUser = channel.channelUsers.find(cu => cu.user.id_42 === user.id_42);
+  if (!channelUser)
+    throw new Error('User not in channel');
+  if (!channelUser.owner)
+    throw new Error('User not owner of channel');
+  const toPromoteUser = await this.userRepository.findOne({ where: { name: toPromoteUserDto.name }, });
+  if (!toPromoteUser)
+    throw new Error('User to promote not found');
+  const toPromoteChannelUser = channel.channelUsers.find(cu => cu.user.id_42 === toPromoteUser.id_42);
+  if (!toPromoteChannelUser)
+    throw new Error('User to promote not in channel');
+  if (toPromoteChannelUser.owner)
+    throw new Error('User already owner of channel');
+  toPromoteChannelUser.admin = true;
+  await this.channelUserRepository.save(toPromoteChannelUser);
+  const client = this.getSocketForUser(user, server);
+  this.sendInfoMessage(channel, user, client, `${toPromoteUser.name} was promoted to admin`);
+  return channel;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 async getChannelMessages(channel: Channel, client: Socket)  {
     const messages = await this.messageRepository.find({ where: { channel: { id: channel.id } }, relations: ['channel'],   order: {created_at: 'ASC'} });
@@ -411,7 +483,6 @@ async getChannelMessages(channel: Channel, client: Socket)  {
 async sendJoinedChannelMessage(channel: Channel, user: User, client: Socket) {
   let message = this.messageRepository.create({ content: `${user.name} joined the channel`, owner: user, channel: channel, isSystemMessage: true });
   await this.messageRepository.save(message);
-  message = await this.messageRepository.findOne({ where: { id: message.id }, relations: ['owner'] });
   const dtoMessage = mapMessageToDto(message);
   client.to(channel.name).emit('message', dtoMessage);
 }
