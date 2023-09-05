@@ -1,15 +1,17 @@
-import { Body, Controller, Get, NotFoundException, Param, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
 
     constructor(private readonly AuthService: AuthService,  
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private user: UserService,
     ) {}
  
     @UseGuards(JwtAuthGuard)
@@ -49,7 +51,7 @@ export class UserController {
       }
 
     @UseGuards(JwtAuthGuard)
-    @Get('is-user/:id')
+    @Get('is-user/:id') 
     async isUser(@Req() req, @Res() res, @Param('id')id: string ): Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         if(jwtUser && id == jwtUser.id_42)
@@ -58,15 +60,48 @@ export class UserController {
             res.status(200).json({ message: 'false' });
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('is-blocked/:id')
+    async isBlocked(@Req() req, @Res() res, @Param('id', ParseIntPipe) id: number): Promise<any>{
+        const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
+        let isBlocked: boolean = await this.user.isBlocked(jwtUser, id);
+        res.send(isBlocked);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('block/:id')
+    async blockUser(@Req() req, @Res() res, @Param('id', ParseIntPipe) id: number): Promise<any>{
+        const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
+        try{
+            await this.user.blockUser(jwtUser.id_42, id);
+        }
+        catch(error){
+            throw new BadRequestException('Failed to block User');
+        }
+        return;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('logout')
+    logout(@Res() res){
+        res.clearCookie('jwtToken');
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async getProfileInfo(@Param() params: any, @Res() res): Promise<any> {
-        const searchedUser = await this.AuthService.findUserById(+params.id);
+    async getProfileInfo(@Param('id', ParseIntPipe) id: number, @Res() res): Promise<any> {
+        const searchedUser = await this.AuthService.findUserById(id);
         if(!searchedUser)
         {
             throw new NotFoundException('User not found');
         }
-        //return {searchedUser};
-        res.send(searchedUser);
+        res.send({
+            profile_picture: searchedUser.profile_picture,
+            name: searchedUser.name,
+            tfa_enabled: searchedUser.tfa_enabled,
+            win_ranked: searchedUser.win_ranked,
+            loss_ranked: searchedUser.loss_ranked,
+        });
     }
 
     @UseGuards(JwtAuthGuard)

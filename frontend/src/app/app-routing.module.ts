@@ -8,6 +8,7 @@ import { EditComponent } from './edit/edit.component';
 import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
 import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {path: '2fa', component: TwoFactorAuthComponent},
@@ -17,8 +18,8 @@ const routes: Routes = [
   {path: 'edit/:id', component: EditComponent},
   {path: 'enable-tfa/:id', component: EnableTFAComponent},
   {path: 'chat', component: ChatComponent},
-  {path: 'chat', component: ChatComponent},
-  {path: 'leaderboard', component: LeaderboardComponent}
+  {path: 'leaderboard', component: LeaderboardComponent},
+  {path: '**', component: PageNotFoundComponent}
 ];
 
 @NgModule({

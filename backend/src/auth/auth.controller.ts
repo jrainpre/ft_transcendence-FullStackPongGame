@@ -9,8 +9,6 @@ import { User } from "src/entities/user.entity";
 import { Repository } from "typeorm";
 import { verify2FADto } from "src/dto/verify2FADto";
 
-
-
 @Controller('auth')
 export class AuthController{
     constructor(private readonly authService: AuthService,
@@ -23,7 +21,7 @@ export class AuthController{
     async handleRedirect(@Req() req, @Res() res): Promise<any>{
         if(req.user.tfa_enabled == false){
                 const token = await this.authService.login(req.user);
-                await res.cookie('jwtToken', token, { httpOnly: true, secure: false }); // Set the cookie
+                await res.cookie('jwtToken', token, { httpOnly: false, secure: false }); // Set the cookie
                 if(req.user.first_login == true)
                 res.redirect(`http://localhost:4200/edit/${req.user.id_42}`);
                 else
@@ -61,8 +59,8 @@ export class AuthController{
       }
 
       @Post ('42/verify-2FA')
-      async verifyQrCode(@Req() req, @Res() res, @Body() qrInfo: any): Promise<any>{
-        const id = qrInfo.id;
+      async verifyQrCode(@Req() req, @Res() res, @Body() qrInfo: verify2FADto): Promise<any>{
+        const id =  parseInt(qrInfo.id, 10);
         const code = qrInfo.code;
         const curUser = await this.authService.findUserById(id);
 
@@ -75,7 +73,7 @@ export class AuthController{
         if(isVerified == true)
         {
           const token = await this.authService.login(curUser);
-          await res.cookie('jwtToken', token, { httpOnly: true, secure: false });
+          await res.cookie('jwtToken', token, { httpOnly: false, secure: false });
           res.send({message: 'Success!'});
         }
       else{
@@ -125,5 +123,3 @@ export class AuthController{
       }
       }
     }
-
-    

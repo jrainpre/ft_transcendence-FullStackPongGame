@@ -18,6 +18,8 @@ import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { FriendlistComponent } from './friendlist/friendlist.component';
 import { MatchHistoryComponent } from './match-history/match-history.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -39,6 +41,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     LeaderboardComponent,
     FriendlistComponent,
     MatchHistoryComponent,
+    PageNotFoundComponent,
     PersonalMatchHistoryComponent,
   ],
   imports: [
@@ -48,6 +51,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     HttpClientModule,
     FormsModule,
     NgbModule,
+    BrowserAnimationsModule,
     MatSnackBarModule,
     BrowserAnimationsModule
   ],
