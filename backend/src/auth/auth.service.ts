@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
@@ -8,6 +8,7 @@ import * as qrcode from 'qrcode';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as randomstring from 'randomstring';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,13 @@ export class AuthService {
   }
 
   async findUserById (id: number): Promise<User | undefined> {
-    const user = await this.userRepository.find({where: {id_42: id}}); //42_id or id?
+    let user;
+    try{
+      user = await this.userRepository.find({where: {id_42: id}}); //42_id or id?
+    }
+    catch(error){
+      throw new NotFoundException('User not found');
+    }
     return user.length > 0 ? user[0] : undefined;
   }
 
