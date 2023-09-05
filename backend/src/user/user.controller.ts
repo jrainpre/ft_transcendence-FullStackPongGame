@@ -44,10 +44,9 @@ export class UserController {
     
           res.status(200).json(simplifiedUsers);
         } catch (error) {
-          res.status(500).json({ error: 'An error occurred while fetching users.' });
+          res.status(400).json({ error: 'An error occurred while fetching users.' });
         }
       }
-
 
     @UseGuards(JwtAuthGuard)
     @Get('is-user/:id')
@@ -69,4 +68,26 @@ export class UserController {
         //return {searchedUser};
         res.send(searchedUser);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('name/:user_name')
+    async getUserByName(@Param('user_name') user_name: string, @Res() res): Promise<any> {
+    try {
+    // Check if the user exists in your UserRepository
+        const searchedUsers = await this.userRepository.find({ where: { name: user_name } });
+
+        if (searchedUsers.length === 0) {
+        // User not found, return an appropriate response
+        return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = searchedUsers[0];
+        res.status(200).json({ id: user.id_42 });
+    } catch (error) {
+    // Handle any unexpected errors
+        console.error('Error:', error);
+        res.status(400).json({ message: 'Internal server error' });
+        }
+    }
+
 }

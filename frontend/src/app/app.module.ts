@@ -19,6 +19,8 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { FriendlistComponent } from './friendlist/friendlist.component';
 import { MatchHistoryComponent } from './match-history/match-history.component';
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -43,9 +45,12 @@ import { PersonalMatchHistoryComponent } from './personal-match-history/personal
     LoginModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    MatSnackBarModule,
+    BrowserAnimationsModule
+
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
