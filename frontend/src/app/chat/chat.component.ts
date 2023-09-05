@@ -113,7 +113,7 @@ export class ChatComponent implements AfterViewChecked {
 
     constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {
 
-        this.socket = io('http://10.11.2.1:3001');
+        this.socket = io('http://localhost:3001');
 
         this.socket.on('message', (message: Message) => {
             console.log(JSON.stringify(message));
