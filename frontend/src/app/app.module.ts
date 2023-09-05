@@ -20,6 +20,7 @@ import { FriendlistComponent } from './friendlist/friendlist.component';
 import { MatchHistoryComponent } from './match-history/match-history.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     LeaderboardComponent,
     FriendlistComponent,
     MatchHistoryComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,
