@@ -13,6 +13,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditComponent } from './edit/edit.component';
 import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
@@ -32,6 +34,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     ProfileComponent,
     EditComponent,
     EnableTFAComponent,
+    ChatComponent,
+    
     SidebarComponent,
     ChatComponent,
     LeaderboardComponent,
@@ -48,7 +52,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     NgbModule,
     MatSnackBarModule,
     BrowserAnimationsModule
-
   ],
   providers: [],
   bootstrap: [AppComponent],

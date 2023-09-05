@@ -1,3 +1,4 @@
+
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { User } from './user.entity';
 
@@ -23,10 +24,10 @@ export class Game {
   @JoinColumn({ name: 'player_two_id', referencedColumnName: 'id_42' })
   playerTwo: User;
 
-  @Column({ type: 'int', default: 0 , name: 'player_one_score'})
+  @Column({ type: 'int', default: 0 })
   player_one_score: number;
 
-  @Column({ type: 'int', default: 0 , name: 'player_two_score'})
+  @Column({ type: 'int', default: 0 })
   player_two_score: number;
 
   @ManyToOne(() => User, { eager: true, nullable: true })

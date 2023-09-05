@@ -17,6 +17,7 @@ const routes: Routes = [
   {path: 'edit/:id', component: EditComponent},
   {path: 'enable-tfa/:id', component: EnableTFAComponent},
   {path: 'chat', component: ChatComponent},
+  {path: 'chat', component: ChatComponent},
   {path: 'leaderboard', component: LeaderboardComponent}
 ];
 
