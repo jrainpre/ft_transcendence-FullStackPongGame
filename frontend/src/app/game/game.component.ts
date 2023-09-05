@@ -9,6 +9,6 @@ import { Component } from '@angular/core';
 export class GameComponent {
   constructor(private http: HttpClient) {}
   ngOnInit(): void {
-    this.http.get(`http://localhost:3001/api/auth/42/hello`, { withCredentials: true }).subscribe();
+    
     }
 }

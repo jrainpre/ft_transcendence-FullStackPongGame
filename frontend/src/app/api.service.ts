@@ -25,14 +25,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}user/${id}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
-            if (error.status === 400) {
-              console.log('Verification failed: Wrong code');
-            } else {
-              console.log('An error occurred during verification');
+            if (error.status === 401) {
+              this.router.navigate(['login']);
             }
             reject(error); // Reject the Promise with the error
           }
@@ -99,8 +96,6 @@ export class ApiService {
     const response = await firstValueFrom<any>(
       this.http.get(`${this.apiUrl}user/is-user/${id}`, { withCredentials: true })
     );
-
-    console.log(response);
     return response.message === 'true';
   }
 
@@ -118,10 +113,10 @@ export class ApiService {
             resolve(response.message); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
-            if (error.status === 400) {
-              console.log('User doesnt exists');
-            } else {
-              console.log('User doesnt exists');
+            if (error.status === 401) 
+            {
+              console.log('rerout')
+              this.router.navigate(['login']);
             }
             reject(error); // Reject the Promise with the error
           }
@@ -159,11 +154,8 @@ export class ApiService {
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
-            if (error.status === 400) {
-              console.log('User doesnt exists');
-            } else {
-              console.log('User doesnt exists');
-            }
+            if (error.status === 401) 
+              this.router.navigate(['login']);
             reject(error); // Reject the Promise with the error
           }
         );
@@ -213,7 +205,7 @@ export class ApiService {
 
   async addFriend(id: string): Promise<any>{
     return new Promise<any>((resolve, reject) => {
-      this.http.get(`${this.apiUrl}friends/add-friend/${id}`, { withCredentials: true })
+      this.http.post(`${this.apiUrl}friends/add-friend/${id}`, undefined, { withCredentials: true })
         .subscribe(
           (response: any) => {
             resolve(response); // Resolve the Promise with the response data
@@ -221,7 +213,22 @@ export class ApiService {
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
               console.log('Cant add friend');
-            } else {
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  async removeFriend(id: string): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.post(`${this.apiUrl}friends/remove-friend/${id}`, undefined, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
               console.log('Cant add friend');
             }
             reject(error); // Reject the Promise with the error
@@ -248,6 +255,37 @@ export class ApiService {
         );
   });
   }
+
+  async isBlocked(id: string): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.apiUrl}user/is-blocked/${id}`, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('User doesnt exists');
+            } else {
+              console.log('User doesnt exists');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
+
+  async blockUser(userId : string): Promise<any>{
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    this.http.post(`${this.apiUrl}user/block/${userId}`, undefined , { withCredentials: true }).subscribe(
+      () => {
+      },
+      (error) => {
+        console.error('Error making POST request', error);
+      }
+    );
+  }
 }
-
-

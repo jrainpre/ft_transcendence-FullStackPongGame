@@ -20,7 +20,14 @@ export class FriendlistComponent {
   }
 
   async loadFriends() {
-    const id = await this.api.getIdByJwt();
+    let id: string;
+    try{
+      id = await this.api.getIdByJwt();
+    }
+    catch(error)
+    {
+      return;
+    }
     this.api.getFriends(id).then((response: any) => {
       console.log(response);
       for (let i = 0; i < response.length; i++) {

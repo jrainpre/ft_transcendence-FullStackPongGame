@@ -19,11 +19,14 @@ export class ProfileComponent {
   win_loss_ratio: string = '';
   isUsersProfile: boolean = false;
   isFriend: boolean = false;
+  isBlocked: boolean = false;
 
   async loadData() {
     let user;
     try{
       user = await this.api.getProfileInfo(this.id);
+      this.isBlocked = await this.api.isBlocked(this.id);
+      console.log('Is Blocked: ', this.isBlocked);
     }
     catch(error){
       console.log("error, wrong ID");
@@ -67,7 +70,6 @@ export class ProfileComponent {
    this.wins = user.win_ranked.toString();
    this.losses = user.loss_ranked.toString();
    this.win_loss_ratio = (user.win_ranked / user.loss_ranked).toString();
-
   }
 
   setParamId(){
@@ -87,14 +89,20 @@ export class ProfileComponent {
   async addFriend(): Promise<any>{
     try{
       const added = await this.api.addFriend(this.id);
-      if(added == true)
-        this.snackBar.open("Added Friend", "close", {duration: 3000,})
-      else
-      this.snackBar.open("Already a Friend", "close", {duration: 3000,})
+      this.ngOnInit();
     }
     catch(error){
-      console.log("addFriend error");
-      return;
+      this.snackBar.open("Already a Friend", "close", {duration: 3000,});
+    }
+  }
+
+  async removeFriend(): Promise<any>{
+    try{
+      const added = await this.api.removeFriend(this.id);
+      this.ngOnInit();
+    }
+    catch(error){
+      this.snackBar.open("Error", "close", {duration: 3000,});
     }
   }
 }

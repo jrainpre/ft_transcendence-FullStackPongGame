@@ -66,15 +66,21 @@
                     </div>
                   </div>
                   <hr>
-                  <div class="row">
+                  <div class=".row">
                     <div class="col-sm-12">
-                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
                     </div>
                     <div class="col-sm-12">
-                      <button class="btn btn-info " (click)="addFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Add Friend</button>
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="addFriend()" [hidden]="!(isUsersProfile == false && isFriend == false)">Add Friend</button>
                     </div>
                     <div class="col-sm-12">
-                      <button class="btn btn-info " (click)="routEditPage()" [hidden]="!(isUsersProfile == false && isFriend == false)">Remove Friend</button>
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="removeFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Remove Friend</button>
+                    </div>
+                    <div class="col-sm-12">
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="addFriend()" [hidden]="!(isUsersProfile == false && isBlocked == false)">Block</button>
+                    </div>
+                    <div class="col-sm-12">
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="routEditPage()" [hidden]="!(isUsersProfile == false && isBlocked == true)">Unblock</button>
                     </div>
                   </div>
                 </div>
