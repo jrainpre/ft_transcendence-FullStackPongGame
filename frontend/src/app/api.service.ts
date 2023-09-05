@@ -211,6 +211,12 @@ export class ApiService {
         );
   });
   }
+
+  getUserByName(name: string): Observable<any> {
+    // Make an HTTP GET request to get user by name
+    return this.http.get(`${this.apiUrl}user/name/${name}`, { withCredentials: true });
+  }
+
 }
 
 
