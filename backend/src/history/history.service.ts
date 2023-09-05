@@ -18,7 +18,12 @@ export class HistoryService {
         // Using TypeORM's repository methods to query the database
         return this.gameRepository
           .createQueryBuilder('game')
-          .select(['game.id', 'game.created_at', 'game.type', 'game.player_one_score', 'game.player_two_score'])
+          .select([
+            'game.id', 
+            'game.created_at', 
+            'game.type', 
+            'game.player_one_score', 
+            'game.player_two_score'])
           .addSelect(['winner.name', 'winner.id_42'])
           .addSelect(['playerOne.name', 'playerOne.id_42'])
           .addSelect(['playerTwo.name', 'playerTwo.id_42'])
@@ -28,5 +33,27 @@ export class HistoryService {
           .where('game.winner_id IS NOT NULL')
           .getMany();
     }
+
+    async getGamesByUserId(id: number): Promise<Game[]> {
+        // Using TypeORM's repository methods to query the database
+        return this.gameRepository
+          .createQueryBuilder('game')
+          .select([
+            'game.id', 
+            'game.created_at', 
+            'game.type', 
+            'game.player_one_score', 
+            'game.player_two_score'])
+          .addSelect(['winner.name', 'winner.id_42'])
+          .addSelect(['playerOne.name', 'playerOne.id_42'])
+          .addSelect(['playerTwo.name', 'playerTwo.id_42'])
+          .leftJoin('game.winner', 'winner')
+          .leftJoin('game.playerOne', 'playerOne')
+          .leftJoin('game.playerTwo', 'playerTwo')
+          .where('game.winner_id IS NOT NULL')
+          .andWhere('(game.playerOne.id_42 = :id OR game.playerTwo.id_42 = :id)', { id })
+          .getMany();
+    }
+    
 }
     
