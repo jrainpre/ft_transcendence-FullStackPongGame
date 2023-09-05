@@ -112,9 +112,9 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
   }
 
 
-  getSocketForUser(user: User, server: Server): Socket {
+  getSocketForUser(user: User, server: Server, check: boolean): Socket {
     const socket = server.sockets.sockets.get(user.socket_id);
-    if (!socket) {
+    if (!socket && check) {
       throw new Error('Socket not found');
     }
     return socket;
@@ -133,10 +133,8 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
       channelUser.admin = true;
     }
     await this.channelUserRepository.save(channelUser);
-    const client = this.getSocketForUser(user, server);
-    if (!client) {
-      throw new Error('Client not found');
-    }
+    const client = this.getSocketForUser(user, server, true);
+
     client.join(channel.name);
     this.sendJoinedChannelMessage(channel, user, client);
   }
@@ -175,7 +173,7 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
        }
        else {
          this.updateChannelOwner(channel, user);
-          const client = this.getSocketForUser(user, server);
+          const client = this.getSocketForUser(user, server, true);
          this.sendLeftChannelMessage(channel, user, client);
          await this.channelUserRepository.delete({ user: user, channel: channel });
      }
@@ -365,7 +363,7 @@ async createPrivateChat(user: User, toChatUserDto: SendUserDto, server: Server) 
   channel = await this.channelRepository.findOne({ where: { name: channel.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
   if (!channel)
     throw new Error('Channel not found');
-  const client = this.getSocketForUser(user, server);
+  const client = this.getSocketForUser(user, server, true);
   await this.addUsersToPrivateChat(user, toChatUser, channel, client);
   return channel;
 }
@@ -394,7 +392,7 @@ async setPassword(user: User, channelDto: SendChannelDto, server: Server) {
   channel.pw_hashed = channelDto.password;
   channel.private_channel = true;
   await this.channelRepository.save(channel);
-  const client = this.getSocketForUser(user, server);
+  const client = this.getSocketForUser(user, server, true);
   this.sendInfoMessage(channel, user, client, 'owner set new password');
   return channel;
 }
@@ -432,11 +430,16 @@ async promoteUser(user: User, toPromoteUserDto: SendUserDto, channelDto: SendCha
     throw new Error('User already owner of channel');
   toPromoteChannelUser.admin = true;
   await this.channelUserRepository.save(toPromoteChannelUser);
-  const client = this.getSocketForUser(user, server);
+  const client = this.getSocketForUser(user, server, true);
   this.sendInfoMessage(channel, user, client, `${toPromoteUser.name} was promoted to admin`);
+  this.updateChannelUserforChannel(channel, user, client);
   return channel;
 }
 
+async updateChannelUserforChannel(channel: Channel, user: User, client: Socket) {
+  const channelUsersDto = await this.getChannelUsersDto(channel);
+  client.to(channel.name).emit('channelUsers', channelUsersDto);
+}
 
 
 
@@ -490,6 +493,8 @@ async sendJoinedChannelMessage(channel: Channel, user: User, client: Socket) {
 async sendChannelInfo(channel: Channel, client: Socket) {
   const channelDto = mapChannelToDto(channel);
   client.emit('channelInfo', channelDto);
+  const channelUsersDto = await this.getChannelUsersDto(channel);
+  client.to(channel.name).emit('channelUsers', channelUsersDto);
 }
 
 async getUserChannels(user: User) : Promise<Channel[]> {
