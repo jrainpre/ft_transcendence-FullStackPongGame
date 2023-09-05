@@ -33,11 +33,5 @@ export class SidebarComponent {
     console.log("Logout");
     this.cookie.delete("jwtToken");
     this.router.navigate(['/login']);
-      // try{
-      //   await this.api.logout();
-      // }
-      // catch(error){
-
-      // }
     }
 }
