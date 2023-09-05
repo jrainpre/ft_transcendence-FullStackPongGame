@@ -153,6 +153,30 @@ export class MessagesController {
         }
     }
 
+    @Post('kick-user')
+    async kickUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.kickUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channelUsers: channelUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('ban-user')
+    async banUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.banUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channelUsers: channelUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
 
 
 
