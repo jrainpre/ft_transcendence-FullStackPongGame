@@ -2,10 +2,10 @@ import { SendMessageDto } from "../dto/send-message.dto";
 import { SendChannelDto } from "../dto/send-channel.dto";
 import { SendUserDto } from "../dto/send-user.dto";
 import { SendChannelUserDto } from "../dto/send-channelUser";
-import { Message } from "../entities/message.entity";
-import { Channel } from "../entities/channel.entity";
-import { User } from "../entities/user.entity";
-import { ChannelUser } from '../entities/channel_user.entity';
+import { Message } from "../../entities/message.entity";
+import { Channel } from "../../entities/channel.entity";
+import { User } from "../../entities/user.entity";
+import { ChannelUser } from "../../entities/channel_user.entity";
 
 export function mapMessageToDto(message: Message): SendMessageDto {
 	return {

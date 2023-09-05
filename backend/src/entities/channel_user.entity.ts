@@ -7,11 +7,11 @@ export class ChannelUser {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Channel, channel => channel.channelUsers)
+  @ManyToOne(() => Channel, channel => channel.channelUsers, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id', referencedColumnName: 'id' })
   channel: Channel;
 
-  @ManyToOne(() => User, user => user.channelUsers, { eager: true })
+  @ManyToOne(() => User, user => user.channelUsers, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id_42' })
   user: User;
 

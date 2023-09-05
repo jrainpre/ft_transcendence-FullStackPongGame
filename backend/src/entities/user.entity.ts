@@ -9,8 +9,7 @@ import { Message } from './message.entity';
 export enum UserStatus {
     ONLINE = 'online',
     OFFLINE = 'offline',
-    INGAME = 'ingame',
-    INQUE = 'inqueue'
+    INGAME = 'ingame'
 }
 
 @Entity('users')
@@ -93,6 +92,8 @@ export class User {
   @OneToMany(() => Message, message => message.owner)
   messages: Message[];
 
+
+
+
 }
 
-export { Friend };

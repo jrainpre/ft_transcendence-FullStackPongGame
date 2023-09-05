@@ -14,7 +14,7 @@ export class Friend {
   @JoinColumn({ name: 'user_id_two', referencedColumnName: 'id_42' })
   userTwo: User;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   accepted: boolean;
 
   @CreateDateColumn()
