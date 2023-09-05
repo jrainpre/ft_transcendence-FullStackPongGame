@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-profile',
@@ -43,6 +44,7 @@ export class ProfileComponent {
   }
   
   async ngOnInit(): Promise<any>{
+    console.log("OnInit");
     this.route.params.subscribe(params => {
       const newId = params['id'];
       if(newId != this.id){
@@ -113,4 +115,33 @@ export class ProfileComponent {
       this.snackBar.open("Error", "close", {duration: 3000,});
     }
   }
+
+  async blockUser(): Promise<any>{
+    const userToBlockDTO = {
+      id_42: parseInt(this.id, 10),
+      name: this.username
+  }
+  try{
+    await this.api.blockUser(userToBlockDTO);
+    console.log("already done");
+    this.ngOnInit();
+  }
+  catch(error){
+    this.snackBar.open("Error blocking User", "close", {duration: 3000,});
+  }
+}
+
+async unblockUser(): Promise<any>{
+  const userToBlockDTO = {
+    id_42: parseInt(this.id, 10),
+    name: this.username
+}
+try{
+  await this.api.unblockUser(userToBlockDTO);
+  this.ngOnInit();
+}
+catch(error){
+  this.snackBar.open("Error unblocking User", "close", {duration: 3000,});
+}
+}
 }

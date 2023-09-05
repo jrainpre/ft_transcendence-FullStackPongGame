@@ -77,10 +77,10 @@
                       <button class="btn btn-info " style="margin-top: 5px;" (click)="removeFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Remove Friend</button>
                     </div>
                     <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="addFriend()" [hidden]="!(isUsersProfile == false && isBlocked == false)">Block</button>
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="blockUser()" [hidden]="!(isUsersProfile == false && isBlocked == false)">Block</button>
                     </div>
                     <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="routEditPage()" [hidden]="!(isUsersProfile == false && isBlocked == true)">Unblock</button>
+                      <button class="btn btn-info " style="margin-top: 5px;" (click)="unblockUser()" [hidden]="!(isUsersProfile == false && isBlocked == true)">Unblock</button>
                     </div>
                   </div>
                 </div>
