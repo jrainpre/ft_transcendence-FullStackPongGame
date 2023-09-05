@@ -57,7 +57,7 @@ import { Message } from 'src/entities/message.entity';
         const userDto = mapUserToDto(user);
         client.emit('identifyDone', userDto);
         await this.messagesService.sendUserChannels(user, client);
-      }
+      }chat
 
       @SubscribeMessage('selectChannel')
       async selectChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket, ) {

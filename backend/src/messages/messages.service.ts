@@ -20,6 +20,7 @@ import { MessagesGateway } from './messages.gateway';
 import e from 'express';
 import { get } from 'http';
 import { SendChannelUserDto } from './dto/send-channelUser';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -99,11 +100,24 @@ export class MessagesService {
   }
 
 
+async createPasswordHash(password: string): Promise<string>{
+  const salt = await bcrypt.genSaltSync(10);
+  const hash =  await bcrypt.hash(password, salt);
+  return hash;
+}
+
+async comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  return bcrypt.compare(plainPassword, hashedPassword);
+}
+
+
+
 async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel> {
   let channel = await this.channelRepository.findOne({ where: { name: channelDto.name } });
   if (channel) {
     throw new Error('Channel already exists');
   }
+  channelDto.password = await this.createPasswordHash(channelDto.password);
   channel = this.channelRepository.create({ name: channelDto.name, private_channel: channelDto.private_channel, pw_hashed: channelDto.password, });
   await this.channelRepository.save(channel);
   channel = await this.channelRepository.findOne({ where: { name: channel.name },
@@ -146,9 +160,8 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
       throw new Error('Channel not found');
     }
     if (channel.pw_hashed) {
-      if (channeldto.password !== channel.pw_hashed) {
+      if (await this.comparePasswords(channeldto.password, channel.pw_hashed) === false) 
         throw new Error('Wrong password');
-      }
     }
       return channel;
     }
@@ -281,8 +294,9 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
 
 
    async createNewMessage(messageDto: SendMessageDto, server: Server ): Promise<Message> {
-    const user = await this.userRepository.findOne({ where: { id_42: messageDto.owner_id } });
-    const channel = await this.channelRepository.findOne({ where: { id: messageDto.channel_id } });
+    const user = await this.userRepository.findOne({ where: { id_42: messageDto.owner_id }, relations: ["channelUsers", "channelUsers.channel.channelUsers", "blockedUsers", "blockedUsers.blockedUser"], });
+    const channels = user.channelUsers.filter(cu => !cu.banned).map(cu => cu.channel);
+    const channel = channels.find(c => c.id === messageDto.channel_id);
     if (channel && user) {
       let message = this.messageRepository.create({ content: messageDto.content, owner: user, channel: channel, isSystemMessage: messageDto.isSystemMessage });
       await this.messageRepository.save(message);
@@ -389,6 +403,7 @@ async setPassword(user: User, channelDto: SendChannelDto, server: Server) {
     throw new Error('User not owner of channel');
   if (channel.direct_message === true)
     throw new Error('Cannot set password for direct message');
+  channelDto.password = await this.createPasswordHash(channelDto.password);
   channel.pw_hashed = channelDto.password;
   channel.private_channel = true;
   await this.channelRepository.save(channel);
@@ -441,35 +456,60 @@ async updateChannelUserforChannel(channel: Channel, user: User, client: Socket) 
   client.to(channel.name).emit('channelUsers', channelUsersDto);
 }
 
+async kickUser(user: User, toKickUserDto: SendUserDto, channelDto: SendChannelDto, server: Server) {
+  const channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user",], });
+  if (!channel)
+    throw new Error('Channel not found');
+  const channelUser = channel.channelUsers.find(cu => cu.user.id_42 === user.id_42);
+  if (!channelUser)
+    throw new Error('User not in channel');
+  if (!channelUser.admin)
+    throw new Error('User not admin of channel');
+  const toKickUser = await this.userRepository.findOne({ where: { name: toKickUserDto.name }, });
+  if (!toKickUser)
+    throw new Error('User to kick not found');
+  const toKickChannelUser = channel.channelUsers.find(cu => cu.user.id_42 === toKickUser.id_42);
+  if (!toKickChannelUser)
+    throw new Error('User to kick not in channel');
+  if (toKickChannelUser.owner)
+    throw new Error('Cannot kick owner of channel');
+  await this.channelUserRepository.delete(toKickChannelUser.id);
+  const client = this.getSocketForUser(user, server, true);
+  this.sendInfoMessage(channel, user, client, `${toKickUser.name} was kicked from channel`);
+  const socket = this.getSocketForUser(toKickUser, server, false);
+  if (socket)
+    socket.leave(channel.name);
+  this.updateChannelUserforChannel(channel, user, client);
+  return channel;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+async banUser(user: User, toBanUserDto: SendUserDto, channelDto: SendChannelDto, server: Server) {
+  const channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user",], });
+  if (!channel)
+    throw new Error('Channel not found');
+  const channelUser = channel.channelUsers.find(cu => cu.user.id_42 === user.id_42);
+  if (!channelUser)
+    throw new Error('User not in channel');
+  if (!channelUser.admin)
+    throw new Error('User not admin of channel');
+  const toBanUser = await this.userRepository.findOne({ where: { name: toBanUserDto.name }, });
+  if (!toBanUser)
+    throw new Error('User to ban not found');
+  const toBanChannelUser = channel.channelUsers.find(cu => cu.user.id_42 === toBanUser.id_42);
+  if (!toBanChannelUser)
+    throw new Error('User to ban not in channel');
+  if (toBanChannelUser.owner)
+    throw new Error('Cannot ban owner of channel');
+    toBanChannelUser.banned = true;
+  await this.channelUserRepository.save(toBanChannelUser);
+  const client = this.getSocketForUser(user, server, true);
+  this.sendInfoMessage(channel, user, client, `${toBanUser.name} was banned from channel`);
+  const socket = this.getSocketForUser(toBanUser, server, false);
+  if (socket)
+    socket.leave(channel.name);
+  this.updateChannelUserforChannel(channel, user, client);
+  return channel;
+}
 
 
 
@@ -499,7 +539,7 @@ async sendChannelInfo(channel: Channel, client: Socket) {
 
 async getUserChannels(user: User) : Promise<Channel[]> {
   let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
-  const channels = userOut?.channelUsers.map(cu => cu.channel);
+  const channels = userOut.channelUsers.filter(cu => !cu.banned).map(cu => cu.channel);
   return channels;
 }
 

@@ -56,6 +56,16 @@ export class ChatComponent implements AfterViewChecked {
     typingDisplay: string = '';
 
 
+    userToKick: User = {
+        id_42: 0,
+        name: ''
+    }
+
+    userToBan: User = {
+        id_42: 0,
+        name: ''
+    }
+
     channelUsers: ChannelUser[] = [];
     userToPromote: User = {
         id_42: 0,
@@ -103,7 +113,7 @@ export class ChatComponent implements AfterViewChecked {
 
     constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {
 
-        this.socket = io('http://10.11.2.1:3001');
+        this.socket = io('http://localhost:3001');
 
         this.socket.on('message', (message: Message) => {
             console.log(JSON.stringify(message));
@@ -170,6 +180,7 @@ export class ChatComponent implements AfterViewChecked {
             this.publicChannels = data.publicCannels;
         if (data.userChannels)
             this.userChannels = data.userChannels;
+        console.log(JSON.stringify(this.userChannels));
         if (data.blockedUsers)
             this.blockedUsers = data.blockedUsers;
     }
@@ -371,6 +382,43 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
+    kickUser(): void {
+        console.log(JSON.stringify(this.userToKick));
+        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/kick-user`, { user: this.userToKick, channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.userToKick = this.flushUser(this.userToKick);
+                    this.snackBar.open('Error kicking user: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.userToKick = this.flushUser(this.userToKick);
+                    this.channelUsers = data.channelUsers;
+                    this.snackBar.open('User kicked successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    banUser(): void {
+        console.log(JSON.stringify(this.userToBan));
+        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/ban-user`, { user: this.userToBan, channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.userToKick = this.flushUser(this.userToBan);
+                    this.snackBar.open('Error banning user: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.userToBan = this.flushUser(this.userToBan);
+                    this.channelUsers = data.channelUsers;
+                    this.snackBar.open('User banned successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
 
 
 
