@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { delay } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
-import { Message, User, Channel } from './interfaces/message';
+import { Message, User, Channel, ChannelUser } from './interfaces/message';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
@@ -54,9 +54,13 @@ export class ChatComponent implements AfterViewChecked {
     isRegistered: boolean = false;
     messages: Message[] = [];
     typingDisplay: string = '';
-    toBlock: string = '';
-    toUnblock: string = '';
 
+
+    channelUsers: ChannelUser[] = [];
+    userToPromote: User = {
+        id_42: 0,
+        name: ''
+    }
 
     userToBlock: User = {
         id_42: 0,
@@ -102,6 +106,7 @@ export class ChatComponent implements AfterViewChecked {
         this.socket = io('http://10.11.2.1:3001');
 
         this.socket.on('message', (message: Message) => {
+            console.log(JSON.stringify(message));
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
@@ -276,13 +281,13 @@ export class ChatComponent implements AfterViewChecked {
                 catchError((error) => {
                     console.error( error);
                     this.snackBar.open('Error blocking user: ' + error.error.message, 'Close', { duration: 5000, });
-                    this.flushUserBlock();
+                    this.userToBlock = this.flushUser(this.userToBlock);
                     return throwError(error);
                 })
             )
             .subscribe(data => {
                 if (data) {
-                    this.flushUserBlock();
+                    this.userToBlock = this.flushUser(this.userToBlock);
                     this.blockedUsers = data.blockedUsers;
                     this.snackBar.open('User blocked successfully', 'Close', { duration: 5000, });
                 }
@@ -290,19 +295,19 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     unblockUser(): void {
-        console.log(JSON.stringify(this.toUnblock));
         this.http.post<{ blockedUsers: User[] }>(`http://localhost:3001/api/chat/unblock-user`, { user: this.userToUnblock }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
                     this.snackBar.open('Error unblocking user: ' + error.error.message, 'Close', { duration: 5000, });
-                    this.flushUserBlock();
+                    this.userToUnblock = this.flushUser(this.userToUnblock);
                     return throwError(error);
+
                 })
             )
             .subscribe(data => {
                 if (data) {
-                    this.flushUserBlock();
+                    this.userToUnblock = this.flushUser(this.userToUnblock);
                     this.blockedUsers = data.blockedUsers;
                     this.snackBar.open('User unblocked successfully', 'Close', { duration: 5000, });
                 }
@@ -315,15 +320,52 @@ export class ChatComponent implements AfterViewChecked {
             .pipe(
                 catchError((error) => {
                     console.error( error);
+                    this.userPrvtchat = this.flushUser(this.userPrvtchat);
                     this.snackBar.open('Error starting private chat: ' + error.error.message, 'Close', { duration: 5000, });
                     return throwError(error);
                 }))
             .subscribe(data => {
                 if (data) {
                     this.flushChannel();
+                    this.userPrvtchat = this.flushUser(this.userPrvtchat);
                     this.channel = data.channel;
                     this.userChannels.push(this.channel);
                     this.snackBar.open('Private chat started successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    setPassword(): void {
+        console.log(JSON.stringify(this.channel));
+        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/set-password`, { channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error setting password: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.channel = data.channel;
+                    this.snackBar.open('Password set successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
+
+    promoteUser(): void {
+        console.log(JSON.stringify(this.userToPromote));
+        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/promote-user`, { user: this.userToPromote, channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.userToPromote = this.flushUser(this.userToPromote);
+                    this.snackBar.open('Error promoting user: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.userToPromote = this.flushUser(this.userToPromote);
+                    this.snackBar.open('User promoted successfully', 'Close', { duration: 5000, });
                 }
             })
     }
@@ -365,39 +407,7 @@ export class ChatComponent implements AfterViewChecked {
 
  
 
-    registerUser() {
-        let user: User = {
-            id_42: this.user.id_42,
-            name: this.user.name,
-        }
-        this.socket.emit('identifyUser', { user: user });
-    }
-
-
-    //   createChannel() {
-    //       if (this.channelName.trim()){
-    //           let newChannel: Channel = {
-    //               name: this.channelName,
-    //               private_channel: false,
-    //               id: 0,
-    //               password: ''
-    //           }
-    //           this.socket.emit('createOrJoinChannel', { channel: newChannel });
-    //           this.channelName = '';
-    //           this.messages = [];
-    //       }
-    //       }
-
-    createPrivateChannel() {
-        if (this.newPrvtchat.trim()) {
-            let user: User = {
-                id_42: 0,
-                name: this.newPrvtchat
-            }
-            this.newPrvtchat = '';
-            this.socket.emit('createPrivateChannel', { user: user });
-        }
-    }
+  
 
     setCurrentChannel(channel: Channel) {
         this.socket.emit('selectChannel', { channel: channel });
@@ -479,6 +489,13 @@ export class ChatComponent implements AfterViewChecked {
         this.userToBlock.name = '';
         this.userToUnblock.id_42 = 0;
         this.userToUnblock.name = '';
+    }
+
+
+    flushUser(user : User) {
+        user.id_42 = 0;
+        user.name = '';
+        return user;
     }
 
 }

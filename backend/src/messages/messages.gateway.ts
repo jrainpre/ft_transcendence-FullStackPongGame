@@ -13,7 +13,7 @@ import {
   import { log } from 'console';
   // import { mapMessageToDto, mapChannelToDto, mapUserToDto } from './helpers/helpers';
 import { Send } from 'express';
-import { SendUserDto } from './dto/send-user.dto copy';
+import { SendUserDto } from './dto/send-user.dto';
 import { SendChannelDto } from './dto/send-channel.dto';
 // import { mapMessageToDto } from './helpers/helpers';
 import { mapChannelToDto, mapUserToDto } from './helpers/helpers';

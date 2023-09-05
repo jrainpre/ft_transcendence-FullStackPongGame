@@ -4,8 +4,8 @@ import { SendChannelDto } from './dto/send-channel.dto';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { get } from 'http';
-import { SendUserDto } from './dto/send-user.dto copy';
-import { mapUserToDto, mapChannelToDto } from './helpers/helpers';
+import { SendUserDto } from './dto/send-user.dto';
+import { mapUserToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
 import { MessagesGateway } from './messages.gateway';
 
 
@@ -124,6 +124,30 @@ export class MessagesController {
             const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.server);
             const channelDto = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('set-password')
+    async setPassword(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.setPassword(user, channelDto, this.messagesGateway.server);
+            const channelDtoToSend = mapChannelToDto(channel);
+            res.status(200).json({ channel: channelDtoToSend });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('promote-user')
+    async promoteUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.promoteUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channelUsers: channelUsersDto });
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }

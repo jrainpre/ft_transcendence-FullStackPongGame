@@ -13,10 +13,7 @@
   <div class="chat-app">
    <div *ngIf="!isRegistered">
       <div class="registration">
-          <h3>Register</h3>
-          <input [(ngModel)]="user.name" placeholder="Enter your name"/>
-          <input [(ngModel)]="user.id_42" placeholder="Enter your username" (keyup.enter)="registerUser()" />
-          <button (click)="registerUser()">Register</button>
+          <h3>is the jwt token working????????????????</h3>
       </div>
   </div>
 
@@ -73,10 +70,12 @@
     </form>
 </div>
 
+
+
 <div class="create-channel-container">
     <h3>Start private Chat</h3>
     <form (ngSubmit)="startPrivateChat()">
-        <label>User to Unblock:
+        <label>User to Chat with:
             <input type="text" name="nameChatUser" [(ngModel)]="userPrvtchat.name" required>
         </label>
         <button type="submit">Start chat</button>
@@ -136,6 +135,24 @@
     <ng-template #noChannel>
         <p>You're not currently in any channel.</p>
     </ng-template>
+
+        <h3>Set new channel password</h3>
+        <form (ngSubmit)="setPassword()">
+            <label>New password:
+                <input type="password" name="newPassword" [(ngModel)]="channel.password" required>
+            </label>
+            <button type="submit">Set new Password</button>
+        </form>
+
+
+        <h3>Promote user to admin</h3>
+        <form (ngSubmit)="promoteUser()">
+            <label>user to promote:
+                <input type="text" name="username" [(ngModel)]="userToPromote.name" required>
+            </label>
+            <button type="submit">Promote user</button>
+        </form>
+    
 </div>
 
 
