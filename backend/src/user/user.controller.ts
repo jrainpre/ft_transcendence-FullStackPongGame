@@ -50,7 +50,6 @@ export class UserController {
         }
       }
 
-
     @UseGuards(JwtAuthGuard)
     @Get('is-user/:id') 
     async isUser(@Req() req, @Res() res, @Param('id')id: string ): Promise<any>{
@@ -104,4 +103,26 @@ export class UserController {
             loss_ranked: searchedUser.loss_ranked,
         });
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('name/:user_name')
+    async getUserByName(@Param('user_name') user_name: string, @Res() res): Promise<any> {
+    try {
+    // Check if the user exists in your UserRepository
+        const searchedUsers = await this.userRepository.find({ where: { name: user_name } });
+
+        if (searchedUsers.length === 0) {
+        // User not found, return an appropriate response
+        return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = searchedUsers[0];
+        res.status(200).json({ id: user.id_42 });
+    } catch (error) {
+    // Handle any unexpected errors
+        console.error('Error:', error);
+        res.status(400).json({ message: 'Internal server error' });
+        }
+    }
+
 }

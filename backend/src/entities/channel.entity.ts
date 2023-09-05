@@ -18,6 +18,10 @@ export class Channel {
   @Column({ type: 'boolean', default: false })
   pw_protected: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  direct_message: boolean;
+
+
   @Column({ type: 'text', nullable: true })
   pw_hashed: string;
 

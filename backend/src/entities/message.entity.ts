@@ -12,7 +12,7 @@ export class Message {
   owner: User;
 
   @Column({ type: 'text', nullable: true })
-  message: string;
+  content: string;
 
   @Column({ type: 'boolean', default: false })
   isSystemMessage: boolean;
@@ -20,7 +20,7 @@ export class Message {
   @CreateDateColumn()
   created_at: Date;
 
-  @ManyToOne(() => Channel, { eager: true })
-  @JoinColumn({ name: 'channel_id', referencedColumnName: 'id' })
+  @ManyToOne(() => Channel, (channel) => channel.messages, { onDelete: 'CASCADE', eager: true })
+  @JoinColumn([{ name: "channel_id", referencedColumnName: "id" }])
   channel: Channel;
 }

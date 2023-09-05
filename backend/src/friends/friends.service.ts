@@ -27,7 +27,6 @@ export class FriendsService {
       .getMany();
   }
   
-  
   async areUsersFriends(userId: number, friendId: number) : Promise<any>{
     const areFriends = await this.friendRepository.findOne({
         where: [{
