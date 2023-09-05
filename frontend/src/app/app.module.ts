@@ -13,6 +13,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditComponent } from './edit/edit.component';
 import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
+import { ChatComponent} from './chat/chat.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
@@ -30,6 +33,8 @@ import { PersonalMatchHistoryComponent } from './personal-match-history/personal
     ProfileComponent,
     EditComponent,
     EnableTFAComponent,
+    ChatComponent,
+    
     SidebarComponent,
     ChatComponent,
     LeaderboardComponent,
@@ -43,7 +48,9 @@ import { PersonalMatchHistoryComponent } from './personal-match-history/personal
     LoginModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

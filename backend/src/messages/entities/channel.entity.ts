@@ -16,10 +16,11 @@ export class Channel {
   private_channel: boolean;
 
   @Column({ type: 'boolean', default: false })
-  direct_message: boolean;
+  pw_protected: boolean;
 
   @Column({ type: 'boolean', default: false })
-  pw_protected: boolean;
+  direct_message: boolean;
+
 
   @Column({ type: 'text', nullable: true })
   pw_hashed: string;
