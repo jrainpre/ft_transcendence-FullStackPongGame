@@ -12,6 +12,7 @@ import { User } from './entities/user.entity';
 import { UploadController } from './upload/upload.controller';
 import { UploadService } from './upload/upload.service';
 import { ConfigModule } from '@nestjs/config';
+import { MessagesModule } from './messages/messages.module';
 import { Friend } from 'src/entities/friends.entity';
 import { FriendsModule } from 'src/friends/friends.module'
 import { FriendsController } from 'src/friends/friends.controller';
@@ -34,7 +35,7 @@ import { HistoryService } from './history/history.service';
   }),
 
   TypeOrmModule.forFeature([User, Friend, Game])
-    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule],
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule MessagesModule],
   controllers: [AppController, EditController, UploadController, FriendsController, HistoryController],
   providers: [AppService, EditService, UploadService, FriendsService, HistoryService],
 
