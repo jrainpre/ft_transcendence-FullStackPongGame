@@ -21,6 +21,10 @@ import { Game } from 'src/entities/games.entity';
 import { HistoryModule } from './history/history.module';
 import { HistoryController } from './history/history.controller';
 import { HistoryService } from './history/history.service';
+import { Channel } from 'diagnostics_channel';
+import { Message } from './entities/message.entity';
+import { BlockedUser } from './entities/blocked_user.entity';
+import { ChannelUser } from './entities/channel_user.entity';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -34,8 +38,8 @@ import { HistoryService } from './history/history.service';
     synchronize: true, // Auto-create database schema (in development)
   }),
 
-  TypeOrmModule.forFeature([User, Friend, Game])
-    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule MessagesModule],
+  TypeOrmModule.forFeature([User, Friend, Game, Channel, Message, BlockedUser, ChannelUser, ])
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule],
   controllers: [AppController, EditController, UploadController, FriendsController, HistoryController],
   providers: [AppService, EditService, UploadService, FriendsService, HistoryService],
 
