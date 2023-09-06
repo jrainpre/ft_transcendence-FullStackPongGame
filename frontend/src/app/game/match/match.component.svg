@@ -1,0 +1,9 @@
+<svg id="app-game" width="100%" height="100%">
+  <rect width="100%" height="100%" />
+  <line id="net" x1="50%" y1="9px" x2="50%" y2="100%" />
+  <text x="23%" y="48">{{ scorePlayerLeft }}</text>
+  <text x="75%" y="48">{{ scorePlayerRight }}</text>
+  <rect class="paddle" [attr.width]="paddleWidth + '%'" [attr.height]="paddleHeight + '%'" [attr.x]="playerLeftX + '%'" [attr.y]="playerLeftY + '%'" />
+  <rect class="paddle" [attr.width]="paddleWidth + '%'" [attr.height]="paddleHeight + '%'" [attr.x]="playerRightX + '%'" [attr.y]="playerRightY + '%'" />
+  <rect id="ball" [attr.width]="ballWidth + '%'" [attr.height]="ballHeight + '%'" [attr.x]="ballX + '%'" [attr.y]="ballY + '%'" />
+</svg>
