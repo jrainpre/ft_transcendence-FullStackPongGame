@@ -9,6 +9,8 @@ import { EnableTFAComponent } from './enable-tfa/enable-tfa.component';
 import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { LobbyComponent } from './game/lobby/lobby.component';
+import { LoadingComponent } from './game/loading/loading.component';
 
 const routes: Routes = [
   {path: '2fa', component: TwoFactorAuthComponent},
@@ -19,6 +21,8 @@ const routes: Routes = [
   {path: 'enable-tfa/:id', component: EnableTFAComponent},
   {path: 'chat', component: ChatComponent},
   {path: 'leaderboard', component: LeaderboardComponent},
+  {path: 'loading/:parameter', component: LoadingComponent},
+  {path: 'lobby', component: LobbyComponent},
   {path: '**', component: PageNotFoundComponent}
 ];
 

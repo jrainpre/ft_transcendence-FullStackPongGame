@@ -1,0 +1,34 @@
+text {
+  font-family: 'Atomic Age', cursive;
+  font-size: 48px;
+  fill: silver;
+}
+
+#ball {
+  fill: silver;
+}
+
+#net {
+  stroke: silver;
+  stroke-width: 2%;
+  stroke-dasharray: 4%, 4%;
+}
+
+.paddle {
+  fill: white;
+}
+
+#app-game {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  margin: auto;
+  width: 900px; 
+  height: 600px;
+}
+
+h1 {
+  text-align: center;
+}
