@@ -25,6 +25,9 @@ import { Channel } from 'diagnostics_channel';
 import { Message } from './entities/message.entity';
 import { BlockedUser } from './entities/blocked_user.entity';
 import { ChannelUser } from './entities/channel_user.entity';
+import { StatusController } from './status/status.controller';
+import { StatusService } from './status/status.service';
+import { StatusModule } from './status/status.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -39,9 +42,9 @@ import { ChannelUser } from './entities/channel_user.entity';
   }),
 
   TypeOrmModule.forFeature([User, Friend, Game, Channel, Message, BlockedUser, ChannelUser, ])
-    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule],
-  controllers: [AppController, EditController, UploadController, FriendsController, HistoryController],
-  providers: [AppService, EditService, UploadService, FriendsService, HistoryService],
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule, StatusModule],
+  controllers: [AppController, EditController, UploadController, FriendsController, HistoryController, StatusController],
+  providers: [AppService, EditService, UploadService, FriendsService, HistoryService, StatusService],
 
 
 })
