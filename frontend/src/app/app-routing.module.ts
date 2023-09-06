@@ -10,6 +10,7 @@ import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { LoadingComponent } from './game/loading/loading.component';
+import { MatchComponent } from './game/match/match.component';
 
 const routes: Routes = [
   {path: '2fa', component: TwoFactorAuthComponent},
@@ -21,6 +22,7 @@ const routes: Routes = [
   {path: 'chat', component: ChatComponent},
   {path: 'leaderboard', component: LeaderboardComponent},
   {path: 'loading/:parameter', component: LoadingComponent},
+  {path: 'match', component: MatchComponent},
   {path: '**', component: PageNotFoundComponent}
 ];
 

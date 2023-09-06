@@ -1,5 +1,5 @@
 import { SubscribeMessage, WebSocketGateway, MessageBody, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
-import { GameService } from '../../services/game/game.service';
+// import { GameService } from '../../services/game/game.service';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { LobbyService } from '../../services/lobby/lobby.service';
@@ -12,7 +12,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   inst: Lobby;
 
   constructor(
-    private gameService: GameService,
+    // private gameService: GameService,
     private lobbyManager: LobbyService) {}
   
   afterInit(server: Server): any {
@@ -25,6 +25,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
+    this.logger.log('Client disconnected: ', client.id);
     this.lobbyManager.terminateSocket(client);
   }
 
@@ -35,6 +36,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('requestLobby')
   entry(@ConnectedSocket() client: Socket, @MessageBody() modus: any){
+    this.logger.log("JOINED");
     this.lobbyManager.joinLobby(client, modus.modus);
   }
 
