@@ -34,7 +34,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     EditComponent,
     EnableTFAComponent,
     ChatComponent,
-    
     SidebarComponent,
     ChatComponent,
     LeaderboardComponent,
@@ -53,7 +52,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     BrowserAnimationsModule,
     MatSnackBarModule,
   ],
-  providers: [],
+  providers: [ProfileComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
