@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./docker/db.env
+    ports:
+      - "5432:5432"
+    restart:
+      always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  nestjs:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./docker/backend.env
+    restart:
+      always
+    depends_on:
+      - postgres
+
+  angular:
+    build: 
+      context: ./frontend
+    ports:
+      - "4200:4200"
+    restart:
+      always
+    depends_on:
+      - nestjs
+
+volumes:
+  postgres-data:
