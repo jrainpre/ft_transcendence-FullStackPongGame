@@ -28,6 +28,7 @@
     "@nestjs/passport": "^10.0.1",
     "@nestjs/platform-express": "^10.2.4",
     "@nestjs/platform-socket.io": "^10.2.4",
+    "@nestjs/schedule": "^3.0.3",
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.2.4",
     "@types/cors": "^2.8.13",
