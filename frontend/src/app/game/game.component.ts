@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router'
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,8 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent {
-  constructor(private http: HttpClient) {}
+  constructor(private router: Router) {}
   ngOnInit(): void {
-    
+      this.router.navigate(['/lobby']);
     }
 }
