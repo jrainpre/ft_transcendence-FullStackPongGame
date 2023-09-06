@@ -6,24 +6,22 @@ import {
   ConnectedSocket,
   OnGatewayDisconnect,
   } from '@nestjs/websockets';
-  import { MessagesService } from './messages.service';
-  import { Server, Socket } from 'socket.io';
-  import { Logger } from '@nestjs/common';
-  import { SendMessageDto } from './dto/send-message.dto';
-  import { log } from 'console';
-  // import { mapMessageToDto, mapChannelToDto, mapUserToDto } from './helpers/helpers';
+import { MessagesService } from './messages.service';
+import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
+import { SendMessageDto } from './dto/send-message.dto';
+import { log } from 'console';
 import { Send } from 'express';
 import { SendUserDto } from './dto/send-user.dto';
 import { SendChannelDto } from './dto/send-channel.dto';
-// import { mapMessageToDto } from './helpers/helpers';
 import { mapChannelToDto, mapUserToDto } from './helpers/helpers';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from 'src/entities/message.entity';
+import { LobbyService } from '../game/services/lobby/lobby.service';
+// import { mapMessageToDto } from './helpers/helpers';
+// import { mapMessageToDto, mapChannelToDto, mapUserToDto } from './helpers/helpers';
 
-
-
-  
   @WebSocketGateway({
     cors: {
       origin: '*',
@@ -32,22 +30,16 @@ import { Message } from 'src/entities/message.entity';
     @Injectable()
       export class MessagesGateway implements OnGatewayDisconnect {
         private readonly logger = new Logger(WebSocketGateway.name);
-        @WebSocketServer()
-        server: Server;
+        // @WebSocketServer()
+        // server: Server;
         
-
-
-
-      constructor(private readonly messagesService: MessagesService) {}
+      constructor(private readonly messagesService: MessagesService, public lobbyManager: LobbyService) {}
   
 
       @SubscribeMessage('createMessage')
       async createMessage(@MessageBody('message') messageDto: SendMessageDto,) {
-        const message = await this.messagesService.createNewMessage(messageDto, this.server);
+        const message = await this.messagesService.createNewMessage(messageDto, this.lobbyManager.server);
       }
-
-
-
 
       @SubscribeMessage('identifyUser')
       async identifyUser(@MessageBody('user') userIn: SendUserDto, @ConnectedSocket() client: Socket, ) {
@@ -66,14 +58,6 @@ import { Message } from 'src/entities/message.entity';
         await this.messagesService.sendChannelInfo(channel, client);
       }
 
-
-
-
-
-
-
- 
-      
       // @SubscribeMessage('typing')
       // async typing(
       // @MessageBody('isTyping') isTyping: boolean,
@@ -82,8 +66,7 @@ import { Message } from 'src/entities/message.entity';
       // ) {
       //   const name = await this.messagesService.getClientByClientId(client.id);
       //   client.broadcast.to(channelName).emit('typing', {name: name, isTyping: isTyping, channelName: channelName});
-      // }
-      
+      // }      
 
       // @SubscribeMessage('createOrJoinChannel')
       // async createChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket,) {
@@ -98,7 +81,6 @@ import { Message } from 'src/entities/message.entity';
       //   }
       // }
 
-    
       @SubscribeMessage('blockUser')
       async blockUser(@MessageBody("toBlockUser") toBlockUserDto: SendUserDto, @ConnectedSocket() client: Socket ){
         const user = await this.messagesService.getClientBySocketId(client.id);
@@ -118,11 +100,6 @@ import { Message } from 'src/entities/message.entity';
         const user = await this.messagesService.updateSocketId(userDto, client.id);
         const channel = await this.messagesService.joinChannels(user, client);
       }
-
-
       
-      
-      async handleDisconnect(client: Socket) {
-     
-      }
+      async handleDisconnect(client: Socket) {}
     }

@@ -14,10 +14,12 @@ import { MessagesController } from './messages.controller';
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { LobbyService } from '../game/services/lobby/lobby.service';
+import { GameGateway } from '../game/gateways/game/game.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Channel, User, ChannelUser, BlockedUser, Game, Friend, ]), AuthModule],
-  providers: [MessagesGateway, MessagesService, ],
+  providers: [GameGateway, MessagesGateway, MessagesService, LobbyService],
   exports: [MessagesService],
   controllers: [MessagesController],
 })
