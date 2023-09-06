@@ -3,11 +3,9 @@ import { Message } from '../entities/message.entity';
 import { User } from '../entities/user.entity';
 import { Channel } from '../entities/channel.entity';
 import { ChannelUser } from '../entities/channel_user.entity';
-// import { BlockedUser } from '../../db/saveforlater/blocked_user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Logger } from '@nestjs/common';
-// import { mapMessageToDto } from './helpers/helpers';
 import { SendMessageDto } from './dto/send-message.dto';
 import { SendUserDto } from './dto/send-user.dto';
 import { Game } from '../entities/games.entity';
@@ -21,6 +19,8 @@ import e from 'express';
 import { get } from 'http';
 import { SendChannelUserDto } from './dto/send-channelUser';
 import * as bcrypt from 'bcrypt';
+// import { BlockedUser } from '../../db/saveforlater/blocked_user.entity';
+// import { mapMessageToDto } from './helpers/helpers';
 
 
 @Injectable()
@@ -47,13 +47,7 @@ export class MessagesService {
     readonly channelUserRepository: Repository<ChannelUser>,
 
     @InjectRepository(BlockedUser)
-    readonly blockedUserRepository: Repository<BlockedUser>,
-
-  ) {}
-
-
-
-
+    readonly blockedUserRepository: Repository<BlockedUser>,) {}
 
     async getPuplicChannelsDto(): Promise<SendChannelDto[]> {
       const channels = await this.channelRepository.find({ where: { private_channel: false }, });
@@ -110,8 +104,6 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
   return bcrypt.compare(plainPassword, hashedPassword);
 }
 
-
-
 async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel> {
   let channel = await this.channelRepository.findOne({ where: { name: channelDto.name } });
   if (channel) {
@@ -125,7 +117,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
  return channel;
   }
 
-
   getSocketForUser(user: User, server: Server, check: boolean): Socket {
     const socket = server.sockets.sockets.get(user.socket_id);
     if (!socket && check) {
@@ -133,7 +124,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
     }
     return socket;
   }
-
 
   async addUserToChannel(user: User, channel: Channel, server: Server){
   let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);

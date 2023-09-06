@@ -60,7 +60,7 @@ export class MessagesController {
 			const user = await this.AuthService.getUserFromJwtCookie(req);
 			this.messagesService.validateChannelName(channelDto);
 			const channel = await this.messagesService.createNewChannel(channelDto, user);
-			await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.server);
+			await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.lobbyManager.server);
 			const channelDtoToSend = mapChannelToDto(channel);
 			res.status(200).json({ channel: channelDtoToSend });
 		} catch (error) {
@@ -73,7 +73,7 @@ export class MessagesController {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
             const channel = await this.messagesService.findChannel(channelDto);
-            await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.server);
+            await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.lobbyManager.server);
             const channelDtoToSend = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDtoToSend });
         } catch (error) {
@@ -85,7 +85,7 @@ export class MessagesController {
     async leaveChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            await this.messagesService.leaveChannel(user, channelDto, this.messagesGateway.server);
+            await this.messagesService.leaveChannel(user, channelDto, this.messagesGateway.lobbyManager.server);
             const userChannelsDto = await this.messagesService.getUserChannelsDto(user);
             res.status(200).json({ userChannels: userChannelsDto });
         } catch (error) {
@@ -121,7 +121,7 @@ export class MessagesController {
     async createPrivateChat(@Body('user') userDto: SendUserDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.server);
+            const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.lobbyManager.server);
             const channelDto = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDto });
         } catch (error) {
@@ -133,7 +133,7 @@ export class MessagesController {
     async setPassword(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.setPassword(user, channelDto, this.messagesGateway.server);
+            const channel = await this.messagesService.setPassword(user, channelDto, this.messagesGateway.lobbyManager.server);
             const channelDtoToSend = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDtoToSend });
         } catch (error) {
@@ -145,7 +145,7 @@ export class MessagesController {
     async promoteUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.promoteUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channel = await this.messagesService.promoteUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
         } catch (error) {
@@ -157,7 +157,7 @@ export class MessagesController {
     async kickUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.kickUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channel = await this.messagesService.kickUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
         } catch (error) {
@@ -169,7 +169,7 @@ export class MessagesController {
     async banUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.banUser(user, userDto, channelDto, this.messagesGateway.server);
+            const channel = await this.messagesService.banUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
         } catch (error) {
