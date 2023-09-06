@@ -22,6 +22,7 @@ export class ProfileComponent {
   isFriend: boolean = false;
   isBlocked: boolean = false;
   public reloadPersonalMatchHistory$ = new Subject<void>();
+  public reloadFriendList$ = new Subject<void>();
 
   async loadData() {
     let user;
@@ -67,6 +68,10 @@ export class ProfileComponent {
   reloadPersonalMatchHistory() {
     this.reloadPersonalMatchHistory$.next();
   }
+
+  reloadFriendList() {
+    this.reloadFriendList$.next();
+  }
   
   setProfileVars(user: any){
    this.profileUrl = user.profile_picture;
@@ -98,6 +103,7 @@ export class ProfileComponent {
     try{
       const added = await this.api.addFriend(this.id);
       this.ngOnInit();
+      this.reloadFriendList();
     }
     catch(error){
       this.snackBar.open("Already a Friend", "close", {duration: 3000,});
@@ -108,6 +114,7 @@ export class ProfileComponent {
     try{
       const added = await this.api.removeFriend(this.id);
       this.ngOnInit();
+      this.reloadFriendList();
     }
     catch(error){
       this.snackBar.open("Error", "close", {duration: 3000,});

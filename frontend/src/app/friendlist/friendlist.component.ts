@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Router } from '@angular/router';
+import { ProfileComponent } from '../profile/profile.component';
+
 
 @Component({
   selector: 'app-friendlist',
@@ -8,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./friendlist.component.css']
 })
 export class FriendlistComponent {
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router,private profileComponent: ProfileComponent) {}
 
   friends: { username: string; id_42: string; status: string }[] = [];
   onlineFriends: any[] = [];
@@ -17,7 +19,13 @@ export class FriendlistComponent {
   // on init fetch list and sort it
   ngOnInit() {
     this.loadFriends();
+
+    this.profileComponent.reloadFriendList$.subscribe(async () => {
+      // Reload your data here
+      this.loadFriends();
+    });
   }
+
 
   async loadFriends() {
     let id: string;
@@ -28,6 +36,9 @@ export class FriendlistComponent {
     {
       return;
     }
+    this.friends = [];
+    this.onlineFriends = [];
+    this.offlineFriends = [];
     this.api.getFriends(id).then((response: any) => {
       console.log(response);
       for (let i = 0; i < response.length; i++) {
@@ -52,6 +63,8 @@ export class FriendlistComponent {
       this.offlineFriends = this.friends.filter(friend => friend.status === 'offline');
     });
   }
+
+  
 
   goToProfile(id_42: string) {
     this.router.navigate(['/profile', id_42],);
