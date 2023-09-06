@@ -9,7 +9,6 @@ export enum ServerEvents
   GameMessage = 'lobby.created',
 }
 
-
 export type ServerPayloads = {
   [ServerEvents.Pong]: {
     message: string;
