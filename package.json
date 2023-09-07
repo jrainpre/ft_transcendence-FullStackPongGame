@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@nestjs/axios": "^3.0.0",
+    "typeorm": "^0.3.17"
+  }
+}

@@ -21,7 +21,7 @@ const routes: Routes = [
   {path: 'enable-tfa/:id', component: EnableTFAComponent},
   {path: 'chat', component: ChatComponent},
   {path: 'leaderboard', component: LeaderboardComponent},
-  {path: 'loading/:parameter', component: LoadingComponent},
+  {path: 'loading/:modus/:name/:id', component: LoadingComponent},
   {path: 'match', component: MatchComponent},
   {path: '**', component: PageNotFoundComponent}
 ];

@@ -2,6 +2,7 @@ import { Injectable, HostListener } from '@angular/core';
 import { io } from 'socket.io-client';
 import { MatchComponent } from '../match/match.component';
 import { Game } from '../interface/interface';
+import { User } from 'src/app/chat/interfaces/message';
 
 @Injectable({
   providedIn: 'root'
@@ -58,7 +59,7 @@ export class WebSocketService {
     this.socket.emit('resetAll');
   }
 
-  requestLobby(modus: string | null){
-    this.socket.emit('requestLobby', {player: this.socket.id, modus: modus});
+  requestLobby(modus: string | null, name: string | null, id: string | null){
+    this.socket.emit('requestLobby', {player: this.socket.id, modus: modus, name: name, id: id});
   }
 }

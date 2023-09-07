@@ -5,6 +5,8 @@ import { Server, Socket } from 'socket.io';
 import { LobbyService } from '../../services/lobby/lobby.service';
 import { Lobby } from 'src/game/services/lobby/lobby';
 import { AuthenticatedSocket } from '../../services/lobby/types';
+import { StatusController } from 'src/status/status.controller';
+import { User } from 'src/entities/user.entity';
 
 @WebSocketGateway({cors: '*'})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -12,7 +14,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   inst: Lobby;
 
   constructor(
-    // private gameService: GameService,
+    // private statusController: StatusController,
     private lobbyManager: LobbyService) {}
   
   afterInit(server: Server): any {
@@ -21,6 +23,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+    this.logger.log('Client connected: ', client.id);
     this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
@@ -29,15 +32,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.lobbyManager.terminateSocket(client);
   }
 
-  // @SubscribeMessage('startGame')
-  // entry(@ConnectedSocket() client: Socket){
-  //   this.lobbyManager.joinLobby(client);
-  // }
-
   @SubscribeMessage('requestLobby')
-  entry(@ConnectedSocket() client: Socket, @MessageBody() modus: any){
+  entry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
     this.logger.log("JOINED");
-    this.lobbyManager.joinLobby(client, modus.modus);
+    this.lobbyManager.joinLobby(client, user.modus, user.name, user.id);
   }
 
   @SubscribeMessage('keyUp')

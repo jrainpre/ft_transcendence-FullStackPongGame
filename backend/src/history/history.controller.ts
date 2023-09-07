@@ -5,7 +5,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { HistoryService } from './history.service';
-import { Game } from 'src/entities/games.entity';
+import { Games } from 'src/entities/games.entity';
 
 @Controller('history')
 export class HistoryController {
@@ -13,7 +13,7 @@ export class HistoryController {
 
     @UseGuards(JwtAuthGuard)
     @Get('all')
-    async getFullHistory(): Promise<Game[]> {
+    async getFullHistory(): Promise<Games[]> {
         const history = await this.historyService.getFullHistory();
         return history;
     }
@@ -21,7 +21,7 @@ export class HistoryController {
     // this has input now, fix it michael
     @UseGuards(JwtAuthGuard) // Add the JwtAuthGuard
     @Get('user/:id')
-    async getGamesByUserId(@Param('id', ParseIntPipe) id: number): Promise<Game[]> {
+    async getGamesByUserId(@Param('id', ParseIntPipe) id: number): Promise<Games[]> {
         const friends = await this.historyService.getGamesByUserId(id);
         return friends;
     }

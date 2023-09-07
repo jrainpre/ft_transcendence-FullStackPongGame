@@ -6,7 +6,6 @@ import { AuthenticatedSocket } from '../../services/lobby/types';
 export class NormalInstance
 {
 	public hasStarted: boolean = false;
-
 	public hasFinished: boolean = false;
 
 	constructor(private readonly lobby: Lobby)
@@ -182,11 +181,10 @@ export class NormalInstance
         this.startRound(id);
       }
       else {
+        this.lobby.updateGameStats(this.game.score, 'left');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     } else if (this.PlayerRightScored()) {
@@ -197,11 +195,10 @@ export class NormalInstance
         this.startRound(id);
       }
       else{ 
+        this.lobby.updateGameStats(this.game.score, 'right');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     }
@@ -455,11 +452,10 @@ export class RankedInstance
         this.startRound(id);
       }
       else {
+        this.lobby.updateGameStats(this.game.score, 'left');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     } else if (this.PlayerRightScored()) {
@@ -470,11 +466,10 @@ export class RankedInstance
         this.startRound(id);
       }
       else{ 
+        this.lobby.updateGameStats(this.game.score, 'right');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     }

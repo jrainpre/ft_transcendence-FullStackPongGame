@@ -21,8 +21,10 @@ export class LoadingComponent implements OnInit{
       });
     }
 
-  ngOnInit(): void {
-    console.log(this.param.snapshot.paramMap.get('parameter'));
-    this.websocketService.requestLobby(this.param.snapshot.paramMap.get('parameter'));
+  async ngOnInit(): Promise<void> {
+    const modus = this.param.snapshot.paramMap.get('modus');
+    const name = this.param.snapshot.paramMap.get('name');
+    const id = this.param.snapshot.paramMap.get('id');
+    this.websocketService.requestLobby(modus, name, id);
   }
 }

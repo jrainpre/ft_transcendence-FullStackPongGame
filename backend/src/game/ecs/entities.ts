@@ -1,7 +1,6 @@
 import { Position, Role, Dimension, Score } from './components';
 
 export class Paddle {
-  // role: Role;
   speed: number = 0;
   increment: number = 0;
 }
