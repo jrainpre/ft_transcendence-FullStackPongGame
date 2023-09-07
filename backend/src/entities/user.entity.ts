@@ -3,7 +3,7 @@ import { Channel } from './channel.entity';
 import { ChannelUser } from './channel_user.entity';
 import { BlockedUser } from './blocked_user.entity';
 import { Friend } from './friends.entity';
-import { Game } from './games.entity';
+import { Games } from './games.entity';
 import { Message } from './message.entity';
 
 export enum UserStatus {
@@ -80,14 +80,14 @@ export class User {
   @OneToMany(() => Friend, friend => friend.userTwo)
   friendTwo: Friend[];
 
-  @OneToMany(() => Game, game => game.winner)
-  gamesWon: Game[];
+  @OneToMany(() => Games, game => game.winner)
+  gamesWon: Games[];
 
-  @OneToMany(() => Game, game => game.playerOne)
-  gamesPlayerOne: Game[];
+  @OneToMany(() => Games, game => game.playerOne)
+  gamesPlayerOne: Games[];
 
-  @OneToMany(() => Game, game => game.playerTwo)
-  gamesPlayerTwo: Game[];
+  @OneToMany(() => Games, game => game.playerTwo)
+  gamesPlayerTwo: Games[];
 
   @OneToMany(() => Message, message => message.owner)
   messages: Message[];

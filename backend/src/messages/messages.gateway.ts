@@ -41,15 +41,15 @@ import { LobbyService } from '../game/services/lobby/lobby.service';
         const message = await this.messagesService.createNewMessage(messageDto, this.lobbyManager.server);
       }
 
-      @SubscribeMessage('identifyUser')
-      async identifyUser(@MessageBody('user') userIn: SendUserDto, @ConnectedSocket() client: Socket, ) {
-        const user = await this.messagesService.identify(userIn, client.id);
-        const channel = await this.messagesService.joinChannels(user, client);
-        const blockedUser = await this.messagesService.updateBlockedUsers(user, client);
-        const userDto = mapUserToDto(user);
-        client.emit('identifyDone', userDto);
-        await this.messagesService.sendUserChannels(user, client);
-      }chat
+      // @SubscribeMessage('identifyUser')
+      // async identifyUser(@MessageBody('user') userIn: SendUserDto, @ConnectedSocket() client: Socket, ) {
+      //   const user = await this.messagesService.identify(userIn, client.id);
+      //   const channel = await this.messagesService.joinChannels(user, client);
+      //   const blockedUser = await this.messagesService.updateBlockedUsers(user, client);
+      //   const userDto = mapUserToDto(user);
+      //   client.emit('identifyDone', userDto);
+      //   await this.messagesService.sendUserChannels(user, client);
+      // }
 
       @SubscribeMessage('selectChannel')
       async selectChannel(@MessageBody('channel') channelDto: SendChannelDto, @ConnectedSocket() client: Socket, ) {

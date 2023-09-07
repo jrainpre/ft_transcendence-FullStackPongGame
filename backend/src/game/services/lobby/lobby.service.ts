@@ -32,9 +32,11 @@ export class LobbyService {
     return lobby;
   }
 
-  async joinLobby(player: AuthenticatedSocket, modus: string): Promise<void>
+  async joinLobby(player: AuthenticatedSocket, modus: string, name: string, id: string): Promise<void>
   {
     player.data.modus = modus;
+    player.data.name = name;
+    player.data.id = id;
     const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.clients.size < 2 && lobby.modus === modus);
     
     if (availableLobby) {

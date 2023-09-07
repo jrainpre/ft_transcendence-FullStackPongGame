@@ -1,17 +1,16 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { WebSocketService } from '../websocket/websocket.service';
 import { io } from 'socket.io-client';
 import { Game } from '../interface/interface';
 import { ActivatedRoute } from '@angular/router';
-
-
+import { User } from '../../chat/interfaces/message';
 
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.svg',
   styleUrls: ['./match.component.scss'],
 })
-export class MatchComponent implements OnDestroy {
+export class MatchComponent implements OnInit, OnDestroy {
 
   constructor(
     private websocketService: WebSocketService,
@@ -24,6 +23,10 @@ export class MatchComponent implements OnDestroy {
     });
   }
   
+  async ngOnInit(): Promise<void> {
+    console.log('matchComponent init');
+  }
+
   ngOnDestroy(): void {
     console.log('Socket disconected: ', this.websocketService.socket.id);
   }

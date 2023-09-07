@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { SendMessageDto } from './dto/send-message.dto';
 import { SendUserDto } from './dto/send-user.dto';
-import { Game } from '../entities/games.entity';
+import { Games } from '../entities/games.entity';
 import { Friend } from '../entities/friends.entity';
 import { mapUserToDto, mapMessageToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
 import { Server, Socket } from 'socket.io';
@@ -37,8 +37,8 @@ export class MessagesService {
     @InjectRepository(Channel)
      readonly channelRepository: Repository<Channel>,
 
-    @InjectRepository(Game)
-    readonly gameRepository: Repository<Game>,
+    @InjectRepository(Games)
+    readonly gameRepository: Repository<Games>,
 
     @InjectRepository(Friend)
     readonly friendRepository: Repository<Friend>,
@@ -238,50 +238,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
       await this.blockedUserRepository.delete(blockedUser.id);
       return user;
     }
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
    async createNewMessage(messageDto: SendMessageDto, server: Server ): Promise<Message> {
     const user = await this.userRepository.findOne({ where: { id_42: messageDto.owner_id }, relations: ["channelUsers", "channelUsers.channel.channelUsers", "blockedUsers", "blockedUsers.blockedUser"], });
@@ -296,10 +252,6 @@ async createNewChannel(channelDto: SendChannelDto, user: User): Promise<Channel>
     }
 
     }
-
-   
-
-
 
     async identify(userIn: SendUserDto, socket_id: string) {
     let user = await this.userRepository.findOne({ where: { id_42: userIn.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"],});
