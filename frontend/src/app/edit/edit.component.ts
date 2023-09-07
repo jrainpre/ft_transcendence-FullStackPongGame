@@ -57,7 +57,7 @@ export class EditComponent {
         this.router.navigate([`/profile/${this.id}`]);
       },
       (error) =>{
-        this.errorMessage = 'User already Exists.';
+          this.errorMessage = error;
       }
     )
   }

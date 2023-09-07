@@ -48,11 +48,11 @@ export class ApiService {
         if(response.success == true)
           return response;
         else
-          throw new Error('Useranme Exists');
+          throw new Error('Useranme Exists or invalid Input (Max len 20)');
         
       }),
       catchError((error) => {
-        return throwError(() => new Error('Useranme Exists'));
+          return throwError(() => new Error(error.error.message));
       })
     );
   }
