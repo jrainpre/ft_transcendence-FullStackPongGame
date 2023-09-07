@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HeartbeatComponent } from './heartbeat/heartbeat.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatchHistoryComponent,
     PageNotFoundComponent,
     PersonalMatchHistoryComponent,
+    HeartbeatComponent,
   ],
   imports: [
     BrowserModule,

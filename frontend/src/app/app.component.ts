@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HeartbeatService } from './heartbeat/heartbeat.service';
 
 @Component({
   selector: 'app-root',
@@ -6,12 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor() {}
-  title = 'test';
+  constructor(private heartbeat: HeartbeatService) {}
 
-  loginClicked(){
-    alert('Hallo');
+  ngOnInit(){
+    console.log("OnInit");
+    this.heartbeat.startHeartbeat();
   }
-
 
 }
