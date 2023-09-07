@@ -117,9 +117,14 @@ export class ChatComponent implements AfterViewChecked {
 
         this.socket.on('message', (message: Message) => {
             console.log(JSON.stringify(message));
+            console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
+            if(message.isSystemMessage === true &&  message.content.includes('was banned from channel'))
+                location.reload();
+            if(message.isSystemMessage === true &&  message.content.includes('was kicked from channel'))
+                location.reload();
         });
 
         this.socket.on('ChannelMessages', (messageArray: Message[]) => {
