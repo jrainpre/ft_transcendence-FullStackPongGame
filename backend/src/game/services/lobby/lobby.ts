@@ -4,31 +4,14 @@ import { AuthenticatedSocket } from './types';
 import { NormalInstance, RankedInstance } from './instance';
 import { Game } from '../../ecs/entities';
 import { Logger } from '@nestjs/common';
-import { User } from 'src/entities/user.entity';
-import { Games } from 'src/entities/games.entity';
+import { User, UserStatus } from 'src/entities/user.entity';
+import { Games, GameType} from 'src/entities/games.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Score } from '../../ecs/components';
 
-export enum GameType {
-  NORMAL = 'normal',
-  RANKED = 'ranked',
-  NO_POWER = 'no_power'
-}
-
-export enum UserStatus {
-  ONLINE = 'online',
-  OFFLINE = 'offline',
-  INGAME = 'ingame'
-}
 export class Lobby
 {
-  @InjectRepository(User)
-  private readonly user: Repository<User>;
-
-  @InjectRepository(Games)
-  private readonly game: Repository<Games>;
-
   public modus: string;
   public readonly id: string = v4();
   public readonly createdAt: Date = new Date();
@@ -37,6 +20,11 @@ export class Lobby
   public hasFinished: boolean = false;
   
   constructor(
+    // @InjectRepository(User)
+    readonly user: Repository<User>,
+    // @InjectRepository(Games)
+    readonly game: Repository<Games>,
+    
     private readonly server: Server,
     public readonly maxClients: number,
     modus: string,
@@ -80,6 +68,8 @@ export class Lobby
 
   public async updateGameStats(score: Score, winner: string): Promise<void> {
     const games = new Games();
+    games.player_one_score = score.playerLeft;
+    games.player_two_score = score.playerRight;
 
     for (const [socketId, socket] of this.clients) {
       const user = await this.user.findOne({where: { id_42: socket.data.id }});
@@ -91,11 +81,9 @@ export class Lobby
       await this.user.save(user);
     }
 
-    games.player_one_score = score.playerLeft;
-    games.player_two_score = score.playerRight;
     games.type = (this.modus === 'normal') ? GameType.NORMAL : GameType.RANKED;
     games.winner = (winner === 'left') ? games.playerOne : games.playerTwo;
-    await this.game.insert(games);
+    await this.game.save(games);
   }
 
   public dispatchToLobby(event: any): void
