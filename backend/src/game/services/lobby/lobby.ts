@@ -74,8 +74,48 @@ export class Lobby
     for (const [socketId, socket] of this.clients) {
       const user = await this.user.findOne({where: { id_42: socket.data.id }});
 
-      if(socket.data.position === 'left'){games.playerOne = user;}
-      else if (socket.data.position === 'right'){games.playerTwo = user;}
+      if(socket.data.position === 'left'){
+        games.playerOne = user;
+        if(winner === 'left') {
+          if(socket.data.modus === 'normal'){
+            user.win_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.win_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+        else{
+          if(socket.data.modus === 'normal'){
+            user.loss_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.loss_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+      }
+      else if (socket.data.position === 'right'){
+        games.playerTwo = user;
+        if(winner === 'right') {
+          if(socket.data.modus === 'normal'){
+            user.win_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.win_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+        else{
+          if(socket.data.modus === 'normal'){
+            user.loss_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.loss_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+      }
       
       user.status = UserStatus.ONLINE;
       await this.user.save(user);
