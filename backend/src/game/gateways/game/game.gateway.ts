@@ -29,6 +29,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   async handleDisconnect(client: Socket): Promise<void> {
     this.logger.log('Client disconnected: ', client.id);
+    for (const lobby of this.lobbyManager.lobbies.values()) {
+      if (lobby.clients.has(client.id)) {
+        this.logger.log('deleted client');
+        lobby.clients.delete(client.id);
+        break;
+      }
+    }
+
+    for (const lobby of this.lobbyManager.lobbies.values()) {
+      if (lobby.clients.size === 0) {
+        this.lobbyManager.lobbies.delete(lobby.id);
+        break;
+      }
+    }
     this.lobbyManager.terminateSocket(client);
   }
 

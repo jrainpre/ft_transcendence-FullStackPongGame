@@ -19,7 +19,7 @@ export class GameComponent {
   const user = this.http.get<{user: User}>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
   .pipe(
     catchError((error: any) => {
-      console.log(error);
+      // console.log(error);
       return of(null);
     }))
     .subscribe(data => {
