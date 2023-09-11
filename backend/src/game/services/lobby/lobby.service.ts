@@ -43,15 +43,33 @@ export class LobbyService {
     return lobby;
   }
 
-  async privateLobby(){
-    //putting the clients into a lobby
-  }
-
-  async joinLobby(player: AuthenticatedSocket, modus: string, name: string, id: string): Promise<void>
-  {
+  async privateLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string, friend_socket_id: string, friend_name: string, friend_id_42: string): Promise<void> {
+    let player1: AuthenticatedSocket;
+    player1.data.modus = modus;
+    player1.data.name = friend_name;
+    player1.data.id = friend_id_42;
     player.data.modus = modus;
     player.data.name = name;
-    player.data.id = id;
+    player.data.id = id_42;
+
+    const newLobby = this.createLobby(modus);
+    newLobby.addClient(player);
+    newLobby.addClient(player1);
+    player.data.position = 'left';
+    player1.data.position = 'right';
+    const user = await this.user.findOne({where: { id_42: player.data.id}});
+    const user1 = await this.user.findOne({where: { id_42: player1.data.id}});
+    user.status = UserStatus.INGAME;
+    user1.status = UserStatus.INGAME;
+    await this.user.save(user);
+    await this.user.save(user1);
+    await newLobby.finishQueue();
+  }
+
+  async joinLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string): Promise<void> {
+    player.data.modus = modus;
+    player.data.name = name;
+    player.data.id = id_42;
     const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.clients.size < 2 && lobby.modus === modus);
     
     if (availableLobby) {

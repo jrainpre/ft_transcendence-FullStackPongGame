@@ -25,6 +25,6 @@ export class GameComponent {
     .subscribe(data => {
       if (data) {
         this.router.navigate(['/loading', modus, data.user.name, data.user.id_42]);
-      }}) 
+      }})
    }
 }

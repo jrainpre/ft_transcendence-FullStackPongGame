@@ -72,10 +72,10 @@ export class NormalInstance
     }
   
     this.gameLoopInterval = setInterval(() => {
-    this.moveLeftPaddle(this.playerLeft.increment);
-    this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveLeftPaddle(this.playerLeft.increment);
+      this.moveRightPaddle(this.playerRight.increment);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
+      this.lobby.dispatchToClient(this.game, lobbyId);
     }, 16); // 16 milliseconds for 60 FPS
   }
 
@@ -135,11 +135,12 @@ export class NormalInstance
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
+    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-    ballCenterY >= this.game.leftPlayerPosition.y &&
-    ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -147,11 +148,12 @@ export class NormalInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
+    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
-    ballCenterY >= this.game.rightPlayerPosition.y &&
-    ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -175,6 +177,7 @@ export class NormalInstance
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
       // await this.delay(1000);
         this.stopGameLoop();
@@ -189,6 +192,7 @@ export class NormalInstance
       }
     } else if (this.PlayerRightScored()) {
       this.game.score.playerRight++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
       // await this.delay(1000);
         this.stopGameLoop();
@@ -343,12 +347,11 @@ export class RankedInstance
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
     }
-  
     this.gameLoopInterval = setInterval(() => {
-    this.moveLeftPaddle(this.playerLeft.increment);
-    this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveLeftPaddle(this.playerLeft.increment);
+      this.moveRightPaddle(this.playerRight.increment);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
+      this.lobby.dispatchToClient(this.game, lobbyId);
     }, 16); // 16 milliseconds for 60 FPS
   }
 
@@ -408,11 +411,12 @@ export class RankedInstance
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
+    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-    ballCenterY >= this.game.leftPlayerPosition.y &&
-    ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -420,11 +424,12 @@ export class RankedInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
+    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
-    ballCenterY >= this.game.rightPlayerPosition.y &&
-    ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -440,14 +445,18 @@ export class RankedInstance
     }
 
     if (this.leftPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
+      this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
+      this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
       // await this.delay(1000);
         this.stopGameLoop();
@@ -462,6 +471,10 @@ export class RankedInstance
       }
     } else if (this.PlayerRightScored()) {
       this.game.score.playerRight++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
       // await this.delay(1000);
         this.stopGameLoop();
