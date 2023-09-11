@@ -7,9 +7,11 @@ import { get } from 'http';
 import { SendUserDto } from './dto/send-user.dto';
 import { mapUserToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
 import { MessagesGateway } from './messages.gateway';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 
 
+@UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class MessagesController {
 	constructor(private readonly messagesService: MessagesService, private readonly AuthService: AuthService, private readonly messagesGateway: MessagesGateway) {}

@@ -38,8 +38,8 @@ export class EditComponent {
      this.curTFA = false;
    }
     this.profileUrl = user.profile_picture;
-    console.log(user.first_login);
-    if(user.first_login == true)
+    console.log('First login -', user.first_login)
+    if(user.first_login == true || user.first_login == undefined)
     {
       this.first_login = true;
       await this.api.setFirstLoginFalse();
