@@ -108,7 +108,7 @@
                         <input type="password" name="newPassword"
                             [(ngModel)]="channel.password" required>
                     </label>
-                    <button type="submit">Set new Password</button>
+                    <button type="submit" [disabled]="!channel.password" >Set new Password</button>
                 </form>
             </div>
             
@@ -209,7 +209,7 @@
                         <input type="text" name="unblockUserName"
                             [(ngModel)]="userToUnblock.name" required>
                     </label>
-                    <button type="submit">Block User</button>
+                    <button type="submit">Unblock User</button>
                 </form>
             </div>
 
