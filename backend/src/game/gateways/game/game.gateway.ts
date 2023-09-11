@@ -48,7 +48,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('privateLobby')
   privateEntry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
-
+    //multiple connected sockets?
   }
 
   @SubscribeMessage('requestLobby')
