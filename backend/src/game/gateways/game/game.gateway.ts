@@ -46,6 +46,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.lobbyManager.terminateSocket(client);
   }
 
+  @SubscribeMessage('privateLobby')
+  privateEntry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
+
+  }
+
   @SubscribeMessage('requestLobby')
   entry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
     this.logger.log("JOINED");

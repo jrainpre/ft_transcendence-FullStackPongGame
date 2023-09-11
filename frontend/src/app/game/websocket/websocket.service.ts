@@ -12,8 +12,9 @@ export class WebSocketService {
   // running: boolean;
   
   constructor() {
-    this.socket = io('http://10.11.2.5:3001');
+    // this.socket = io('http://10.11.2.5:3001');
     // this.running = false;
+    this.socket = io('http://192.168.32.68:3001');
   }
 
   // @HostListener('window:keydown', ['$event'])

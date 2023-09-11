@@ -38,12 +38,12 @@ export class NormalInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 2;
+		this.playerLeft.speed = 1.5;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 2;
+		this.playerRight.speed = 1.5;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
@@ -273,6 +273,8 @@ export class NormalInstance
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export class RankedInstance
 {
 	public hasStarted: boolean = false;
@@ -309,12 +311,12 @@ export class RankedInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 2;
+		this.playerLeft.speed = 1.5;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 2;
+		this.playerRight.speed = 1.5;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
