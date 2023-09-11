@@ -204,6 +204,7 @@ export class ChatComponent implements AfterViewChecked {
             this.userChannels = data.userChannels;
         if (data.blockedUsers)
             this.blockedUsers = data.blockedUsers;
+        console.log(data.userChannels);
     }
 
     private saveCreatedChannel(data: { channel: Channel; }) {
@@ -570,6 +571,15 @@ export class ChatComponent implements AfterViewChecked {
         user.id_42 = 0;
         user.name = '';
         return user;
+    }
+
+    oneVsOne(user: any){
+        if(this.user.id_42 === user.id_42)
+        {
+            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+        }
+        
+
     }
 
 }

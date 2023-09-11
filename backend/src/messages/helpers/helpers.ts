@@ -40,5 +40,6 @@ export function mapUserToDto(user: User): SendUserDto {
 		name: channelUser.user.name,
 		admin: channelUser.admin,
 		owner: channelUser.owner,
+		status: channelUser.user.status
 	};
   }
