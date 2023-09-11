@@ -48,13 +48,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('privateLobby')
   privateEntry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
-    //multiple connected sockets?
+    this.lobbyManager.privateLobby(client, user.modus, user.name, user.id_42, user.friend_socket_id, user.friend_name, user.friend_id_42);
   }
 
   @SubscribeMessage('requestLobby')
   entry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
     this.logger.log("JOINED");
-    this.lobbyManager.joinLobby(client, user.modus, user.name, user.id);
+    this.lobbyManager.joinLobby(client, user.modus, user.name, user.id_42);
   }
 
   @SubscribeMessage('keyUp')
@@ -76,9 +76,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       } else {
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
-    } else {
-      this.logger.error(`Client ${client.id} not found in any lobby.`);
     }
+    // else {
+    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
+    // }
   }
 
   @SubscribeMessage('keyDown')
@@ -100,8 +101,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       } else {
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
-    } else {
-      this.logger.error(`Client ${client.id} not found in any lobby.`);
-    }
+    } 
+    // else {
+    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
+    // }
   }
 }
