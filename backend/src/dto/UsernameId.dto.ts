@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length, isString } from "class-validator";
+import { IsNotEmpty, Length, Matches, isString } from "class-validator";
 
 export class UsernameIdDTO{
 
@@ -7,5 +7,6 @@ export class UsernameIdDTO{
 
     @IsNotEmpty()
     @Length(1, 20)
+    @Matches(/^\S*$/, { message: 'Field cannot contain spaces' })
     name: string;
 }
