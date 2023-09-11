@@ -44,9 +44,9 @@ export class LobbyService {
   }
 
   async privateLobby(){
-
+    //putting the clients into a lobby
   }
-  
+
   async joinLobby(player: AuthenticatedSocket, modus: string, name: string, id: string): Promise<void>
   {
     player.data.modus = modus;
