@@ -47,7 +47,14 @@
             <h4>{{ user.name }}</h4>
             <p *ngIf="user.admin">Admin</p>
             <p *ngIf="user.owner">Owner</p>
+            <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
+                {{ user.status }}
+            </p>
+            
+            <!-- Add a button -->
+
         </div>
+        <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
     </div>
 </div>
 
