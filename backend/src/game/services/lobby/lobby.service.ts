@@ -7,7 +7,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { User, UserStatus } from 'src/entities/user.entity';
 import { Games, GameType} from 'src/entities/games.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ReturnDocument } from 'typeorm';
 
 @Injectable()
 export class LobbyService {
@@ -73,8 +73,13 @@ export class LobbyService {
     const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.clients.size < 2 && lobby.modus === modus);
     
     if (availableLobby) {
-      availableLobby.addClient(player);
+
+      for (const [key, client] of availableLobby.clients.entries()) {
+        if(client.data.id === player.data.id) {return;}
+      }
+
       player.data.position = 'right';
+      availableLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
       user.status = UserStatus.INGAME;
       await this.user.save(user);
@@ -82,8 +87,8 @@ export class LobbyService {
       this.lobbies.delete(availableLobby.id);
     } else {
       const newLobby = this.createLobby(modus);
-      newLobby.addClient(player);
       player.data.position = 'left';
+      newLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
       user.status = UserStatus.INGAME;
       await this.user.save(user);

@@ -55,4 +55,8 @@ export class LoadingComponent implements OnInit{
       }
     });
   }
+
+  abort(){
+    this.router.navigate(['/game']);
+  }
 }
