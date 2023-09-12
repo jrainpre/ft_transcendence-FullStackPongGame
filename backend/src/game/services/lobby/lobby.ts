@@ -15,7 +15,7 @@ export class Lobby
   public modus: string;
   public readonly id: string = v4();
   public readonly createdAt: Date = new Date();
-  public readonly clients: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
+  public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<Socket['id'], AuthenticatedSocket>();
   public readonly instance: any;
   public hasFinished: boolean = false;
   

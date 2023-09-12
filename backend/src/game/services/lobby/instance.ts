@@ -169,17 +169,17 @@ export class NormalInstance
     }
 
     if (this.leftPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
@@ -192,9 +192,11 @@ export class NormalInstance
       }
     } else if (this.PlayerRightScored()) {
       this.game.score.playerRight++;
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
@@ -458,7 +460,6 @@ export class RankedInstance
       await new Promise(resolve => setTimeout(resolve, 2000));
       this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
@@ -476,7 +477,6 @@ export class RankedInstance
       await new Promise(resolve => setTimeout(resolve, 2000));
       this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
