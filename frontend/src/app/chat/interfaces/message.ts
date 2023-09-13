@@ -24,7 +24,6 @@ export interface ChannelUser {
 	name: string;
 	admin: boolean;
 	owner: boolean;
-	status: string;
 }
 
 export interface ChatData {
