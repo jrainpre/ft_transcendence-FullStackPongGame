@@ -2,14 +2,15 @@ import { Component } from '@angular/core';
 import { delay } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
-import { Message, User, Channel, ChannelUser } from './interfaces/message';
+import { Message, User, Channel, ChannelUser, ChatData } from './interfaces/message';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FriendlistComponent} from '../friendlist/friendlist.component';
+import { WebSocketService } from '../game/websocket/websocket.service';
 
 
 @Component({
@@ -121,7 +122,7 @@ export class ChatComponent implements AfterViewChecked {
     blockedUsers: User[] = [];
 
 
-    constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {
+    constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar, ) {
 
         this.socket = io('http://localhost:3001');
 
@@ -180,7 +181,6 @@ export class ChatComponent implements AfterViewChecked {
         this.socket.on('channelUsers', (channelUsers: ChannelUser[]) => {
             this.channelUsers = channelUsers;
         });
-
 
     }
 
@@ -577,9 +577,53 @@ export class ChatComponent implements AfterViewChecked {
         if(this.user.id_42 === user.id_42)
         {
             this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+            return;
         }
-        
+        let curUser: {
+            id_42: number;
+            socketId: string;
+            name: string;
+        };
 
+        let challengedUser :{
+            id_42: number;
+            socketId: string;
+            name: string;   
+        }
+
+        this.http
+        .get<ChatData>(`http://localhost:3001/api/chat/one-vs-one/${this.user.id_42}`, { withCredentials: true })
+        .pipe(
+          catchError((error) => {
+            console.error(error);
+            this.snackBar.open('Error creating Game', 'Close', { duration: 5000 });
+            return throwError(error);
+          }),
+          switchMap((curUserData) => {
+            if (curUserData) {
+              curUser = curUserData.info;    
+              // Make the second HTTP request and switch to it
+              return this.http.get<ChatData>(`http://localhost:3001/api/chat/one-vs-one/${user.id_42}`, { withCredentials: true });
+            } else {
+              // Return an empty observable if curUserData is undefined
+              return of(undefined);
+            }
+          }),
+          catchError((error) => {
+            console.error(error);
+            this.snackBar.open('Error creating Game', 'Close', { duration: 5000 });
+            return throwError(error);
+          })
+        )
+        .subscribe((challengedUserData) => {
+          if (challengedUserData) {
+            challengedUser = challengedUserData.info;
+
+            console.log('challengedUser:', challengedUser);
+            console.log('curUser:', curUser);
+            // Now you can use 'curUser' and 'challengedUser' here
+            // Continue with any logic that depends on these variables
+          }
+        });
     }
-
 }

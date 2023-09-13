@@ -26,3 +26,11 @@ export interface ChannelUser {
 	owner: boolean;
 	status: string;
 }
+
+export interface ChatData {
+	info:{
+		id_42: number;
+		socketId: string;
+		name: string;
+	}
+  }
