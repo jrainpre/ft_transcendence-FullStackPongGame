@@ -92,8 +92,8 @@ export class User {
   @OneToMany(() => Message, message => message.owner)
   messages: Message[];
 
-
-
+  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  lastActiveTimestamp: Date;
 
 }
 

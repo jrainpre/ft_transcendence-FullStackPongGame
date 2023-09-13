@@ -10,19 +10,47 @@
             </div>
         </div>
 
-        <div class="flex-container">
-            <div class="create-channel-container">
-                <!-- Channels the User has Joined -->
-                <div *ngIf="isRegistered" class="channels-container">
-                    
-                    <h3>Your Channels</h3>
-                    <button *ngFor="let channel of userChannels"
-                    (click)="setCurrentChannel(channel)">
-                    {{ channel.name }}
-                </button>
+
+
+
+
+        <div class="list-container">
+            <h3>Public Channels</h3>
+        <div *ngIf="isRegistered" class="list-container">
+            <div *ngFor="let channel of publicChannels" class="list-item">
+                <!-- Channel Details -->
+                <div class="list-details" (click)="joinChannelWrapper(channel)">
+                    <h4>{{ channel.name }}</h4>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="list-container">
+        <h3>User Channels</h3>
+    <div *ngIf="isRegistered" class="list-container">
+        <div *ngFor="let channel of userChannels" class="list-item">
+            <!-- Channel Details -->
+            <div class="list-details" (click)="selectChannel(channel)">
+                <h4>{{ channel.name }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="isRegistered" class="list-container">
+    <h3>Channel Users</h3>
+    <div *ngFor="let user of channelUsers" class="list-item">
+        <!-- User Details -->
+        <div class="list-details" (click)="routeToUser(user)">
+            <h4>{{ user.name }}</h4>
+            <p *ngIf="user.admin">Admin</p>
+            <p *ngIf="user.owner">Owner</p>
+        </div>
+    </div>
+</div>
+
 
         <div class="flex-container">
             <!-- Main chat container -->
@@ -80,7 +108,7 @@
                         <input type="password" name="newPassword"
                             [(ngModel)]="channel.password" required>
                     </label>
-                    <button type="submit">Set new Password</button>
+                    <button type="submit" [disabled]="!channel.password" >Set new Password</button>
                 </form>
             </div>
             
@@ -101,11 +129,18 @@
                     <button type="submit">Kick User</button>
                 </form>
                 <form (ngSubmit)="banUser()">
-                    <label>user to kick:
+                    <label>user to ban:
                         <input type="text" name="username"
                             [(ngModel)]="userToBan.name" required>
                     </label>
                     <button type="submit">Ban User</button>
+                </form>
+                <form (ngSubmit)="muteUser()">
+                    <label>user to ban:
+                        <input type="text" name="username"
+                            [(ngModel)]="userToMute.name" required>
+                    </label>
+                    <button type="submit">Mute User</button>
                 </form>
             </div>
         </div>   
@@ -174,7 +209,7 @@
                         <input type="text" name="unblockUserName"
                             [(ngModel)]="userToUnblock.name" required>
                     </label>
-                    <button type="submit">Block User</button>
+                    <button type="submit">Unblock User</button>
                 </form>
             </div>
 
