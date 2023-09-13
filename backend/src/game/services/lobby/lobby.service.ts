@@ -43,27 +43,37 @@ export class LobbyService {
     return lobby;
   }
 
-  async privateLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string, friend_socket_id: string, friend_name: string, friend_id_42: string): Promise<void> {
-    let player1: AuthenticatedSocket;
-    player1.data.modus = modus;
-    player1.data.name = friend_name;
-    player1.data.id = friend_id_42;
+  async privateLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string, first: boolean, lobby_id: string): Promise<string | null> {
+   
     player.data.modus = modus;
     player.data.name = name;
     player.data.id = id_42;
 
-    const newLobby = this.createLobby(modus);
-    newLobby.addClient(player);
-    newLobby.addClient(player1);
-    player.data.position = 'left';
-    player1.data.position = 'right';
-    const user = await this.user.findOne({where: { id_42: player.data.id}});
-    const user1 = await this.user.findOne({where: { id_42: player1.data.id}});
-    user.status = UserStatus.INGAME;
-    user1.status = UserStatus.INGAME;
-    await this.user.save(user);
-    await this.user.save(user1);
-    await newLobby.finishQueue();
+    if(first == true) {
+      this.logger.log('FIRST');
+      const newLobby = this.createLobby(modus);
+      newLobby.addClient(player);
+      player.data.position = 'left';
+      const user = await this.user.findOne({where: { id_42: player.data.id}});
+      user.status = UserStatus.INGAME;
+      await this.user.save(user);
+      this.logger.log(newLobby.id);
+      return newLobby.id;
+    } else if (first == false){
+      this.logger.log('SECOND');
+      const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.id === lobby_id);
+      availableLobby.addClient(player);
+      player.data.position = 'right';
+      const user = await this.user.findOne({where: { id_42: player.data.id}});
+      user.status = UserStatus.INGAME;
+      await this.user.save(user);
+
+      for (const [key, client] of availableLobby.clients.entries()) {
+        this.logger.log(key, 'CLIENTS_IN_LOBBY');
+      }
+
+      await availableLobby.finishQueue();
+    }
   }
 
   async joinLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string): Promise<void> {
