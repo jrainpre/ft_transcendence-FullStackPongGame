@@ -9,6 +9,7 @@ import { catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FriendlistComponent} from '../friendlist/friendlist.component';
 
 
 @Component({
@@ -48,13 +49,22 @@ export class ChatComponent implements AfterViewChecked {
         isSystemMessage: false,
         created_at: new Date()
     }
-    channelName: string = '';
-    channelList: any[] = [];
     messageContent: string = '';
     isRegistered: boolean = false;
     messages: Message[] = [];
     typingDisplay: string = '';
 
+
+
+    userToGame: User = {
+        id_42: 0,
+        name: ''
+    }
+
+    userToMute: User = {
+        id_42: 0,
+        name: ''
+    }
 
     userToKick: User = {
         id_42: 0,
@@ -117,9 +127,14 @@ export class ChatComponent implements AfterViewChecked {
 
         this.socket.on('message', (message: Message) => {
             console.log(JSON.stringify(message));
+            console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
+            if(message.isSystemMessage === true &&  message.content.includes('was banned from channel'))
+                location.reload();
+            if(message.isSystemMessage === true &&  message.content.includes('was kicked from channel'))
+                location.reload();
         });
 
         this.socket.on('ChannelMessages', (messageArray: Message[]) => {
@@ -131,7 +146,7 @@ export class ChatComponent implements AfterViewChecked {
         });
 
         this.socket.on('userChannels', (channels: any[]) => {
-            this.channelList = channels;
+            this.userChannels = channels;
         });
 
         // this.socket.on("typing", (data: any) => {
@@ -170,17 +185,23 @@ export class ChatComponent implements AfterViewChecked {
     }
 
 
+
     async ngOnInit(): Promise<void> {
         this.loadUserData();
     };
 
-    private saveUserData(data: { user: User; publicCannels: Channel[]; userChannels: Channel[]; blockedUsers: User[]; }) {
+
+    async joinChannelWrapper(channel: Channel): Promise<void> {
+        this.channelToJoin.name = channel.name;
+        this.joinChannel();
+    }
+
+    private saveUserData(data: { user: User; publicChannels: Channel[]; userChannels: Channel[]; blockedUsers: User[]; }) {
         this.user = data.user;
-        if (data.publicCannels)
-            this.publicChannels = data.publicCannels;
+        if (data.publicChannels)
+            this.publicChannels = data.publicChannels;
         if (data.userChannels)
             this.userChannels = data.userChannels;
-        console.log(JSON.stringify(this.userChannels));
         if (data.blockedUsers)
             this.blockedUsers = data.blockedUsers;
     }
@@ -210,7 +231,7 @@ export class ChatComponent implements AfterViewChecked {
 
     loadUserData(): void {
         console.log('loadUserData');
-        this.http.get<{ user: User, publicCannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
+        this.http.get<{ user: User, publicChannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
             .pipe(
                 catchError((error: any) => {
                 this.snackBar.open('Error load user data: ' + error.error.message, 'Close', { duration: 5000, });
@@ -420,8 +441,67 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
+    muteUser(): void {
+        console.log(JSON.stringify(this.userToMute));
+        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/mute-user`, { user: this.userToMute, channel: this.channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.userToMute = this.flushUser(this.userToMute);
+                    this.snackBar.open('Error muting user: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.userToMute = this.flushUser(this.userToMute);
+                    this.channelUsers = data.channelUsers;
+                    this.snackBar.open('User muted successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
 
+    inviteUserToGame(): void {
+        console.log(JSON.stringify(this.userToGame));
+        this.http.post<{ }>(`http://localhost:3001/api/chat/invite-user-to-game`, { user: this.userToGame}, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.userToGame = this.flushUser(this.userToGame);
+                    this.snackBar.open('Error inviting user to game: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                if (data) {
+                    this.userToGame = this.flushUser(this.userToGame);
+                    this.snackBar.open('User invited to game successfully', 'Close', { duration: 5000, });
+                }
+            })
+    }
 
+    selectChannel(channel: Channel) {
+        this.http.post<{ channel: Channel, channelUsers: ChannelUser[], messages: Message[] }>(`http://localhost:3001/api/chat/select-channel`, { channel: channel }, { withCredentials: true })
+            .pipe(
+                catchError((error) => {
+                    console.error( error);
+                    this.snackBar.open('Error selecting channel: ' + error.error.message, 'Close', { duration: 5000, });
+                    return throwError(error);
+                }))
+            .subscribe(data => {
+                this.flushChannel();
+                if (data) {
+                    if (data.channel)
+                        this.channel = data.channel;
+                    if (data.channelUsers)
+                        this.channelUsers = data.channelUsers;
+                    if (data.messages)
+                     this.messages = data.messages;
+                }
+            })
+        }
+
+        routeToUser(user: User) {
+            this.router.navigate([`/profile/${user.id_42}`]);
+        }
 
     setCurrentChannel(channel: Channel) {
         this.socket.emit('selectChannel', { channel: channel });
@@ -439,34 +519,14 @@ export class ChatComponent implements AfterViewChecked {
     }
 
 
-    // emitTyping = () => {
-    //     this.socket.emit("typing", { isTyping: true, channelName: this.currentChannel });
-
-    //     setTimeout(() => {
-    //         this.socket.emit("typing", { isTyping: false, channelName: this.currentChannel });
-    //     }, 2000);
-    // };
-
-    // leaveChannel() {
-    //     this.socket.emit('leaveChannel', { channel: this.channel });
-    //     this.flushChannel();
-    // }
-
-
-
-
-
-
     updateSocketId() {
         this.socket.emit('updateSocketId', { user: this.user });
     }
 
 
-
-
-
     flushChannel() {
         this.messages = [];
+        this.channelUsers = [];
         this.typingDisplay = '';
         this.typingDisplay = '';
         this.channel.id = 0;

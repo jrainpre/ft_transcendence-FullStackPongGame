@@ -28,6 +28,7 @@ import { ChannelUser } from './entities/channel_user.entity';
 import { StatusController } from './status/status.controller';
 import { StatusService } from './status/status.service';
 import { StatusModule } from './status/status.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -42,7 +43,7 @@ import { StatusModule } from './status/status.module';
   }),
 
   TypeOrmModule.forFeature([User, Friend, Games, Channel, Message, BlockedUser, ChannelUser, ])
-    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule, StatusModule],
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule, StatusModule, ScheduleModule.forRoot()],
   controllers: [AppController, EditController, UploadController, FriendsController, HistoryController, StatusController],
   providers: [AppService, EditService, UploadService, FriendsService, HistoryService, StatusService],
 

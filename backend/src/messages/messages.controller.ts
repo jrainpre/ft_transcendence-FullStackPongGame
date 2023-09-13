@@ -7,9 +7,11 @@ import { get } from 'http';
 import { SendUserDto } from './dto/send-user.dto';
 import { mapUserToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
 import { MessagesGateway } from './messages.gateway';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 
 
+@UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class MessagesController {
 	constructor(private readonly messagesService: MessagesService, private readonly AuthService: AuthService, private readonly messagesGateway: MessagesGateway) {}
@@ -40,7 +42,6 @@ export class MessagesController {
             if (!user ) {
                 return res.status(400).json({ message: "Failed to retrieve data" });
             }
-
             return res.json({
                 user: userDto,
                 publicChannels: publicChannelsDto,
@@ -72,7 +73,7 @@ export class MessagesController {
     async joinChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
-            const channel = await this.messagesService.findChannel(channelDto);
+            const channel = await this.messagesService.findChannel(channelDto, true);
             await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.lobbyManager.server);
             const channelDtoToSend = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDtoToSend });
@@ -172,6 +173,43 @@ export class MessagesController {
             const channel = await this.messagesService.banUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('mute-user')
+    async muteUser(@Body('user') userDto: SendUserDto, @Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.muteUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channelUsers: channelUsersDto });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('invite-user-to-game')
+    async inviteUserToGame(@Body('user') userDto: SendUserDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.inviteUserToGame(user, userDto, this.messagesGateway.lobbyManager.server);
+            res.status(200).json({ message: "User invited to game" });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    @Post('select-channel')
+    async selectChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
+        try {
+            let user = await this.AuthService.getUserFromJwtCookie(req);
+            const channel = await this.messagesService.findChannel(channelDto, false);
+            const channelDtoToSend = mapChannelToDto(channel);
+            const messagesDto = await this.messagesService.getChannelMessagesDto(channel);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channel: channelDtoToSend, messages: messagesDto, channelUsers: channelUsersDto });
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
