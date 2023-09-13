@@ -1,4 +1,5 @@
 import { IsInt, IsBoolean, IsString, Length, Matches } from 'class-validator';
+import { UserStatus } from 'src/entities/user.entity';
 
 export class SendChannelUserDto {
     
@@ -17,4 +18,6 @@ export class SendChannelUserDto {
 
     @IsBoolean()
     owner: boolean;
+
+    status: UserStatus;
 }
