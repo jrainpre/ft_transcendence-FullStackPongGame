@@ -1,5 +1,5 @@
 import { MessagesService } from './messages.service';
-import { Body, Controller, Get, Post, NotFoundException, Param, Req, Res, UseGuards, HttpStatus, HttpException } from '@nestjs/common';
+import { Body, Controller, Get, Post, NotFoundException, Param, Req, Res, UseGuards, HttpStatus, HttpException, ParseIntPipe } from '@nestjs/common';
 import { SendChannelDto } from './dto/send-channel.dto';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
@@ -215,13 +215,18 @@ export class MessagesController {
         }
     }
 
-
-
-
-
-
-
-
-
-
+    @Get('one-vs-one/:id')
+    async getOneVsOneInfos(@Param('id', ParseIntPipe) id: number, @Res() res: Response){
+        try {
+            let user = await this.AuthService.findUserById(id);
+            let ret = {
+                id_42: user.id_42,
+                socketId: user.socket_id,
+                name: user.name
+            }
+            res.status(200).json({ info: ret});
+        } catch (error) {
+            return res.status(400).json({message: error.message});
+        }
+    }
 }
