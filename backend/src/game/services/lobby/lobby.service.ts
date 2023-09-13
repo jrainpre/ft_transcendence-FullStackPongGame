@@ -74,9 +74,9 @@ export class LobbyService {
     
     if (availableLobby) {
 
-      for (const [key, client] of availableLobby.clients.entries()) {
-        if(client.data.id === player.data.id) {return;}
-      }
+      // for (const [key, client] of availableLobby.clients.entries()) {
+      //   if(client.data.id === player.data.id) {return;}
+      // }
 
       player.data.position = 'right';
       availableLobby.addClient(player);
