@@ -38,12 +38,12 @@ export class NormalInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 1.5;
+		this.playerLeft.speed = 0.1;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 1.5;
+		this.playerRight.speed = 0.1;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
@@ -76,7 +76,7 @@ export class NormalInstance
       this.moveRightPaddle(this.playerRight.increment);
       this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
       this.lobby.dispatchToClient(this.game, lobbyId);
-    }, 16); // 16 milliseconds for 60 FPS
+    }, 1);
   }
 
   stopGameLoop(): void {
@@ -88,7 +88,7 @@ export class NormalInstance
 
   getRandomIncrement(): number {
     const isNegative = Math.floor(Math.random() * 2) === 1;
-    return (0.8 * (isNegative ? -1 : 1));
+    return (0.05 * (isNegative ? -1 : 1));
   }
 
   setBall(): void {
@@ -135,7 +135,6 @@ export class NormalInstance
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
@@ -148,7 +147,6 @@ export class NormalInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
@@ -317,12 +315,12 @@ export class RankedInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 1.5;
+		this.playerLeft.speed = 0.1;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 1.5;
+		this.playerRight.speed = 0.1;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
@@ -354,7 +352,7 @@ export class RankedInstance
       this.moveRightPaddle(this.playerRight.increment);
       this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
       this.lobby.dispatchToClient(this.game, lobbyId);
-    }, 16); // 16 milliseconds for 60 FPS
+    }, 1);
   }
 
   stopGameLoop(): void {
@@ -366,7 +364,7 @@ export class RankedInstance
 
   getRandomIncrement(): number {
     const isNegative = Math.floor(Math.random() * 2) === 1;
-    return (0.8 * (isNegative ? -1 : 1));
+    return (0.05 * (isNegative ? -1 : 1));
   }
 
   setBall(): void {
@@ -413,7 +411,6 @@ export class RankedInstance
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
@@ -426,7 +423,6 @@ export class RankedInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    // const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height;
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
@@ -443,14 +439,21 @@ export class RankedInstance
     this.game.ballPosition.y += yIncrement;
 
     if (this.BallWallsCollision()) {
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementY *= -1;
     }
 
     if (this.leftPaddleHit()) {
-      this.loopIncrementX *= 1.2;
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-      this.loopIncrementX *= 1.2;
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {

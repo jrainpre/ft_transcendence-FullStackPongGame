@@ -423,41 +423,6 @@ export class ChatComponent implements AfterViewChecked {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-  
-
     setCurrentChannel(channel: Channel) {
         this.socket.emit('selectChannel', { channel: channel });
         this.messages = [];
