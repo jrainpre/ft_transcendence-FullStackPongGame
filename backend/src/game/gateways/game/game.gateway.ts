@@ -5,6 +5,8 @@ import { Server, Socket } from 'socket.io';
 import { LobbyService } from '../../services/lobby/lobby.service';
 import { Lobby } from 'src/game/services/lobby/lobby';
 import { AuthenticatedSocket } from '../../services/lobby/types';
+import { StatusController } from 'src/status/status.controller';
+import { User } from 'src/entities/user.entity';
 
 @WebSocketGateway({cors: '*'})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -12,7 +14,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   inst: Lobby;
 
   constructor(
-    // private gameService: GameService,
+    // private statusController: StatusController,
     private lobbyManager: LobbyService) {}
   
   afterInit(server: Server): any {
@@ -21,23 +23,38 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+    this.logger.log('Client connected: ', client.id);
     this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
     this.logger.log('Client disconnected: ', client.id);
+    for (const lobby of this.lobbyManager.lobbies.values()) {
+      if (lobby.clients.has(client.id)) {
+        this.logger.log('deleted client');
+        lobby.clients.delete(client.id);
+        break;
+      }
+    }
+
+    for (const lobby of this.lobbyManager.lobbies.values()) {
+      if (lobby.clients.size === 0) {
+        this.lobbyManager.lobbies.delete(lobby.id);
+        break;
+      }
+    }
     this.lobbyManager.terminateSocket(client);
   }
 
-  // @SubscribeMessage('startGame')
-  // entry(@ConnectedSocket() client: Socket){
-  //   this.lobbyManager.joinLobby(client);
-  // }
+  @SubscribeMessage('privateLobby')
+  privateEntry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
+    this.lobbyManager.privateLobby(client, user.modus, user.name, user.id_42, user.friend_socket_id, user.friend_name, user.friend_id_42);
+  }
 
   @SubscribeMessage('requestLobby')
-  entry(@ConnectedSocket() client: Socket, @MessageBody() modus: any){
+  entry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
     this.logger.log("JOINED");
-    this.lobbyManager.joinLobby(client, modus.modus);
+    this.lobbyManager.joinLobby(client, user.modus, user.name, user.id_42);
   }
 
   @SubscribeMessage('keyUp')
@@ -59,9 +76,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       } else {
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
-    } else {
-      this.logger.error(`Client ${client.id} not found in any lobby.`);
     }
+    // else {
+    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
+    // }
   }
 
   @SubscribeMessage('keyDown')
@@ -83,8 +101,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       } else {
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
-    } else {
-      this.logger.error(`Client ${client.id} not found in any lobby.`);
-    }
+    } 
+    // else {
+    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
+    // }
   }
 }

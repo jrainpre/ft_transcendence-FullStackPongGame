@@ -29,6 +29,16 @@ body {
   padding: 20px;
 }
 
+.custom-text {
+  font-size: 15px;
+  color: #1a202c;
+}
+
+.custom-text-card {
+  font-size: 13px;
+  color: #1a202c;
+}
+
 .btn {
   background-color: #007bff;
   color: #fff;
@@ -45,7 +55,7 @@ body {
 
 .list-group-item {
   border: none;
-  padding: 10px 0;
+  padding: 10px;
 }
 
 .list-group-item h6 {
@@ -53,6 +63,7 @@ body {
 }
 
 .text-secondary {
+  font-size: 20px;
   color: #6c757d;
 }
 

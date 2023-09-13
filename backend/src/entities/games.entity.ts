@@ -9,7 +9,7 @@ export enum GameType {
 }
 
 @Entity('games')
-export class Game {
+export class Games {
   @PrimaryGeneratedColumn()
   id: number;
 
