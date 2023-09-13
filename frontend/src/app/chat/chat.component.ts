@@ -584,13 +584,13 @@ export class ChatComponent implements AfterViewChecked {
             socketId: string;
             name: string;
         };
-
+ 
         let challengedUser :{
             id_42: number;
             socketId: string;
             name: string;   
         }
-
+ 
         this.http
         .get<ChatData>(`http://localhost:3001/api/chat/one-vs-one/${this.user.id_42}`, { withCredentials: true })
         .pipe(
@@ -618,7 +618,7 @@ export class ChatComponent implements AfterViewChecked {
         .subscribe((challengedUserData) => {
           if (challengedUserData) {
             challengedUser = challengedUserData.info;
-
+ 
             console.log('challengedUser:', challengedUser);
             console.log('curUser:', curUser);
             // Now you can use 'curUser' and 'challengedUser' here

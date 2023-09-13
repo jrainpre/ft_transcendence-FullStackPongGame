@@ -266,8 +266,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       server.to(message.channel.name).emit('message', dtoMessage);
       return message;
     }
-
-    }
+  }
 
     async identify(userIn: SendUserDto, socket_id: string) {
     let user = await this.userRepository.findOne({ where: { id_42: userIn.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"],});
