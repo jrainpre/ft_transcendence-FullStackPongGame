@@ -17,7 +17,7 @@ import { Friend } from 'src/entities/friends.entity';
 import { FriendsModule } from 'src/friends/friends.module'
 import { FriendsController } from 'src/friends/friends.controller';
 import { FriendsService } from 'src/friends/friends.service';
-import { Game } from 'src/entities/games.entity';
+import { Games } from 'src/entities/games.entity';
 import { HistoryModule } from './history/history.module';
 import { HistoryController } from './history/history.controller';
 import { HistoryService } from './history/history.service';
@@ -41,9 +41,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     entities: ['dist/**/*.entity.js'], // Automatically load entity classes
     synchronize: true, // Auto-create database schema (in development)
   }),
-  TypeOrmModule.forFeature([User, Friend, Game, Channel, Message, BlockedUser, ChannelUser,])
-    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule, StatusModule,
-  ScheduleModule.forRoot()],
+
+  TypeOrmModule.forFeature([User, Friend, Games, Channel, Message, BlockedUser, ChannelUser, ])
+    ,AuthModule, UserModule, EditModule, FriendsModule, HistoryModule, MessagesModule, StatusModule, ScheduleModule.forRoot()],
   controllers: [AppController, EditController, UploadController, FriendsController, HistoryController, StatusController],
   providers: [AppService, EditService, UploadService, FriendsService, HistoryService, StatusService],
 

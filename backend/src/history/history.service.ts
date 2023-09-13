@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository} from 'typeorm';
 import { User } from 'src/entities/user.entity';
-import { Game } from 'src/entities/games.entity';
+import { Games } from 'src/entities/games.entity';
 import { create } from 'domain';
 
 @Injectable()
@@ -10,11 +10,11 @@ export class HistoryService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        @InjectRepository(Game)
-        private readonly gameRepository: Repository<Game>,
+        @InjectRepository(Games)
+        private readonly gameRepository: Repository<Games>,
     ) {}
     
-    async getFullHistory(): Promise<Game[]> {
+    async getFullHistory(): Promise<Games[]> {
         // Using TypeORM's repository methods to query the database
         return this.gameRepository
           .createQueryBuilder('game')
@@ -34,7 +34,7 @@ export class HistoryService {
           .getMany();
     }
 
-    async getGamesByUserId(id: number): Promise<Game[]> {
+    async getGamesByUserId(id: number): Promise<Games[]> {
         // Using TypeORM's repository methods to query the database
         return this.gameRepository
           .createQueryBuilder('game')

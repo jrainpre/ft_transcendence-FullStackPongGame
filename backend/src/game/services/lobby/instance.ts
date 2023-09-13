@@ -6,7 +6,6 @@ import { AuthenticatedSocket } from '../../services/lobby/types';
 export class NormalInstance
 {
 	public hasStarted: boolean = false;
-
 	public hasFinished: boolean = false;
 
 	constructor(private readonly lobby: Lobby)
@@ -39,12 +38,12 @@ export class NormalInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 2;
+		this.playerLeft.speed = 0.1;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 2;
+		this.playerRight.speed = 0.1;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
@@ -73,11 +72,11 @@ export class NormalInstance
     }
   
     this.gameLoopInterval = setInterval(() => {
-    this.moveLeftPaddle(this.playerLeft.increment);
-    this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    }, 16); // 16 milliseconds for 60 FPS
+      this.moveLeftPaddle(this.playerLeft.increment);
+      this.moveRightPaddle(this.playerRight.increment);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
+      this.lobby.dispatchToClient(this.game, lobbyId);
+    }, 1);
   }
 
   stopGameLoop(): void {
@@ -89,7 +88,7 @@ export class NormalInstance
 
   getRandomIncrement(): number {
     const isNegative = Math.floor(Math.random() * 2) === 1;
-    return (0.8 * (isNegative ? -1 : 1));
+    return (0.05 * (isNegative ? -1 : 1));
   }
 
   setBall(): void {
@@ -139,8 +138,8 @@ export class NormalInstance
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-    ballCenterY >= this.game.leftPlayerPosition.y &&
-    ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -151,8 +150,8 @@ export class NormalInstance
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
-    ballCenterY >= this.game.rightPlayerPosition.y &&
-    ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -168,40 +167,42 @@ export class NormalInstance
     }
 
     if (this.leftPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
       else {
+        this.lobby.updateGameStats(this.game.score, 'left');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     } else if (this.PlayerRightScored()) {
       this.game.score.playerRight++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
       else{ 
+        this.lobby.updateGameStats(this.game.score, 'right');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     }
@@ -276,6 +277,8 @@ export class NormalInstance
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export class RankedInstance
 {
 	public hasStarted: boolean = false;
@@ -312,12 +315,12 @@ export class RankedInstance
 		this.referee.moveBall = true;
 		this.referee.movePaddle = true;
 
-		this.playerLeft.speed = 2;
+		this.playerLeft.speed = 0.1;
 		this.game.leftPlayerPosition.y = 40;
 		this.game.leftPlayerPosition.x = this.game.margin;
 		this.playerLeft.increment = 0;
 
-		this.playerRight.speed = 2;
+		this.playerRight.speed = 0.1;
 		this.game.rightPlayerPosition.y = 40;
 		this.game.rightPlayerPosition.x = 100 - this.game.margin - this.game.paddleDimension.width;
 		this.playerRight.increment = 0;
@@ -344,13 +347,12 @@ export class RankedInstance
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
     }
-  
     this.gameLoopInterval = setInterval(() => {
-    this.moveLeftPaddle(this.playerLeft.increment);
-    this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    }, 16); // 16 milliseconds for 60 FPS
+      this.moveLeftPaddle(this.playerLeft.increment);
+      this.moveRightPaddle(this.playerRight.increment);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
+      this.lobby.dispatchToClient(this.game, lobbyId);
+    }, 1);
   }
 
   stopGameLoop(): void {
@@ -362,7 +364,7 @@ export class RankedInstance
 
   getRandomIncrement(): number {
     const isNegative = Math.floor(Math.random() * 2) === 1;
-    return (0.8 * (isNegative ? -1 : 1));
+    return (0.05 * (isNegative ? -1 : 1));
   }
 
   setBall(): void {
@@ -412,8 +414,8 @@ export class RankedInstance
     return (
     this.game.ballPosition.x <= leftPaddleBorder &&
     this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-    ballCenterY >= this.game.leftPlayerPosition.y &&
-    ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -424,8 +426,8 @@ export class RankedInstance
     return (
     ballRightX >= this.game.rightPlayerPosition.x &&
     ballRightX < paddleRightRightX &&
-    ballCenterY >= this.game.rightPlayerPosition.y &&
-    ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -437,44 +439,55 @@ export class RankedInstance
     this.game.ballPosition.y += yIncrement;
 
     if (this.BallWallsCollision()) {
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementY *= -1;
     }
 
     if (this.leftPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-    // this.loopIncrementX *= 1.2;
+      if(this.loopIncrementX <= 0.11) {
+        this.loopIncrementX *= 1.2;
+      }
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
       else {
+        this.lobby.updateGameStats(this.game.score, 'left');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     } else if (this.PlayerRightScored()) {
       this.game.score.playerRight++;
+      this.stopGameLoop();
+      this.resetBallAndRackets();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.gameLoop(this.lobby.id);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
-      // await this.delay(1000);
         this.stopGameLoop();
         this.startRound(id);
       }
       else{ 
+        this.lobby.updateGameStats(this.game.score, 'right');
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
-        // this.lobby.endGame();
-        // this.logger.log('GGGGGGGGGGGGG');
         return;
       }
     }

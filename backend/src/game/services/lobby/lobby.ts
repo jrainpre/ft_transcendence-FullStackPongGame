@@ -4,17 +4,31 @@ import { AuthenticatedSocket } from './types';
 import { NormalInstance, RankedInstance } from './instance';
 import { Game } from '../../ecs/entities';
 import { Logger } from '@nestjs/common';
+import { User, UserStatus } from 'src/entities/user.entity';
+import { Games, GameType} from 'src/entities/games.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Score } from '../../ecs/components';
 
 export class Lobby
 {
   public modus: string;
   public readonly id: string = v4();
   public readonly createdAt: Date = new Date();
-  public readonly clients: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
+  public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<Socket['id'], AuthenticatedSocket>();
   public readonly instance: any;
   public hasFinished: boolean = false;
-
-  constructor(private readonly server: Server, public readonly maxClients: number, modus: string) {
+  
+  constructor(
+    // @InjectRepository(User)
+    readonly user: Repository<User>,
+    // @InjectRepository(Games)
+    readonly game: Repository<Games>,
+    
+    private readonly server: Server,
+    public readonly maxClients: number,
+    modus: string,
+    ) {
     this.modus = modus;
 
     switch(modus) {
@@ -52,6 +66,66 @@ export class Lobby
     }
   }
 
+  public async updateGameStats(score: Score, winner: string): Promise<void> {
+    const games = new Games();
+    games.player_one_score = score.playerLeft;
+    games.player_two_score = score.playerRight;
+
+    for (const [socketId, socket] of this.clients) {
+      const user = await this.user.findOne({where: { id_42: socket.data.id }});
+
+      if(socket.data.position === 'left'){
+        games.playerOne = user;
+        if(winner === 'left') {
+          if(socket.data.modus === 'normal'){
+            user.win_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.win_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+        else{
+          if(socket.data.modus === 'normal'){
+            user.loss_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.loss_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+      }
+      else if (socket.data.position === 'right'){
+        games.playerTwo = user;
+        if(winner === 'right') {
+          if(socket.data.modus === 'normal'){
+            user.win_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.win_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+        else{
+          if(socket.data.modus === 'normal'){
+            user.loss_normal += 1;
+            user.games_played_normal += 1;
+          }else if(socket.data.modus === 'ranked'){
+            user.loss_ranked += 1;
+            user.games_played_ranked += 1;
+          }
+        }
+      }
+      
+      user.status = UserStatus.ONLINE;
+      await this.user.save(user);
+    }
+
+    games.type = (this.modus === 'normal') ? GameType.NORMAL : GameType.RANKED;
+    games.winner = (winner === 'left') ? games.playerOne : games.playerTwo;
+    await this.game.save(games);
+  }
+
   public dispatchToLobby(event: any): void
   {
     this.server.to(this.id).emit(event);
@@ -71,6 +145,7 @@ export class Lobby
       if(this.hasFinished === true) {
         this.logger.log("Finsihed");
         this.endGame();
+        await new Promise(resolve => setTimeout(resolve, 3000));
         this.server.to(this.id).emit('returnToStart');
         break;
       }
