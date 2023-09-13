@@ -122,11 +122,16 @@ export class ChatComponent implements AfterViewChecked {
     blockedUsers: User[] = [];
 
 
-    constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private snackBar: MatSnackBar, ) {
+    constructor(
+        private route: ActivatedRoute,
+        private http: HttpClient,
+        private router: Router,
+        private snackBar: MatSnackBar,
+        private webservice: WebSocketService) {
 
-        this.socket = io('http://localhost:3001');
+        // this.socket = io('http://localhost:3001');
 
-        this.socket.on('message', (message: Message) => {
+        this.webservice.socket.on('message', (message: Message) => {
             console.log(JSON.stringify(message));
             console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
@@ -138,7 +143,7 @@ export class ChatComponent implements AfterViewChecked {
                 location.reload();
         });
 
-        this.socket.on('ChannelMessages', (messageArray: Message[]) => {
+        this.webservice.socket.on('ChannelMessages', (messageArray: Message[]) => {
             const filteredMessages = messageArray.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id)
             );
             this.messages.push(...filteredMessages);
@@ -146,7 +151,7 @@ export class ChatComponent implements AfterViewChecked {
 
         });
 
-        this.socket.on('userChannels', (channels: any[]) => {
+        this.webservice.socket.on('userChannels', (channels: any[]) => {
             this.userChannels = channels;
         });
 
@@ -165,20 +170,20 @@ export class ChatComponent implements AfterViewChecked {
 
 
 
-        this.socket.on('blockedUsers', (users: User[]) => {
+        this.webservice.socket.on('blockedUsers', (users: User[]) => {
             this.blockedUsers = users;
         })
 
-        this.socket.on('identifyDone', (user: User) => {
+        this.webservice.socket.on('identifyDone', (user: User) => {
             this.user = user;
             this.isRegistered = true;
         });
 
-        this.socket.on('channelInfo', (channel: Channel) => {
+        this.webservice.socket.on('channelInfo', (channel: Channel) => {
             this.channel = channel;
         });
 
-        this.socket.on('channelUsers', (channelUsers: ChannelUser[]) => {
+        this.webservice.socket.on('channelUsers', (channelUsers: ChannelUser[]) => {
             this.channelUsers = channelUsers;
         });
 
@@ -505,7 +510,7 @@ export class ChatComponent implements AfterViewChecked {
         }
 
     setCurrentChannel(channel: Channel) {
-        this.socket.emit('selectChannel', { channel: channel });
+        this.webservice.socket.emit('selectChannel', { channel: channel });
         this.messages = [];
     }
 
@@ -515,13 +520,13 @@ export class ChatComponent implements AfterViewChecked {
             this.message.channel_id = this.channel.id;
         }
 
-        this.socket.emit('createMessage', { message: this.message });
+        this.webservice.socket.emit('createMessage', { message: this.message });
         this.flushMessage();
     }
 
 
     updateSocketId() {
-        this.socket.emit('updateSocketId', { user: this.user });
+        this.webservice.socket.emit('updateSocketId', { user: this.user });
     }
 
 
@@ -574,11 +579,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     oneVsOne(user: any){
-        if(this.user.id_42 === user.id_42)
-        {
-            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
-            return;
-        }
+        // if(this.user.id_42 === user.id_42)
+        // {
+        //     this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+        //     return;
+        // }
         let curUser: {
             id_42: number;
             socketId: string;
@@ -621,9 +626,9 @@ export class ChatComponent implements AfterViewChecked {
  
             console.log('challengedUser:', challengedUser);
             console.log('curUser:', curUser);
-            // Now you can use 'curUser' and 'challengedUser' here
-            // Continue with any logic that depends on these variables
-          }
+            this.webservice.privateLobby('ranked', curUser.name, curUser.id_42.toString(), challengedUser.socketId, challengedUser.name, challengedUser.id_42.toString());
+            // this.webservice.socket.emit('establishConnection',{ senderSocketId: this.webservice.socket.id }).to(challengedUser.socketId);
+        }
         });
     }
-}
+} 

@@ -137,6 +137,16 @@ export class Lobby
   }
 
   public async finishQueue(){
+
+    const room = this.server.sockets.adapter.rooms.get(this.id);
+
+    if (room) {
+    const socketIds = Array.from(room);
+    this.logger.log(`Clients connected to room ${this.id}:`, socketIds);
+    } else {
+      this.logger.log(`Room ${this.id} does not exist or has no clients.`);
+    }
+
     this.server.to(this.id).emit('finishedQueue');
     await new Promise(resolve => setTimeout(resolve, 3000));
     this.instance.startRound(this.id);

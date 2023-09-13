@@ -12,13 +12,14 @@ export class LoadingComponent implements OnInit{
     private router: Router,
     private param: ActivatedRoute,
     private websocketService: WebSocketService) {
-      this.websocketService.socket.on('finishedQueue', () => {
-        this.router.navigate(['/match']);
-      });
+      // this.websocketService.socket.on('finishedQueue', () => {
+      //   console.log("CONNECTED");
+      //   this.router.navigate(['/match']);
+      // });
 
-      this.websocketService.socket.on('returnToStart', () => {
-        this.router.navigate(['/game']);
-      });
+      // this.websocketService.socket.on('returnToStart', () => {
+      //   this.router.navigate(['/game']);
+      // });
     }
 
   async ngOnInit(): Promise<void> {

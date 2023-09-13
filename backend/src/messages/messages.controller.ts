@@ -6,7 +6,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { get } from 'http';
 import { SendUserDto } from './dto/send-user.dto';
 import { mapUserToDto, mapChannelToDto, mapChannelUserToDto } from './helpers/helpers';
-import { MessagesGateway } from './messages.gateway';
+// import { MessagesGateway } from './messages.gateway';
+import { GameGateway } from '../game/gateways/game/game.gateway';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 
@@ -14,7 +15,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class MessagesController {
-	constructor(private readonly messagesService: MessagesService, private readonly AuthService: AuthService, private readonly messagesGateway: MessagesGateway) {}
+	constructor(private readonly messagesService: MessagesService, private readonly AuthService: AuthService, private readonly messagesGateway: GameGateway) {}
 
 
 

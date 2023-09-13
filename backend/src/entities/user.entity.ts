@@ -21,6 +21,9 @@ export class User {
   name: string;
 
   @Column({ type: 'varchar', nullable: true })
+  first_socket_id: string;
+
+  @Column({ type: 'varchar', nullable: true })
   socket_id: string;
 
   @Column({ type: 'boolean', default: false })

@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessagesService } from './messages.service';
-import { MessagesGateway } from './messages.gateway';
+// import { MessagesGateway } from './messages.gateway';
+// import { GameGateway } from '../game/gateways/game/game.gateway';
 import { Message } from '../entities/message.entity';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../entities/user.entity';
@@ -19,7 +20,7 @@ import { GameGateway } from '../game/gateways/game/game.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Channel, User, ChannelUser, BlockedUser, Games, Friend, ]), AuthModule],
-  providers: [GameGateway, MessagesGateway, MessagesService, LobbyService],
+  providers: [GameGateway, MessagesService, LobbyService],
   exports: [MessagesService],
   controllers: [MessagesController],
 })
