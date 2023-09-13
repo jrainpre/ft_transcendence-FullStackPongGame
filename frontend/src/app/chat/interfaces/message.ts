@@ -20,16 +20,17 @@ export interface Channel {
 }
 
 export interface ChannelUser {
-	id_42: number;
-	name: string;
-	admin: boolean;
-	owner: boolean;
+    id_42: number;
+    name: string;
+    admin: boolean;
+    owner: boolean;
+    status: string;
 }
 
 export interface ChatData {
-	info:{
-		id_42: number;
-		socketId: string;
-		name: string;
-	}
+    info:{
+        id_42: number;
+        socketId: string;
+        name: string;
+    }
   }
