@@ -27,8 +27,14 @@ export class EditComponent {
     this.route.params.subscribe(params => {
       this.id = params['id'];
     });
-
-    const user = await this.api.getProfileInfo(this.id);
+    let user;
+    try{
+      user = await this.api.getProfileInfo(this.id);
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
     this.username = user.name;
     this.inputUsername = this.username;
     if(user.tfa_enabled == true){
