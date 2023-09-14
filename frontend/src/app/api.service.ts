@@ -31,7 +31,7 @@ export class ApiService {
             if (error.status === 401) {
               this.router.navigate(['login']);
             }
-            reject(error); // Reject the Promise with the error
+            return throwError(() => new Error(error.message)); // Reject the Promise with the error
           }
         );
   });
@@ -48,8 +48,7 @@ export class ApiService {
         if(response.success == true)
           return response;
         else
-          throw new Error('Useranme Exists or invalid Input (Max len 20)');
-        
+          throw new Error('Error');
       }),
       catchError((error) => {
           return throwError(() => new Error(error.error.message));
