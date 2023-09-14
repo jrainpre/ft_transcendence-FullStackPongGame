@@ -3,7 +3,6 @@ import { WebSocketService } from '../websocket/websocket.service';
 import { io } from 'socket.io-client';
 import { Game } from '../interface/interface';
 import { ActivatedRoute } from '@angular/router';
-import { User } from '../../chat/interfaces/message';
 
 @Component({
   selector: 'app-match',

@@ -36,6 +36,7 @@ export class LoadingComponent implements OnInit{
   }
 
   abort(){
+    this.websocketService.sendAbort();
     this.router.navigate(['/game']);
   }
 }
