@@ -55,35 +55,13 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    // Process the key event (e.g., move paddle)
-    // Send input to the backend via WebSocket service
-    // console.log(event);
     this.websocketService.sendKeyDown({ key: event.code });
-    // this.socket.emit('keyDown', { key: event.code });
   }
 
   @HostListener('window:keyup', ['$event'])
   onKeyUp(event: KeyboardEvent) {
-    // Process the key event (e.g., move paddle)
-    // Send input to the backend via WebSocket service
-    // console.log(event);
     this.websocketService.sendKeyUp({ key: event.code });
-    // this.socket.emit('keyUp', { key: event.code });
   }
-
-  // startGame(){
-  //   this.websocketService.sendStartGame();
-  // }
-
-  // newGame(){
-  //   this.websocketService.sendNewGame();
-  //   // this.socket.emit('newGame'); 
-  // }
-
-  // resetAll() {
-  //   this.websocketService.sendResetAll();
-  //   // this.socket.emit('resetAll');
-  // }
 
   updateGame(game: Game) {
     this.ballX = game.ballPosition.x;

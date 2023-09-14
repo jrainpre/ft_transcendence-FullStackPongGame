@@ -579,11 +579,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     oneVsOne(user: any){
-        // if(this.user.id_42 === user.id_42)
-        // {
-        //     this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
-        //     return;
-        // }
+        if(this.user.id_42 === user.id_42)
+        {
+            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+            return;
+        }
         let curUser: {
             id_42: number;
             socketId: string;
@@ -627,7 +627,6 @@ export class ChatComponent implements AfterViewChecked {
             console.log('challengedUser:', challengedUser);
             console.log('curUser:', curUser);
             this.webservice.privateLobby('ranked', curUser.name, curUser.id_42.toString(), challengedUser.socketId, challengedUser.name, challengedUser.id_42.toString());
-            // this.webservice.socket.emit('establishConnection',{ senderSocketId: this.webservice.socket.id }).to(challengedUser.socketId);
         }
         });
     }

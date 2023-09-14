@@ -43,15 +43,11 @@ const channel = await this.messagesService.joinChannels(user, client);
 
 
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
-    // if(client.id != undefined)
-    //   first_socket = client.id;
     this.logger.log('Client connected: ', client.id);
     this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
-    // if(client.id == first_socket)
-    //  first_soccket = null;
     this.logger.log('Client disconnected: ', client.id);
     for (const lobby of this.lobbyManager.lobbies.values()) {
       if (lobby.clients.has(client.id)) {
@@ -109,9 +105,6 @@ const channel = await this.messagesService.joinChannels(user, client);
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
     }
-    // else {
-    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
-    // }
   }
 
   @SubscribeMessage('keyDown')
@@ -134,8 +127,5 @@ const channel = await this.messagesService.joinChannels(user, client);
         this.logger.error(`PlayerId not found for client ${client.id}`);
       }
     } 
-    // else {
-    //   this.logger.error(`Client ${client.id} not found in any lobby.`);
-    // }
   }
 }

@@ -20,9 +20,7 @@ export class Lobby
   public hasFinished: boolean = false;
   
   constructor(
-    // @InjectRepository(User)
     readonly user: Repository<User>,
-    // @InjectRepository(Games)
     readonly game: Repository<Games>,
     
     private readonly server: Server,
