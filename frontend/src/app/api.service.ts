@@ -330,4 +330,21 @@ export class ApiService {
       throw error;
     }
   }
+
+  async setStatusOnline(): Promise<any>{
+    return new Promise<any>((resolve, reject) => {
+      this.http.post(`${this.apiUrl}status/online`, undefined, { withCredentials: true })
+        .subscribe(
+          (response: any) => {
+            resolve(response); // Resolve the Promise with the response data
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              console.log('Cant Set Online');
+            }
+            reject(error); // Reject the Promise with the error
+          }
+        );
+  });
+  }
 }
