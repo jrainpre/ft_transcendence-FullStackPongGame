@@ -2,7 +2,6 @@ import { Injectable, HostListener } from '@angular/core';
 import { Socket, io } from 'socket.io-client';
 import { MatchComponent } from '../match/match.component';
 import { Game } from '../interface/interface';
-import { User } from 'src/app/chat/interfaces/message';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Injectable({
@@ -40,6 +39,10 @@ export class WebSocketService {
   sendKeyDown(input: any){
     // console.log(input);
     this.socket.emit('keyDown', input);
+  }
+
+  sendAbort(){
+    this.socket.emit('abort');
   }
 
   sendNewGame(){

@@ -66,6 +66,12 @@ const channel = await this.messagesService.joinChannels(user, client);
     this.lobbyManager.terminateSocket(client);
   }
   
+  @SubscribeMessage('abort')
+  async abort(@ConnectedSocket() client: Socket) {
+    this.lobbyManager.cleanUp(client.id);
+    this.logger.log('LOBBY_SUCCESFULLY_CLEANED');
+  }
+
   @SubscribeMessage('privateLobby')
   async privateEntry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
     if(user.first == true) {
