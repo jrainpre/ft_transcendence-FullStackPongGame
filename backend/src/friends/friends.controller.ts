@@ -16,6 +16,10 @@ export class FriendsController {
     @UseGuards(JwtAuthGuard)
     @Get('is-friend/:id')
     async isFriend(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<any>{
+      if(id > 2147483646)
+      {
+        throw new NotFoundException('Id out of range');
+      }
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         var isFriend = await this.friendsService.areUsersFriends(jwtUser.id_42, id);
         return isFriend;
@@ -24,6 +28,10 @@ export class FriendsController {
     @UseGuards(JwtAuthGuard)
     @Post('add-friend/:id')
     async addFriend(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<any>{
+      if(id > 2147483646)
+      {
+        throw new NotFoundException('Id out of range');
+      }
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         if(await this.friendsService.areUsersFriends(jwtUser.id_42, id) == true)
           return false;
@@ -35,6 +43,10 @@ export class FriendsController {
     @UseGuards(JwtAuthGuard)
     @Post('remove-friend/:id')
     async removeFriend(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<any>{
+      if(id > 2147483646)
+      {
+        throw new NotFoundException('Id out of range');
+      }
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         const friend = await this.AuthService.findUserById(id);
         await this.friendsService.removeFriend(jwtUser, friend);
@@ -44,6 +56,10 @@ export class FriendsController {
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getAllFriends(@Param('id', ParseIntPipe) id: number): Promise<Friend[]> {
+      if(id > 2147483646)
+      {
+        throw new NotFoundException('Id out of range');
+      }
     const friends = await this.friendsService.getAllFriends(id);
     return friends;
   }
