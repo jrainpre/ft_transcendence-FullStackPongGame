@@ -63,6 +63,10 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get('is-blocked/:id')
     async isBlocked(@Req() req, @Res() res, @Param('id', ParseIntPipe) id: number): Promise<any>{
+        if(id > 2147483646)
+        {
+          throw new NotFoundException('Id out of range');
+        }
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
         let isBlocked: boolean = await this.user.isBlocked(jwtUser, id);
         res.send(isBlocked);
@@ -72,7 +76,12 @@ export class UserController {
     @Post('block/:id')
     async blockUser(@Req() req, @Res() res, @Param('id', ParseIntPipe) id: number): Promise<any>{
         const jwtUser = await this.AuthService.getUserFromJwtCookie(req);
+        if(id > 2147483646)
+        {
+          throw new NotFoundException('Id out of range');
+        }
         try{
+            
             await this.user.blockUser(jwtUser.id_42, id);
         }
         catch(error){

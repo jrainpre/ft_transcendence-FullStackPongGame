@@ -108,7 +108,7 @@ export class ProfileComponent {
       this.reloadFriendList();
     }
     catch(error){
-      this.snackBar.open("Already a Friend", "close", {duration: 3000,});
+      this.snackBar.open("Error adding friend", "close", {duration: 3000,});
     }
   }
 
