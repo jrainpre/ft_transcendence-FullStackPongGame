@@ -90,7 +90,6 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getProfileInfo(@Param('id', ParseIntPipe) id: number, @Res() res): Promise<any> {
-        
         const searchedUser = await this.AuthService.findUserById(id);
         if(!searchedUser)
         {
