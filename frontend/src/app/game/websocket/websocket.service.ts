@@ -32,24 +32,6 @@ export class WebSocketService {
     });
   }
 
-  // @HostListener('window:keydown', ['$event'])
-  // onKeyDown(event: KeyboardEvent) {
-  //   // Process the key event (e.g., move paddle)
-  //   // Send input to the backend via WebSocket service
-  //   console.log(event);
-  //   // this.websocketService.sendKeyDown({ key: event.code });
-  //   this.socket.emit('keyDown', { key: event.code });
-  // }
-
-  // @HostListener('window:keyup', ['$event'])
-  // onKeyUp(event: KeyboardEvent) {
-  //   // Process the key event (e.g., move paddle)
-  //   // Send input to the backend via WebSocket service
-  //   console.log(event);
-  //   // this.websocketService.sendKeyUp({ key: event.code });
-  //   this.socket.emit('keyUp', { key: event.code });
-  // }
-
   sendKeyUp(input: any){
     // console.log(input);
     this.socket.emit('keyUp', input);
@@ -61,9 +43,6 @@ export class WebSocketService {
   }
 
   sendNewGame(){
-    // if (this.running === false) {
-    //   this.running = true;
-    // }
     this.socket.emit('newGame', {player: this.socket.id});
   }
 
