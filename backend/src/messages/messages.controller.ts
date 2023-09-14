@@ -123,6 +123,8 @@ export class MessagesController {
     async createPrivateChat(@Body('user') userDto: SendUserDto, @Req() req: any, @Res() res: Response) {
         try {
             const user = await this.AuthService.getUserFromJwtCookie(req);
+            if(user.name === userDto.name)
+                throw new Error(`Can't start private chat with yourself`);
             const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.lobbyManager.server);
             const channelDto = mapChannelToDto(channel);
             res.status(200).json({ channel: channelDto });
