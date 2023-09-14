@@ -43,6 +43,17 @@ export class LobbyService {
     return lobby;
   }
 
+  public async cleanUp(client_id: string){
+    for (const [lobbyId, lobby] of this.lobbies) {
+      for (const [key, client] of lobby.clients.entries()) {
+        if (key === client_id){
+          this.lobbies.delete(lobby.id);
+          return;
+        }
+      }
+    }
+  }
+
   async privateLobby(player: AuthenticatedSocket, modus: string, name: string, id_42: string, first: boolean, lobby_id: string): Promise<string | null> {
    
     player.data.modus = modus;
@@ -83,6 +94,10 @@ export class LobbyService {
     const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.clients.size < 2 && lobby.modus === modus);
     
     if (availableLobby) {
+      if(player.data.id > 2147483647) {
+        this.server.emit('returnToStart');
+        return;
+      }
 
       for (const [key, client] of availableLobby.clients.entries()) {
         if(client.data.id === player.data.id) {return;}
@@ -96,6 +111,11 @@ export class LobbyService {
       await availableLobby.finishQueue();
       this.lobbies.delete(availableLobby.id);
     } else {
+      if(player.data.id > 2147483647) {
+        this.server.emit('returnToStart');
+        return;
+      }
+
       const newLobby = this.createLobby(modus);
       player.data.position = 'left';
       newLobby.addClient(player);
