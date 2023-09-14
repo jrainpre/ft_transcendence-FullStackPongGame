@@ -84,7 +84,7 @@ export class ProfileComponent {
     this.tfa_enabled = 'false';
    this.wins = user.win_ranked.toString();
    this.losses = user.loss_ranked.toString();
-   this.win_loss_ratio = (user.win_ranked / user.loss_ranked).toString();
+   this.win_loss_ratio = ((user.win_ranked / user.loss_ranked).toFixed(2)).toString();
   }
 
   setParamId(){
