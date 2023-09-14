@@ -47,6 +47,10 @@ export class AuthService {
   }
 
   async findUserById (id: number): Promise<User | undefined> {
+    if(id > 2147483646)
+    {
+      throw new NotFoundException('Id out of range');
+    }
     let user;
     try{
       user = await this.userRepository.find({where: {id_42: id}}); //42_id or id?

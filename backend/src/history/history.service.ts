@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository} from 'typeorm';
 import { User } from 'src/entities/user.entity';
@@ -36,6 +36,10 @@ export class HistoryService {
 
     async getGamesByUserId(id: number): Promise<Games[]> {
         // Using TypeORM's repository methods to query the database
+        if(id > 2147483646)
+        {
+          throw new NotFoundException('Id out of range');
+        }
         return this.gameRepository
           .createQueryBuilder('game')
           .select([
