@@ -307,7 +307,7 @@ export class ApiService {
     });
 
     try{
-      const response =  await firstValueFrom(this.http.post(`http://localhost:3001/api/chat/block-user`, 
+      const response =  await firstValueFrom(this.http.post(`${this.apiUrl}chat/block-user`, 
       { user: userToBlockDTO } , { withCredentials: true }));
 
       return response;
@@ -323,7 +323,7 @@ export class ApiService {
       'Content-Type': 'application/json'
     });
     try{
-      const response =  await firstValueFrom(this.http.post(`http://localhost:3001/api/chat/unblock-user`, 
+      const response =  await firstValueFrom(this.http.post(`${this.apiUrl}chat/unblock-user`, 
       { user: userToBlockDTO } , { withCredentials: true }));
       return response;
     }

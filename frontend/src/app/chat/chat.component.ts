@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
+
 import { delay } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
@@ -13,6 +14,7 @@ import { FriendlistComponent} from '../friendlist/friendlist.component';
 import { WebSocketService } from '../game/websocket/websocket.service';
 import { environment } from 'src/environments/environment';
 
+@Injectable()
 
 @Component({
     selector: 'app-chat',
@@ -133,8 +135,8 @@ export class ChatComponent implements AfterViewChecked {
         // this.socket = io('http://localhost:3001');
 
         this.webservice.socket.on('message', (message: Message) => {
-            console.log(JSON.stringify(message));
-            console.log('Message called');
+            // ////console.log(JSON.stringify(message));
+            // ////console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
@@ -145,10 +147,9 @@ export class ChatComponent implements AfterViewChecked {
         });
 
         this.webservice.socket.on('ChannelMessages', (messageArray: Message[]) => {
-            const filteredMessages = messageArray.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id)
-            );
+            const filteredMessages = messageArray.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id));
             this.messages.push(...filteredMessages);
-            // console.log(JSON.stringify(this.messages));
+            // ////console.log(JSON.stringify(this.messages));
 
         });
 
@@ -192,7 +193,7 @@ export class ChatComponent implements AfterViewChecked {
             this.userChannels = data.userChannels;
         if (data.blockedUsers)
             this.blockedUsers = data.blockedUsers;
-        console.log(data.userChannels);
+        //////console.log(data.userChannels);
     }
 
     private saveCreatedChannel(data: { channel: Channel; }) {
@@ -219,7 +220,7 @@ export class ChatComponent implements AfterViewChecked {
 
 
     loadUserData(): void {
-        console.log('loadUserData');
+        //////console.log('loadUserData');
         this.http.get<{ user: User, publicChannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(environment.apiUrl + `chat/get-user-data`, { withCredentials: true })
             .pipe(
                 catchError((error: any) => {
@@ -240,7 +241,7 @@ export class ChatComponent implements AfterViewChecked {
 
 
     createChannel(): void {
-        console.log(JSON.stringify(this.channelToCreate));
+        ////console.log(JSON.stringify(this.channelToCreate));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -258,7 +259,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     joinChannel(): void {
-        console.log(JSON.stringify(this.channelToJoin));
+        ////console.log(JSON.stringify(this.channelToJoin));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -289,7 +290,7 @@ export class ChatComponent implements AfterViewChecked {
                     this.flushChannel();
                     if (data.userChannels)
                         this.userChannels = data.userChannels;
-                        console.log(JSON.stringify(this.publicChannels));
+                        ////console.log(JSON.stringify(this.publicChannels));
                     this.snackBar.open('Channel left successfully', 'Close', { duration: 5000, });
                 }
             })
@@ -335,7 +336,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     startPrivateChat(): void {
-        console.log(JSON.stringify(this.userPrvtchat));
+        ////console.log(JSON.stringify(this.userPrvtchat));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -356,7 +357,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     setPassword(): void {
-        console.log(JSON.stringify(this.channel));
+        ////console.log(JSON.stringify(this.channel));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/set-password`, { channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -373,7 +374,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     promoteUser(): void {
-        console.log(JSON.stringify(this.userToPromote));
+        ////console.log(JSON.stringify(this.userToPromote));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: this.userToPromote, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -386,14 +387,14 @@ export class ChatComponent implements AfterViewChecked {
                 if (data) {
                     this.userToPromote = this.flushUser(this.userToPromote);
                     this.channelUsers = data.channelUsers;
-                    console.log(JSON.stringify(this.channelUsers));
+                    ////console.log(JSON.stringify(this.channelUsers));
                     this.snackBar.open('User promoted successfully', 'Close', { duration: 5000, });
                 }
             })
     }
 
     kickUser(): void {
-        console.log(JSON.stringify(this.userToKick));
+        ////console.log(JSON.stringify(this.userToKick));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: this.userToKick, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -412,7 +413,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     banUser(): void {
-        console.log(JSON.stringify(this.userToBan));
+        ////console.log(JSON.stringify(this.userToBan));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: this.userToBan, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -431,7 +432,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     muteUser(): void {
-        console.log(JSON.stringify(this.userToMute));
+        ////console.log(JSON.stringify(this.userToMute));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: this.userToMute, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -450,7 +451,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     inviteUserToGame(): void {
-        console.log(JSON.stringify(this.userToGame));
+        ////console.log(JSON.stringify(this.userToGame));
         this.http.post<{ }>(environment.apiUrl + `chat/invite-user-to-game`, { user: this.userToGame}, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -483,7 +484,10 @@ export class ChatComponent implements AfterViewChecked {
                     if (data.channelUsers)
                         this.channelUsers = data.channelUsers;
                     if (data.messages)
-                     this.messages = data.messages;
+                    {
+                        const filteredMessages = data.messages.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id));
+                        this.messages = filteredMessages;
+                    }
                 }
             })
         }
@@ -500,11 +504,10 @@ export class ChatComponent implements AfterViewChecked {
     sendMessage() {
         if (this.message.content.trim() && this.channel.id !== 0) {
             this.message.owner_id = this.user.id_42;
-            this.message.channel_id = this.channel.id;
+            this.message.channel_id = this.channel.id;   
+            this.webservice.socket.emit('createMessage', { message: this.message });
+            this.flushMessage();
         }
-
-        this.webservice.socket.emit('createMessage', { message: this.message });
-        this.flushMessage();
     }
 
 
@@ -607,8 +610,8 @@ export class ChatComponent implements AfterViewChecked {
           if (challengedUserData) {
             challengedUser = challengedUserData.info;
  
-            console.log('challengedUser:', challengedUser);
-            console.log('curUser:', curUser);
+            ////console.log('challengedUser:', challengedUser);
+            ////console.log('curUser:', curUser);
             this.webservice.privateLobby('ranked', curUser.name, curUser.id_42.toString(), challengedUser.socketId, challengedUser.name, challengedUser.id_42.toString());
         }
         });
