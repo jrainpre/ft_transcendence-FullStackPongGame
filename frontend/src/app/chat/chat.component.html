@@ -111,7 +111,7 @@
                         <input type="password" name="newPassword"
                             [(ngModel)]="channel.password" required>
                     </label>
-                    <button type="submit" [disabled]="!channel.password" >Set new Password</button>
+                    <button type="submit" >Set new Password</button>
                 </form>
             </div>
  
@@ -139,7 +139,7 @@
                     <button type="submit">Ban User</button>
                 </form>
                 <form (ngSubmit)="muteUser()">
-                    <label>user to ban:
+                    <label>user to mute:
                         <input type="text" name="username"
                             [(ngModel)]="userToMute.name" required>
                     </label>
