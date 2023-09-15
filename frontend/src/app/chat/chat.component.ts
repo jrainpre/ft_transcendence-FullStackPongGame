@@ -137,9 +137,9 @@ export class ChatComponent implements AfterViewChecked {
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
-            if(message.isSystemMessage === true &&  message.content.includes('was banned from channel'))
+            if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was banned from channel`))
                 location.reload();
-            if(message.isSystemMessage === true &&  message.content.includes('was kicked from channel'))
+            if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was kicked from channel`))
                 location.reload();
         });
 
@@ -154,21 +154,6 @@ export class ChatComponent implements AfterViewChecked {
         this.webservice.socket.on('userChannels', (channels: any[]) => {
             this.userChannels = channels;
         });
-
-        // this.socket.on("typing", (data: any) => {
-        //     if (data.channelName === this.currentChannel) {
-        //         if (!this.blockedUsers.some(user => user.name === data.name)) {
-        //         if (data.isTyping) {
-        //             this.typingDisplay = `${data.name} is typing...`;
-        //         } else {
-        //             this.typingDisplay = '';
-        //         }
-        //     }
-        // }
-        // })
-
-
-
 
         this.webservice.socket.on('blockedUsers', (users: User[]) => {
             this.blockedUsers = users;
@@ -189,12 +174,9 @@ export class ChatComponent implements AfterViewChecked {
 
     }
 
-
-
     async ngOnInit(): Promise<void> {
         this.loadUserData();
     };
-
 
     async joinChannelWrapper(channel: Channel): Promise<void> {
         this.channelToJoin.name = channel.name;
