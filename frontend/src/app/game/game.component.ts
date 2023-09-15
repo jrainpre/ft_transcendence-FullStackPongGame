@@ -5,6 +5,7 @@ import { User } from '../chat/interfaces/message';
 import { catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class GameComponent implements OnInit{
   }
 
   async loading(modus: string){
-  const user = this.http.get<{user: User}>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
+  const user = this.http.get<{user: User}>(environment.apiUrl +  `chat/get-user-data`, { withCredentials: true })
   .pipe(
     catchError((error: any) => {
       // console.log(error);
@@ -34,7 +35,7 @@ export class GameComponent implements OnInit{
 
     async setStatusOnline(): Promise<any>{
     return new Promise<any>((resolve, reject) => {
-      this.http.post(`http://localhost:3001/api/status/online`, undefined, { withCredentials: true })
+      this.http.post(environment.apiUrl +  `status/online`, undefined, { withCredentials: true })
         .subscribe(
           (response: any) => {
             resolve(response); // Resolve the Promise with the response data

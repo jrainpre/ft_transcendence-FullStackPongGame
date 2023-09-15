@@ -3,6 +3,7 @@ import { Socket, io } from 'socket.io-client';
 import { MatchComponent } from '../match/match.component';
 import { Game } from '../interface/interface';
 import { Router, ActivatedRoute } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class WebSocketService {
   // running: boolean;
   
   constructor(private router: Router) {
-    this.socket = io('http://localhost:3001');
+    this.socket = io(environment.socketUrl);
     // this.running = false;
     // this.socket = io('http://192.168.32.68:3001');
 
