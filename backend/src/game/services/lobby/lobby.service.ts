@@ -47,6 +47,24 @@ export class LobbyService {
     for (const [lobbyId, lobby] of this.lobbies) {
       for (const [key, client] of lobby.clients.entries()) {
         if (key === client_id){
+          lobby.instance.triggerFinish();
+          lobby.instance = null;
+          this.lobbies.delete(lobby.id);
+          return;
+        }
+      }
+    }
+  }
+
+  public async cleanUpBackButton(client_id: string){
+    for (const [lobbyId, lobby] of this.lobbies) {
+      for (const [key, client] of lobby.clients.entries()) {
+        if (key === client_id){
+          this.logger.log('DELETE LOBBY');
+          lobby.instance.resetAll();
+          lobby.instance.stopGameLoop();
+          lobby.instance.triggerFinish();
+          lobby.instance = null;
           this.lobbies.delete(lobby.id);
           return;
         }

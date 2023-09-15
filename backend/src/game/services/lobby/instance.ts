@@ -355,7 +355,7 @@ export class RankedInstance
     }, 1);
   }
 
-  stopGameLoop(): void {
+   stopGameLoop(): void {
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
       this.gameLoopInterval = null;
