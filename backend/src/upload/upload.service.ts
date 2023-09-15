@@ -9,7 +9,7 @@ export class UploadService {
     constructor(@InjectRepository(User) private readonly userRepository: Repository<User>, private auth: AuthService) {}
 
     async changeAvatar(path :string, user: any): Promise<any>{
-        user.profile_picture = 'http://localhost:3001/' + path;
+        user.profile_picture = process.env.backendUrl + path;
         await this.userRepository.save(user);
     }
 }

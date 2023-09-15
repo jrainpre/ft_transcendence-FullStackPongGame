@@ -3,6 +3,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { StatusService } from './status.service';
 import { User, UserStatus } from 'src/entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { json } from 'stream/consumers';
 
 @Controller('status')
 export class StatusController {
@@ -18,10 +19,11 @@ export class StatusController {
         catch(error){
             throw new BadRequestException();
         }
+        res.status(200).json(); 
     }
 
     @Post('offline')
-    async setOffline(@Req() req): Promise<any>{
+    async setOffline(@Req() req, @Res() res): Promise<any>{
         try{
             const jwtUser = await this.auth.getUserFromJwtCookie(req);
             await this.status.setStatus(jwtUser, UserStatus.OFFLINE);
@@ -29,10 +31,11 @@ export class StatusController {
         catch(error){
             throw new BadRequestException();
         }
+        res.status(200).json(); 
     }
 
     @Post('ingame')
-    async setIngame(@Req() req): Promise<any>{
+    async setIngame(@Req() req, @Res() res): Promise<any>{
         try{
             const jwtUser = await this.auth.getUserFromJwtCookie(req);
             await this.status.setStatus(jwtUser, UserStatus.INGAME);
@@ -40,11 +43,12 @@ export class StatusController {
         catch(error){
             throw new BadRequestException();
         }
+        res.status(200).json(); 
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('heartbeat')
-    async setHeartbeat(@Req() req): Promise<any>{
+    async setHeartbeat(@Req() req, @Res() res): Promise<any>{
         let user: User;
         try{
             user = await this.auth.getUserFromJwtCookie(req);
@@ -53,5 +57,6 @@ export class StatusController {
         catch(error){
             return new BadRequestException();
         }
+        res.status(200).json(); 
     }
 }
