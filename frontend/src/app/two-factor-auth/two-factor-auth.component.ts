@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-two-factor-auth',
   templateUrl: './two-factor-auth.component.html',
@@ -23,7 +24,7 @@ export class TwoFactorAuthComponent implements OnInit {
   }
 
 verify2FA(){
-  this.http.post(`http://localhost:3001/api/auth/42/verify-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
+  this.http.post(environment.apiUrl + `auth/42/verify-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
   .subscribe(
     (response: any) => {
       console.log('Response:', response); // Log the response to see its structure

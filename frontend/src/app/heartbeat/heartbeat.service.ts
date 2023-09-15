@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subscription, interval, of } from 'rxjs';
+import { catchError, mergeMap, switchMap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -18,22 +19,41 @@ export class HeartbeatService {
     const intervalObservable = interval(heartbeatIntervalMs);
 
     // Use switchMap to make the API call when the interval emits a value
-    console.log("test")
     this.heartbeatInterval = intervalObservable.pipe(
-      switchMap(() =>
-        this.http.post('http://localhost:3001/api/status/heartbeat', undefined, {
+      mergeMap(() =>
+        this.http.post(environment.apiUrl + 'status/heartbeat', undefined, {
           withCredentials: true,
-        })
+        }).pipe(
+          catchError((error) => {
+            console.error('Error sending heartbeat:', error);
+            // Handle the error if needed
+            return of(null); // Continue the observable stream even after an error
+          })
+        )
       )
     ).subscribe(
       (response: any) => {
-        console.log('Heartbeat sent successfully');
-        // Handle the response data if needed
-      },
-      (error) => {
-        console.error('Error sending heartbeat:', error);
-        // Handle the error if needed
+        if (response !== null) {
+          console.log('Heartbeat sent successfully');
+          // Handle the response data if needed
+        }
       }
     );
+    // this.heartbeatInterval = intervalObservable.pipe(
+    //   switchMap(() =>
+    //     this.http.post('http://localhost:3001/api/status/heartbeat', undefined, {
+    //       withCredentials: true,
+    //     })
+    //   )
+    // ).subscribe(
+    //   (response: any) => {
+    //     console.log('Heartbeat sent successfully');
+    //     // Handle the response data if needed
+    //   },
+    //   (error) => {
+    //     console.error('Error sending heartbeat:', error);
+    //     // Handle the error if needed
+    //   }
+    // );
   }
 }

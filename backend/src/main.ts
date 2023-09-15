@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:4200',
+    origin: process.env.frontendUrl,
     credentials: true, // Allow sending cookies and other credentials
   };
 
