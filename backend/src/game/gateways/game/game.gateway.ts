@@ -66,6 +66,13 @@ const channel = await this.messagesService.joinChannels(user, client);
     this.lobbyManager.terminateSocket(client);
   }
   
+  @SubscribeMessage('backButton')
+  async button(@ConnectedSocket() client: Socket){
+    this.logger.log('BACKBUTTIN');
+    await this.lobbyManager.cleanUpBackButton(client.id);
+    this.lobbyManager.server.emit('returnToStart');
+  }
+
   @SubscribeMessage('abort')
   async abort(@ConnectedSocket() client: Socket) {
     this.lobbyManager.cleanUp(client.id);
