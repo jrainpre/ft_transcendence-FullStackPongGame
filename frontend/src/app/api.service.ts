@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, firstValueFrom, map, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class ApiService {
-  private apiUrl = 'http://localhost:3001/api/'; // Replace with your backend URL
+  private apiUrl = environment.apiUrl; // Replace with your backend URL
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 

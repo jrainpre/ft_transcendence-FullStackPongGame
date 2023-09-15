@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-enable-tfa',
@@ -27,14 +28,14 @@ export class EnableTFAComponent {
   loadQRCode(): void {
     // Make API call to get QR code image URL
     console.log(this.userId);
-      this.http.get<{ qrCodeDataUri: string }>(`http://localhost:3001/api/auth/42/get-qr-code/${this.userId}`, { withCredentials: true }).subscribe(data => {
+      this.http.get<{ qrCodeDataUri: string }>(environment.apiUrl + `auth/42/get-qr-code/${this.userId}`, { withCredentials: true }).subscribe(data => {
         this.qrCodeUrl = data.qrCodeDataUri;
         console.log(this.qrCodeUrl);
   });
 }
 
 enable2FA(){
-  this.http.post(`http://localhost:3001/api/auth/42/enable-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
+  this.http.post(environment.apiUrl + `auth/42/enable-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
   .subscribe(
     (response: any) => {
       console.log('Response:', response); // Log the response to see its structure

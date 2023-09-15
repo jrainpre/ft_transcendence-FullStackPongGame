@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FriendlistComponent} from '../friendlist/friendlist.component';
 import { WebSocketService } from '../game/websocket/websocket.service';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -237,7 +238,7 @@ export class ChatComponent implements AfterViewChecked {
 
     loadUserData(): void {
         console.log('loadUserData');
-        this.http.get<{ user: User, publicChannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true })
+        this.http.get<{ user: User, publicChannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(environment.apiUrl + `chat/get-user-data`, { withCredentials: true })
             .pipe(
                 catchError((error: any) => {
                 this.snackBar.open('Error load user data: ' + error.error.message, 'Close', { duration: 5000, });
@@ -258,7 +259,7 @@ export class ChatComponent implements AfterViewChecked {
 
     createChannel(): void {
         console.log(JSON.stringify(this.channelToCreate));
-        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
+        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -276,7 +277,7 @@ export class ChatComponent implements AfterViewChecked {
 
     joinChannel(): void {
         console.log(JSON.stringify(this.channelToJoin));
-        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
+        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -293,7 +294,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     leaveChannel(): void {
-        this.http.post<{userChannels: Channel[]}>(`http://localhost:3001/api/chat/leave-channel`, { channel: this.channel }, { withCredentials: true })
+        this.http.post<{userChannels: Channel[]}>(environment.apiUrl + `chat/leave-channel`, { channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -313,7 +314,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     blockUser(): void {
-        this.http.post<{ blockedUsers: User[] }>(`http://localhost:3001/api/chat/block-user`, { user: this.userToBlock }, { withCredentials: true })
+        this.http.post<{ blockedUsers: User[] }>(environment.apiUrl + `chat/block-user`, { user: this.userToBlock }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -332,7 +333,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     unblockUser(): void {
-        this.http.post<{ blockedUsers: User[] }>(`http://localhost:3001/api/chat/unblock-user`, { user: this.userToUnblock }, { withCredentials: true })
+        this.http.post<{ blockedUsers: User[] }>(environment.apiUrl + `chat/unblock-user`, { user: this.userToUnblock }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -353,7 +354,7 @@ export class ChatComponent implements AfterViewChecked {
 
     startPrivateChat(): void {
         console.log(JSON.stringify(this.userPrvtchat));
-        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
+        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -374,7 +375,7 @@ export class ChatComponent implements AfterViewChecked {
 
     setPassword(): void {
         console.log(JSON.stringify(this.channel));
-        this.http.post<{ channel: Channel }>(`http://localhost:3001/api/chat/set-password`, { channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/set-password`, { channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -391,7 +392,7 @@ export class ChatComponent implements AfterViewChecked {
 
     promoteUser(): void {
         console.log(JSON.stringify(this.userToPromote));
-        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/promote-user`, { user: this.userToPromote, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: this.userToPromote, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -411,7 +412,7 @@ export class ChatComponent implements AfterViewChecked {
 
     kickUser(): void {
         console.log(JSON.stringify(this.userToKick));
-        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/kick-user`, { user: this.userToKick, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: this.userToKick, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -430,7 +431,7 @@ export class ChatComponent implements AfterViewChecked {
 
     banUser(): void {
         console.log(JSON.stringify(this.userToBan));
-        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/ban-user`, { user: this.userToBan, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: this.userToBan, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -449,7 +450,7 @@ export class ChatComponent implements AfterViewChecked {
 
     muteUser(): void {
         console.log(JSON.stringify(this.userToMute));
-        this.http.post<{ channelUsers: ChannelUser[] }>(`http://localhost:3001/api/chat/mute-user`, { user: this.userToMute, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: this.userToMute, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -468,7 +469,7 @@ export class ChatComponent implements AfterViewChecked {
 
     inviteUserToGame(): void {
         console.log(JSON.stringify(this.userToGame));
-        this.http.post<{ }>(`http://localhost:3001/api/chat/invite-user-to-game`, { user: this.userToGame}, { withCredentials: true })
+        this.http.post<{ }>(environment.apiUrl + `chat/invite-user-to-game`, { user: this.userToGame}, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -485,7 +486,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     selectChannel(channel: Channel) {
-        this.http.post<{ channel: Channel, channelUsers: ChannelUser[], messages: Message[] }>(`http://localhost:3001/api/chat/select-channel`, { channel: channel }, { withCredentials: true })
+        this.http.post<{ channel: Channel, channelUsers: ChannelUser[], messages: Message[] }>(environment.apiUrl + `chat/select-channel`, { channel: channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -597,7 +598,7 @@ export class ChatComponent implements AfterViewChecked {
         }
  
         this.http
-        .get<ChatData>(`http://localhost:3001/api/chat/one-vs-one/${this.user.id_42}`, { withCredentials: true })
+        .get<ChatData>(environment.apiUrl + `chat/one-vs-one/${this.user.id_42}`, { withCredentials: true })
         .pipe(
           catchError((error) => {
             console.error(error);
@@ -608,7 +609,7 @@ export class ChatComponent implements AfterViewChecked {
             if (curUserData) {
               curUser = curUserData.info;    
               // Make the second HTTP request and switch to it
-              return this.http.get<ChatData>(`http://localhost:3001/api/chat/one-vs-one/${user.id_42}`, { withCredentials: true });
+              return this.http.get<ChatData>(environment.apiUrl + `chat/one-vs-one/${user.id_42}`, { withCredentials: true });
             } else {
               // Return an empty observable if curUserData is undefined
               return of(undefined);
