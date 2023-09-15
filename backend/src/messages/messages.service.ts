@@ -133,10 +133,13 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
 
 
   async addUserToChannel(user: User, channel: Channel, server: Server) {
+
+    let isBanned = channel.channelUsers.some(cu => cu.user.id_42 === user.id_42 && cu.banned);
+    if (isBanned)
+      throw new Error('User is banned from channel');
     let newInChannel = !channel.channelUsers.some(cu => cu.user.id_42 === user.id_42);
-    if (!newInChannel) {
+    if (!newInChannel)
       throw new Error('User already in channel');
-    }
     const channelUser = this.channelUserRepository.create({ user: user, channel: channel, });
     if (channel.channelUsers.length === 0)//first user in channel
     {
@@ -168,7 +171,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
   }
 
   async leaveChannel(user: User, channelDto: SendChannelDto, server: Server) {
-    const channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
+    let channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
     if (!channel) {
       throw new Error('Channel not found');
     }
@@ -177,6 +180,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       await this.channelRepository.delete(channel.id);
       return;
     }
+
     if (channel.channelUsers.length === 1) {
       await this.channelUserRepository.delete({ user: user, channel: channel });
       await this.channelRepository.delete(channel.id);
@@ -186,6 +190,12 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       const client = this.getSocketForUser(user, server, true);
       this.sendLeftChannelMessage(channel, user, client);
       await this.channelUserRepository.delete({ user: user, channel: channel });
+    }
+    channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
+    if (channel.channelUsers.every(cu => cu.banned)) {
+      await this.deleteAllUsersFromChannel(channel);
+      await this.channelRepository.delete(channel.id);
+      return;
     }
   }
 
@@ -291,7 +301,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const toChatUser = await this.userRepository.findOne({ where: { name: toChatUserDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel", "channelUsers.channel.channelUsers",], });
     if (!toChatUser)
       throw new Error('User to chat with not found');
-    let channelIsPresent = toChatUser.channelUsers.find(cu => cu.channel.private_channel === true && cu.channel.channelUsers.some(cu => cu.user.id_42 === user.id_42));
+    let channelIsPresent = toChatUser.channelUsers.find(cu => cu.channel.direct_message === true && cu.channel.channelUsers.some(cu => cu.user.id_42 === user.id_42));
     if (channelIsPresent)
       throw new Error('Private chat already exists');
     const name = `${user.name}-${toChatUser.name}`;
@@ -337,6 +347,8 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     channelDto.password = await this.createPasswordHash(channelDto.password);
     channel.pw_hashed = channelDto.password;
     channel.private_channel = true;
+    if (channel.pw_hashed === null)
+      channel.private_channel = false;
     await this.channelRepository.save(channel);
     const client = this.getSocketForUser(user, server, true);
     this.sendInfoMessage(channel, user, client, 'owner set new password');
