@@ -25,7 +25,9 @@ export class MatchComponent implements OnInit {
       this.updateGame(game);
     });
   }
+
   private unsubscriber : Subject<void> = new Subject<void>();
+  
   ngOnInit(): void {
     history.pushState(null, '');
   

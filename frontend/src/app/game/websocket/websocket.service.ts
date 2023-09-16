@@ -28,7 +28,8 @@ export class WebSocketService {
     });
 
     this.socket.on('returnToStart', () => {
-      this.router.navigate(['/game']);
+      // this.router.navigate(['/game']);
+      window.location.href = '/game';
     });
   }
 
