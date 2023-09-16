@@ -275,6 +275,13 @@ export class NormalInstance
 		this.hasFinished = true;
 		this.lobby.dispatchToLobby('Game finished !');
 	}
+
+  terminate(){
+    this.resetAll();
+    this.stopGameLoop();
+    this.lobby.hasFinished = true;
+    return;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -560,4 +567,11 @@ export class RankedInstance
 		this.hasFinished = true;
 		this.lobby.dispatchToLobby('Game finished !');
 	}
+
+  terminate(){
+    this.resetAll();
+    this.stopGameLoop();
+    this.lobby.hasFinished = true;
+    return;
+  }
 }
