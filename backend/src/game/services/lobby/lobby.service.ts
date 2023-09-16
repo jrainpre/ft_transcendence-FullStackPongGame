@@ -65,6 +65,7 @@ export class LobbyService {
           lobby.instance.stopGameLoop();
           lobby.instance.triggerFinish();
           lobby.instance = null;
+          lobby.clients.delete(client_id);
           this.lobbies.delete(lobby.id);
           return;
         }
