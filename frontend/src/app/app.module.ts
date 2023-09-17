@@ -36,7 +36,6 @@ import { HeartbeatComponent } from './heartbeat/heartbeat.component';
     EnableTFAComponent,
     ChatComponent,
     SidebarComponent,
-    ChatComponent,
     LeaderboardComponent,
     FriendlistComponent,
     MatchHistoryComponent,

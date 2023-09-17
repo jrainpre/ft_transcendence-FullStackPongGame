@@ -11,6 +11,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { LoadingComponent } from './game/loading/loading.component';
 import { MatchComponent } from './game/match/match.component';
+import { BackButtonGuard } from './back-button.guard';
 
 const routes: Routes = [
   {path: '2fa', component: TwoFactorAuthComponent},

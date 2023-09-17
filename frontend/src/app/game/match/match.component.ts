@@ -2,18 +2,22 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { WebSocketService } from '../websocket/websocket.service';
 import { io } from 'socket.io-client';
 import { Game } from '../interface/interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+
 
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.svg',
   styleUrls: ['./match.component.scss'],
 })
-export class MatchComponent implements OnInit, OnDestroy {
+export class MatchComponent implements OnInit {
 
   constructor(
     private websocketService: WebSocketService,
-    private param: ActivatedRoute) {
+    private param: ActivatedRoute,
+    private router: Router) {
 
     this.websocketService.sendStartGame();
 
@@ -21,14 +25,26 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.updateGame(game);
     });
   }
+
+  private unsubscriber : Subject<void> = new Subject<void>();
   
-  async ngOnInit(): Promise<void> {
-    console.log('matchComponent init');
+  ngOnInit(): void {
+    history.pushState(null, '');
+  
+    fromEvent(window, 'popstate').pipe(
+      takeUntil(this.unsubscriber)
+    ).subscribe((_) => {
+      history.pushState(null, '');
+      console.log('Socket disconected: ', this.websocketService.socket.id);
+      this.websocketService.socket.emit('backButton');
+    });
   }
 
-  ngOnDestroy(): void {
-    console.log('Socket disconected: ', this.websocketService.socket.id);
-  }
+  // async ngOnDestroy(){
+  //   console.log('Socket disconected: ', this.websocketService.socket.id);
+  //   this.websocketService.socket.emit('backButton');
+  //   await new Promise(resolve => setTimeout(resolve, 5000));
+  // }
 
   // constants
   ballWidth = 2;

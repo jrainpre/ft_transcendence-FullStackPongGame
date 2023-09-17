@@ -44,9 +44,27 @@ export class LobbyService {
   }
 
   public async cleanUp(client_id: string){
-    for (const [lobbyId, lobby] of this.lobbies) {
-      for (const [key, client] of lobby.clients.entries()) {
+    for (let [lobbyId, lobby] of this.lobbies) {
+      for (let [key, client] of lobby.clients.entries()) {
         if (key === client_id){
+          lobby.instance.triggerFinish();
+          lobby.instance = null;
+          this.lobbies.delete(lobby.id);
+          return;
+        }
+      }
+    }
+  }
+
+  public async cleanUpBackButton(client_id: string){
+    for (let [lobbyId, lobby] of this.lobbies) {
+      for (let [key, client] of lobby.clients.entries()) {
+        if (key === client_id){
+          this.logger.log('DELETE LOBBY');
+          client.leave(lobby.id);
+          lobby.instance.terminate();
+          lobby.instance = null;
+          lobby.clients.delete(client_id);
           this.lobbies.delete(lobby.id);
           return;
         }
@@ -61,6 +79,13 @@ export class LobbyService {
     player.data.id = id_42;
 
     if(first == true) {
+
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
+
       this.logger.log('FIRST');
       const newLobby = this.createLobby(modus);
       newLobby.addClient(player);
@@ -71,6 +96,13 @@ export class LobbyService {
       this.logger.log(newLobby.id);
       return newLobby.id;
     } else if (first == false){
+
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
+
       this.logger.log('SECOND');
       const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.id === lobby_id);
       availableLobby.addClient(player);
@@ -103,6 +135,12 @@ export class LobbyService {
         if(client.data.id === player.data.id) {return;}
       }
 
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
+
       player.data.position = 'right';
       availableLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
@@ -114,6 +152,12 @@ export class LobbyService {
       if(player.data.id > 2147483647) {
         this.server.emit('returnToStart');
         return;
+      }
+
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
       }
 
       const newLobby = this.createLobby(modus);
