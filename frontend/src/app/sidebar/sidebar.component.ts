@@ -4,6 +4,8 @@ import { ApiService } from '../api.service';
 import {CookieService} from 'ngx-cookie-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ChatComponent } from '../chat/chat.component';
+import { WebSocketService } from '../game/websocket/websocket.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,14 +13,27 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  
+
+
+
+
   searchQuery: string = '';
   constructor(private router: Router, 
     private api: ApiService, 
     private snackBar: MatSnackBar, 
     private browserAnimationsModule: BrowserAnimationsModule,
-    private cookie: CookieService) {}
+    private cookie: CookieService,
+    private webservice: WebSocketService) {}
 
+    async ngOnInit(): Promise<any>{
+      const id = await this.api.getIdByJwt();
+      const user = {
+        name: "dummy",
+        id_42: id,
+      }
+      this.webservice.socket.emit('updateSocketId', { user: user });
+      console.log("Updated SocketID");
+    }
 
   async routProfile(): Promise<any>{
     const id = await this.api.getIdByJwt();

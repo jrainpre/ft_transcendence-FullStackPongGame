@@ -13,5 +13,4 @@ export class AppComponent{
     console.log("OnInit");
     this.heartbeat.startHeartbeat();
   }
-
 }

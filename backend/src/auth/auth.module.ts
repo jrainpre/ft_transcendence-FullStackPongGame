@@ -12,8 +12,8 @@ import { User } from 'src/entities/user.entity';
 @Module({
     controllers: [AuthController, ],
     imports: [PassportModule,
-            JwtModule.register({ secret: '1337Secret', //ENV
-                                signOptions: {expiresIn: '1h'}}),
+            JwtModule.register({ secret: process.env.jwtSecret,
+                                signOptions: {expiresIn: '133337s'}}),
                                 TypeOrmModule.forFeature([User])],
     providers: [FortyTwoStrategy,
     AuthService, JwtStrategty],

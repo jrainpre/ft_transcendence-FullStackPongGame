@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-page-not-found',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./page-not-found.component.css']
 })
 export class PageNotFoundComponent {
-
+  imageUrl = environment.socketUrl;
 }
