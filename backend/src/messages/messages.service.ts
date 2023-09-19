@@ -150,9 +150,13 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const client = this.getSocketForUser(user, server, true);
 
     client.join(channel.name);
-    this.sendJoinedChannelMessage(channel, user, client);
+    this.sendJoinedChannelMessage(channel, user, server);
   }
 
+
+  findChannelNoThrow(channeldto: SendChannelDto): Promise<Channel> {
+    return this.channelRepository.findOne({ where: { name: channeldto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel",], });
+  }
 
   async findChannel(channeldto: SendChannelDto, pw_check: boolean): Promise<Channel> {
     const channel = await this.channelRepository.findOne({ where: { name: channeldto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel",], });
@@ -350,21 +354,21 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     if (channel.pw_hashed === null)
       channel.private_channel = false;
     await this.channelRepository.save(channel);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, 'owner set new password');
+    this.sendInfoMessage(channel, user, server, 'owner set new password');
     return channel;
   }
 
-  async sendInfoMessage(channel: Channel, user: User, client: Socket, content: string) {
+  async sendInfoMessage(channel: Channel, user: User, server: Server, content: string) {
     let message = this.messageRepository.create({ content: content, owner: user, channel: channel, isSystemMessage: true });
     this.messageRepository.save(message);
     const dtoMessage = mapMessageToDto(message);
-    client.to(channel.name).emit('message', dtoMessage);
+    server.to(channel.name).emit('message', dtoMessage);
   }
 
   async getChannelUsersDto(channel: Channel) {
     channel = await this.channelRepository.findOne({ where: { name: channel.name }, relations: ["channelUsers", "channelUsers.user",], });
-    const channelUsersDto = channel.channelUsers.map(mapChannelUserToDto);
+    const channelUsers = channel.channelUsers.filter(cu => !cu.banned);
+    const channelUsersDto = channelUsers.map(mapChannelUserToDto);
     return channelUsersDto;
   }
 
@@ -387,15 +391,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('User already owner of channel');
     toPromoteChannelUser.admin = true;
     await this.channelUserRepository.save(toPromoteChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toPromoteUser.name} was promoted to admin`);
-    this.updateChannelUserforChannel(channel, user, client);
+    this.sendInfoMessage(channel, user, server, `${toPromoteUser.name} was promoted to admin`);
+    const socket = this.getSocketForUser(toPromoteUser, server, false);
+    if (socket)
+      socket.emit('gotPromoted', channelDto);
     return channel;
-  }
-
-  async updateChannelUserforChannel(channel: Channel, user: User, client: Socket) {
-    const channelUsersDto = await this.getChannelUsersDto(channel);
-    client.to(channel.name).emit('channelUsers', channelUsersDto);
   }
 
   async kickUser(user: User, toKickUserDto: SendUserDto, channelDto: SendChannelDto, server: Server) {
@@ -416,12 +416,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     if (toKickChannelUser.owner)
       throw new Error('Cannot kick owner of channel');
     await this.channelUserRepository.delete(toKickChannelUser.id);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toKickUser.name} was kicked from channel`);
+    this.sendInfoMessage(channel, user, server, `${toKickUser.name} was kicked from channel`);
     const socket = this.getSocketForUser(toKickUser, server, false);
     if (socket)
+      socket.emit('gotKicked', channelDto);
       socket.leave(channel.name);
-    this.updateChannelUserforChannel(channel, user, client);
     return channel;
   }
 
@@ -444,12 +443,13 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Cannot ban owner of channel');
     toBanChannelUser.banned = true;
     await this.channelUserRepository.save(toBanChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toBanUser.name} was banned from channel`);
+    this.sendInfoMessage(channel, user, server, `${toBanUser.name} was banned from channel`);
     const socket = this.getSocketForUser(toBanUser, server, false);
     if (socket)
+    {
       socket.leave(channel.name);
-    this.updateChannelUserforChannel(channel, user, client);
+      socket.emit('gotBanned', channelDto)
+    }
     return channel;
   }
 
@@ -472,9 +472,10 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Cannot mute owner of channel');
     toMuteChannelUser.mute = new Date(Date.now() + 3 * 60 * 1000);
     await this.channelUserRepository.save(toMuteChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toMuteUser.name} is muted for 3 minutes`);
-    this.updateChannelUserforChannel(channel, user, client);
+    this.sendInfoMessage(channel, user, server, `${toMuteUser.name} is muted for 3 minutes`);
+    const socket = this.getSocketForUser(toMuteUser, server, false);
+    if (socket)
+      socket.emit('gotMuted', channelDto);
     return channel;
   }
 
@@ -500,11 +501,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     return messagesDto;
   }
 
-  async sendJoinedChannelMessage(channel: Channel, user: User, client: Socket) {
+  async sendJoinedChannelMessage(channel: Channel, user: User, server: Server) {
     let message = this.messageRepository.create({ content: `${user.name} joined the channel`, owner: user, channel: channel, isSystemMessage: true });
     await this.messageRepository.save(message);
     const dtoMessage = mapMessageToDto(message);
-    client.to(channel.name).emit('message', dtoMessage);
+    server.to(channel.name).emit('message', dtoMessage);
   }
 
   async sendChannelInfo(channel: Channel, client: Socket) {

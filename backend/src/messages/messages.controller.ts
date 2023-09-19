@@ -18,19 +18,6 @@ export class MessagesController {
 	constructor(private readonly messagesService: MessagesService, private readonly AuthService: AuthService, private readonly messagesGateway: GameGateway) {}
 
 
-
-
-//   loadUserData(): void {
-//         this.http.get<{ user: User, publicCannels: Channel[], userChannels: Channel[],  }>(`http://localhost:3001/api/chat/get-user-data`, { withCredentials: true }).subscribe(data => {
-//             this.user = data.user;
-//             this.publicChannels = data.publicCannels;
-//             this.userChannels = data.userChannels;
-//             console.log(JSON.stringify(this.user));
-//             console.log(JSON.stringify(this.publicChannels));
-//             console.log(JSON.stringify(this.userChannels));
-//     });
-//     }
-
 @Get('get-user-data')
     async getUserData(@Res() res: Response, @Req() req: any) {
         try {
@@ -57,14 +44,17 @@ export class MessagesController {
 
 	@Post('create-channel')
 	async createChannel(@Body('channel') channelDto: SendChannelDto, @Req() req: any, @Res() res: Response) {
-		console.log(req.body);
 		try {
 			const user = await this.AuthService.getUserFromJwtCookie(req);
 			this.messagesService.validateChannelName(channelDto);
 			const channel = await this.messagesService.createNewChannel(channelDto, user);
 			await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.lobbyManager.server);
 			const channelDtoToSend = mapChannelToDto(channel);
-			res.status(200).json({ channel: channelDtoToSend });
+            const messagesDto = await this.messagesService.getChannelMessagesDto(channel);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            const publicChannelsDto = await this.messagesService.getPuplicChannelsDto();
+			res.status(200).json({  channel: channelDtoToSend,  channelUsers: channelUsersDto, messages: messagesDto});
+            this.messagesGateway.lobbyManager.server.emit('updatePublicChannels', { publicChannels: publicChannelsDto});
 		} catch (error) {
 			return res.status(400).json({ message: error.message });
 		}
@@ -77,7 +67,10 @@ export class MessagesController {
             const channel = await this.messagesService.findChannel(channelDto, true);
             await this.messagesService.addUserToChannel(user, channel, this.messagesGateway.lobbyManager.server);
             const channelDtoToSend = mapChannelToDto(channel);
-            res.status(200).json({ channel: channelDtoToSend });
+            const messagesDto = await this.messagesService.getChannelMessagesDto(channel);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+            res.status(200).json({ channel: channelDtoToSend, messages: messagesDto, channelUsers: channelUsersDto });
+            this.messagesGateway.lobbyManager.server.to(channelDtoToSend.name).emit('updateChannelUsers', {channel: channelDtoToSend, channelUsers: channelUsersDto});
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -90,6 +83,11 @@ export class MessagesController {
             await this.messagesService.leaveChannel(user, channelDto, this.messagesGateway.lobbyManager.server);
             const userChannelsDto = await this.messagesService.getUserChannelsDto(user);
             res.status(200).json({ userChannels: userChannelsDto });
+            const channel = await this.messagesService.findChannelNoThrow(channelDto);
+            if(channel){
+                const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+                this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
+            }
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -152,6 +150,7 @@ export class MessagesController {
             const channel = await this.messagesService.promoteUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
+            this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -164,6 +163,8 @@ export class MessagesController {
             const channel = await this.messagesService.kickUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
+            this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
+
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -176,6 +177,8 @@ export class MessagesController {
             const channel = await this.messagesService.banUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
+            this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
+
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -188,6 +191,7 @@ export class MessagesController {
             const channel = await this.messagesService.muteUser(user, userDto, channelDto, this.messagesGateway.lobbyManager.server);
             const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
             res.status(200).json({ channelUsers: channelUsersDto });
+            this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
