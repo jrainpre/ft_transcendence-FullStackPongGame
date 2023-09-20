@@ -100,6 +100,9 @@ export class MessagesController {
             user =  await this.messagesService.addUserToBlockList(user, toBlockUser);
             const blockedUsersDto = await this.messagesService.getBlockedUsersDto(user);
             res.status(200).json({ blockedUsers: blockedUsersDto });
+            const blockedUser = await this.messagesService.findUserByName(toBlockUser);
+            this.messagesGateway.lobbyManager.server.to(user.socket_id).emit('updateBlockedUsers', {blockedUsers: blockedUsersDto});
+            this.messagesGateway.lobbyManager.server.to(blockedUser.socket_id).emit('gotBlocked', {user: mapUserToDto(user)});
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
@@ -112,6 +115,9 @@ export class MessagesController {
             user = await this.messagesService.removeUserFromBlockList(user, toUnblockUser);
             const blockedUsersDto = await this.messagesService.getBlockedUsersDto(user);
             res.status(200).json({ blockedUsers: blockedUsersDto });
+            const blockedUser = await this.messagesService.findUserByName(toUnblockUser);
+            this.messagesGateway.lobbyManager.server.to(user.socket_id).emit('updateBlockedUsers', {blockedUsers: blockedUsersDto});
+            this.messagesGateway.lobbyManager.server.to(blockedUser.socket_id).emit('gotUnblocked', {user: mapUserToDto(user)});
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }

@@ -190,13 +190,11 @@ body {
 }
 
 .messages-area {
-    height: 400px;
-    width: 350px;
+    height: 60vh;
+    width: 100%;
+    max-width: 350px;
     overflow-y: auto;
-    padding-right: 5px;
-    padding-left: 5px;
-    padding-bottom: 5px;
-    padding-top: 5px;
+    padding: 5px;
     border: 1px solid #ECECEC;
 }
 
@@ -214,26 +212,9 @@ body {
     animation: ellipsis 1.5s infinite;
 }
 
-@keyframes ellipsis {
-    0% {
-        opacity: 0.5;
-    }
-
-    25% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-
-    100% {
-        opacity: 0.2;
-    }
-}
-
 .input-area {
-    width: 350px;
+    width: 100%;      /* Adjusted to full width */
+    max-width: 350px; /* Set a maximum width */
     display: flex;
     border-top: 1px solid #ECECEC;
     padding: 10px;
@@ -268,6 +249,21 @@ body {
     margin-left: auto;
 }
 
+/* Media Queries for Responsiveness */
+@media only screen and (max-width: 600px) {
+    .messages-area {
+        max-width: 100%;  /* Allow it to take the full width on small screens */
+    }
+    .input-area {
+        flex-direction: column; /* Stack input and button vertically on small screens */
+    }
+    .input-area input, .input-area button {
+        width: 100%; /* Full width for input and button */
+        margin-right: 0; /* Remove margin-right */
+        margin-bottom: 5px; /* Add a little space between input and button */
+    }
+}
+
 .private-section {
     margin-bottom: 20px;
 }
@@ -282,9 +278,11 @@ body {
 
 h3 {
     padding: 10px;
-    background-color: #009688;
+    height: 10vh;
+    background-color: #3a60b1;
     color: white;
     margin: 0;
+    border-radius: 5px;
 }
 
 
@@ -353,3 +351,24 @@ h3 {
     justify-content: space-between; /* Distribute items evenly */
     align-items: flex-start; /* Align items at the top */
 }
+
+
+.scrollable-list {
+    height: 55vh;
+    overflow-y: auto;
+    margin-right: 0%;
+    border-radius: 5px;
+}
+
+.scrollable-list-user {
+    height: 70vh;
+    overflow-y: auto;
+    margin-right: 0%;
+
+
+}
+
+.test {
+    margin-bottom: 5vh;
+}
+
