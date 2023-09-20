@@ -180,6 +180,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Channel not found');
     }
     if (channel.direct_message === true) {
+      server.to(channel.name).emit('channelDeleted', channelDto);
       await this.deleteAllUsersFromChannel(channel);
       await this.channelRepository.delete(channel.id);
       return;
@@ -539,5 +540,10 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const blockedUser = await this.getBlockedUsers(user);
     const blockedUserDto = blockedUser.map(mapUserToDto);
     client.emit('blockedUsers', blockedUserDto);
+  }
+
+  async findUserByName(userDto: SendUserDto) {
+    const user = await this.userRepository.findOne({ where: { name: userDto.name }, });
+    return user;
   }
 }

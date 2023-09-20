@@ -9,82 +9,121 @@
                 <h3>is the jwt token working????????????????</h3>
             </div>
         </div>
-        <div class="container">
-        <div class="list-container">
-            <h3>Public Channels</h3>
-        <div *ngIf="isRegistered" class="list-container">
-            <div *ngFor="let channel of publicChannels" class="list-item">
-                <!-- Channel Details -->
-                <div class="list-details" (click)="joinChannelWrapper(channel)">
-                    <h4>{{ channel.name }}</h4>
+
+
+        <div class="test">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Public Channels</mat-label>
+                            <mat-select [(value)]="selectedChannel" (selectionChange)="joinChannelWrapper($event.value)">
+                              <mat-option *ngFor="let channel of publicChannels" [value]="channel">
+                                {{ channel.name }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                    </div>
+
+                    <!-- User Channels -->
+                    <div class="col">
+                        <h3 class="mb-3">User Channels</h3>
+                        <ul class="list-group scrollable-list">
+                            <li *ngFor="let channel of userChannels" class="list-group-item list-group-item-action" (click)="selectChannel(channel)">
+                                {{ channel.name }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- User Channels -->
+<!-- User Channels -->
+<div class="col">
+    <h3 class="mb-3">User Channels</h3>
+    <div class="channel-card-container">
+        <mat-card *ngFor="let channel of userChannels" (click)="selectChannel(channel)" class="channel-card">
+            <mat-card-header>
+                <mat-card-title>{{ channel.name }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
+
+
+
+                    <!-- Chat Container -->
+                    <div class="col">
+                        <!-- Messages Display Area -->
+                        <div class="messages-area" #messagesContainer>
+                            <!-- Messages loop -->
+                            <div class="message" *ngFor="let message of messages"
+                                [ngClass]="{
+                                            'outgoing': message.owner_id === user.id_42 && !message.isSystemMessage, 
+                                            'incoming': message.owner_id !== user.id_42 && !message.isSystemMessage, 
+                                            'system': message.isSystemMessage }">
+                                <div class="message-header">
+                                    <span
+                                        *ngIf="message.owner_id !== user.id_42 && !message.isSystemMessage"
+                                        class="message-author">{{ message.author }}</span>
+                                    <span *ngIf="message.isSystemMessage"
+                                        class="message-author">{{ 'System' }}</span>
+                                </div>
+                                <div class="message-content">
+                                    {{ message.content }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-area">
+                            <input [(ngModel)]="message.content"
+                                placeholder="Type a message..."
+                                (keyup.enter)="sendMessage()" />
+                            <button (click)="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                    <h3 class="mb-3">Channel user</h3>
+                    <ul class="list-group scrollable-list">
+                        <div *ngFor="let user of channelUsers" class="list-group-item list-group-item-action">
+                            <!-- User Details -->
+                            <div class="list-details" (click)="routeToUser(user)">
+                                <h4>{{ user.name }}</h4>
+                                <p *ngIf="user.admin">Admin</p>
+                                <p *ngIf="user.owner">Owner</p>
+                                <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
+                                    {{ user.status }}
+                                </p>
+                            </div>
+                            <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
+                        </div>
+                    </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        
  
-    <div class="list-container">
-        <h3>User Channels</h3>
-    <div *ngIf="isRegistered" class="list-container">
-        <div *ngFor="let channel of userChannels" class="list-item">
-            <!-- Channel Details -->
-            <div class="list-details" (click)="selectChannel(channel)">
-                <h4>{{ channel.name }}</h4>
-            </div>
-        </div>
-    </div>
-</div>
- 
- 
-<div *ngIf="isRegistered" class="list-container">
-    <h3>Channel Users</h3>
-    <div *ngFor="let user of channelUsers" class="list-item">
-        <!-- User Details -->
-        <div class="list-details" (click)="routeToUser(user)">
-            <h4>{{ user.name }}</h4>
-            <p *ngIf="user.admin">Admin</p>
-            <p *ngIf="user.owner">Owner</p>
-            <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
-                {{ user.status }}
-            </p>
- 
-            <!-- Add a button -->
- 
-        </div>
-        <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
-    </div>
-</div>
-</div>
+
  
         <div class="flex-container">
             <!-- Main chat container -->
-            <div class="chat-container">
-                <!-- Messages Display Area -->
-                <div *ngIf="channel.id !== 0" class="messages-area" #messagesContainer>
-                    <!-- Messages loop -->
-                    <div class="message" *ngFor="let message of messages"
-                        [ngClass]="{
-                                    'outgoing': message.owner_id === user.id_42 && !message.isSystemMessage, 
-                                    'incoming': message.owner_id !== user.id_42 && !message.isSystemMessage, 
-                                    'system': message.isSystemMessage }">
-                        <div class="message-header">
-                            <span
-                                *ngIf="message.owner_id !== user.id_42 && !message.isSystemMessage"
-                                class="message-author">{{ message.author }}</span>
-                            <span *ngIf="message.isSystemMessage"
-                                class="message-author">{{ 'System' }}</span>
- 
-                        </div>
-                        <div class="message-content">
-                            {{ message.content }}
-                        </div>
+         
+            <div class="row">
+                <div class="list-container">
+                <h3>Channel Users</h3>
+                <div *ngFor="let user of channelUsers" class="list-item">
+                    <!-- User Details -->
+                    <div class="list-details" (click)="routeToUser(user)">
+                        <h4>{{ user.name }}</h4>
+                        <p *ngIf="user.admin">Admin</p>
+                        <p *ngIf="user.owner">Owner</p>
+                        <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
+                            {{ user.status }}
+                        </p>
                     </div>
+                    <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
                 </div>
-                <div *ngIf="channel.id !== 0" class="input-area">
-                    <input [(ngModel)]="message.content"
-                        placeholder="Type a message..."
-                        (keyup.enter)="sendMessage()" />
-                    <button (click)="sendMessage()">Send</button>
-                </div>
+            </div>
             </div>
  
             <div class="create-channel-container">
@@ -116,34 +155,19 @@
             </div>
  
             <div class="create-channel-container">
-                <form (ngSubmit)="promoteUser()">
-                    <label>user to promote to admin:
-                        <input type="text" name="username"
-                            [(ngModel)]="userToPromote.name" required>
+                <form (ngSubmit)="performAction()">
+                    <label>User:
+                        <input type="text" name="username" [(ngModel)]="selectedUser.name" required>
                     </label>
-                    <button type="submit">Promote user</button>
-                </form>
- 
-                <form (ngSubmit)="kickUser()">
-                    <label>user to kick:
-                        <input type="text" name="username"
-                            [(ngModel)]="userToKick.name" required>
+                    <label>Action:
+                        <select name="actionName" [(ngModel)]="slectedAdminAction">
+                            <option value="promote">Promote to Admin</option>
+                            <option value="kick">Kick</option>
+                            <option value="ban">Ban</option>
+                            <option value="mute">Mute</option>
+                        </select>
                     </label>
-                    <button type="submit">Kick User</button>
-                </form>
-                <form (ngSubmit)="banUser()">
-                    <label>user to ban:
-                        <input type="text" name="username"
-                            [(ngModel)]="userToBan.name" required>
-                    </label>
-                    <button type="submit">Ban User</button>
-                </form>
-                <form (ngSubmit)="muteUser()">
-                    <label>user to mute:
-                        <input type="text" name="username"
-                            [(ngModel)]="userToMute.name" required>
-                    </label>
-                    <button type="submit">Mute User</button>
+                    <button type="submit">Submit</button>
                 </form>
             </div>
         </div>   
