@@ -29,6 +29,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule, } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatIconModule} from '@angular/material/icon';
+import {MatGridListModule} from '@angular/material/grid-list';
+import { MatChipsModule } from '@angular/material/chips';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 
@@ -68,11 +73,17 @@ import { MatCardModule } from '@angular/material/card';
     MatListModule,
     MatExpansionModule,
     MatCardModule,
-    MatCardModule
+    MatCardModule,
+    MatTabsModule,
+    MatIconModule,
+    MatGridListModule,
+    MatChipsModule,
+    MatTooltipModule
 
   ],
   exports: [MatExpansionModule,
-    MatCardModule],
+    MatCardModule,
+    MatChipsModule],
   providers: [ProfileComponent],
   bootstrap: [AppComponent],
 })

@@ -11,49 +11,51 @@
         </div>
 
 
-        <div class="test">
+        <div class="complete-chat">
             <div class="container mt-4">
                 <div class="row">
-                    <div class="col">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Public Channels</mat-label>
-                            <mat-select [(value)]="selectedChannel" (selectionChange)="joinChannelWrapper($event.value)">
-                              <mat-option *ngFor="let channel of publicChannels" [value]="channel">
-                                {{ channel.name }}
-                              </mat-option>
-                            </mat-select>
-                          </mat-form-field>
-                    </div>
-
                     <!-- User Channels -->
                     <div class="col">
-                        <h3 class="mb-3">User Channels</h3>
-                        <ul class="list-group scrollable-list">
-                            <li *ngFor="let channel of userChannels" class="list-group-item list-group-item-action" (click)="selectChannel(channel)">
-                                {{ channel.name }}
-                            </li>
-                        </ul>
+                        <div class="chat-box">
+                            <div class="dropdown">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Public Channels</mat-label>
+                                <mat-select [(value)]="selectedChannel" (selectionChange)="joinChannelWrapper($event.value)">
+                                  <mat-option *ngFor="let channel of publicChannels" [value]="channel">
+                                    {{ channel.name }}
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                        </div>
+                        <div class="channels-container1">
+                            <h2>Channels</h2>
+                            <mat-selection-list #channels hideSingleSelectionIndicator [multiple]="false">
+                                <mat-list-option *ngFor="let channel of userChannels" [value]="channel" (click)="selectChannel(channel)">
+                                    {{channel.name}}
+                                </mat-list-option>
+                            </mat-selection-list>
+                        </div>
                     </div>
-
-                    <!-- User Channels -->
-<!-- User Channels -->
-<div class="col">
-    <h3 class="mb-3">User Channels</h3>
-    <div class="channel-card-container">
-        <mat-card *ngFor="let channel of userChannels" (click)="selectChannel(channel)" class="channel-card">
-            <mat-card-header>
-                <mat-card-title>{{ channel.name }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-            </mat-card-content>
-        </mat-card>
-    </div>
-</div>
-
-
-
+                </div>
                     <!-- Chat Container -->
                     <div class="col">
+                        <div class="chat-box">
+                            <!-- Current Channel Name Display -->
+                            <div class="channel-name">
+                                <mat-grid-list cols="2" rowHeight="2:1">
+                                    <mat-grid-tile>
+                                    <div *ngIf="channel.id !== 0">{{ channel.name }}</div>
+                                    <div *ngIf="channel.id == 0"> No channel selected</div>
+                                    </mat-grid-tile>    
+                                    <mat-grid-tile>
+                                <button mat-raised-button class="modern-btn" (click)="leaveChannel()" aria-label="Leave Channel">
+                                    <mat-icon>logout</mat-icon>
+                                </button>
+                                </mat-grid-tile>    
+
+                                </mat-grid-list>
+                                
+                            </div>
                         <!-- Messages Display Area -->
                         <div class="messages-area" #messagesContainer>
                             <!-- Messages loop -->
@@ -80,29 +82,108 @@
                                 (keyup.enter)="sendMessage()" />
                             <button (click)="sendMessage()">Send</button>
                         </div>
+                        </div>
                     </div>
                     <div class="col">
-                    <h3 class="mb-3">Channel user</h3>
-                    <ul class="list-group scrollable-list">
-                        <div *ngFor="let user of channelUsers" class="list-group-item list-group-item-action">
-                            <!-- User Details -->
-                            <div class="list-details" (click)="routeToUser(user)">
-                                <h4>{{ user.name }}</h4>
-                                <p *ngIf="user.admin">Admin</p>
-                                <p *ngIf="user.owner">Owner</p>
-                                <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
-                                    {{ user.status }}
-                                </p>
+                        <div class="chat-box">
+                            <div class="channels-container1">
+                                <div class="channel-users-list">
+                                <h2>Channel Users</h2>
+                                <mat-selection-list #usersList hideSingleSelectionIndicator [multiple]="false">
+                                    <mat-list-option *ngFor="let user of channelUsers" [value]="user">
+                                        <div class="user-container">
+                                            <!-- Display user name with tooltip for extra details -->
+                                            <div class="list-details" (click)="routeToUser(user)" 
+                                                [matTooltip]="getUserTooltip(user)">
+                                                <h4 mat-line>{{ user.name }}</h4>
+                                            </div>
+                                            <!-- Game button -->
+                                            <button mat-raised-button class="modern-btn" (click)="oneVsOne(user)" aria-label="start game with">
+                                                <mat-icon>sports_esports</mat-icon>
+                                            </button>
+                                        </div>
+                                
+                                    </mat-list-option>
+                                </mat-selection-list>
+                                
                             </div>
-                            <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
                         </div>
-                    </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
  
+
+
+
+
+
+
+
+        <mat-tab-group>
+            <mat-tab label="channel user">
+                <div class="list-container">
+                    <h3>Channel Users</h3>
+                    <div *ngFor="let user of channelUsers" class="list-item">
+                        <!-- User Details -->
+                        <div class="list-details" (click)="routeToUser(user)">
+                            <h4>{{ user.name }}</h4>
+                            <p *ngIf="user.admin">Admin</p>
+                            <p *ngIf="user.owner">Owner</p>
+                            <p [ngClass]="{'online': user.status === 'online', 'offline': user.status === 'offline', 'ingame': user.status === 'ingame'}">
+                                {{ user.status }}
+                            </p>
+                        </div>
+                        <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
+                        <button mat-raised-button class="modern-btn" (click)="oneVsOne(user)" aria-label="start game with">
+                            <mat-icon>logout</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="channel join"> 
+                <div class="create-channel-container">
+                    <h3>Join a Channel</h3>
+                    <form (ngSubmit)="joinChannel()">
+                        <label>Channel Name:
+                            <input type="text" name="channelName"
+                                [(ngModel)]="channelToJoin.name" required>
+                        </label>
+                        <label>Password:
+                            <input type="password" name="channelPassword"
+                                [(ngModel)]="channelToJoin.password"
+                                placeholder="leave blank if the channel has no password">
+                        </label>
+                        <button type="submit">Join Channel</button>
+                    </form>
+                </div>
+                 </mat-tab>
+            <mat-tab label="create Channel"> 
+                <div class="create-channel-container">
+                    <h3>Create a New Channel</h3>
+                    <form (ngSubmit)="createChannel()">
+                        <label>Channel Name:
+                            <input type="text" name="channelName"
+                                [(ngModel)]="channelToCreate.name" required>
+                        </label>
+                        <div class="private-section">
+                            <label>
+                                <input type="checkbox" name="isPrivate"
+                                    [(ngModel)]="channelToCreate.private_channel">
+                                Private Channel (Tick if private)
+                            </label>
+                        </div>
+                        <label>Password:
+                            <input type="password" name="channelPassword"
+                                [(ngModel)]="channelToCreate.password"
+                                placeholder="Required if private channel is ticked">
+                        </label>
+                        <button type="submit">Create Channel</button>
+                    </form>
+                </div> </mat-tab>
+          </mat-tab-group>
 
  
         <div class="flex-container">
@@ -122,6 +203,7 @@
                         </p>
                     </div>
                     <button *ngIf="user.status === 'online'" (click)="oneVsOne(user)">1 vs 1</button>
+
                 </div>
             </div>
             </div>
