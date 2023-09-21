@@ -17,7 +17,6 @@ body {
   
   /* Style for the chat display in the middle */
   .chat-display {
-    flex: auto; /* Takes up two-thirds of available space */
     overflow-y: auto;
     padding: 20px;
   }
@@ -31,8 +30,10 @@ body {
 
   .flex-container {
     display: flex;
-    flex-wrap: wrap; /* Allows items to wrap to the next row if necessary */
-    gap: 0px; /* Adjust the gap between items as needed */
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: row; /* Make sure content is aligned horizontally */
 }
   
 
@@ -149,6 +150,7 @@ body {
 
 .messages-container {
     flex: 1;
+    
 }
 
 .message {
@@ -190,35 +192,28 @@ body {
 }
 
 .messages-area {
-    height: 60vh;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 200vh;
     width: 100%;
-    max-width: 350px;
     overflow-y: auto;
     padding: 5px;
     border: 1px solid #ECECEC;
+    background-color: #FFFDF6;
+
 }
 
-.typing-indicator {
-    font-style: italic;
-    color: #555;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.ellipsis {
-    display: inline-block;
-    animation: ellipsis 1.5s infinite;
-}
 
 .input-area {
     width: 100%;      /* Adjusted to full width */
-    max-width: 350px; /* Set a maximum width */
     display: flex;
     border-top: 1px solid #ECECEC;
     padding: 10px;
-    background-color: #FAFAFA;
+    background-color: #fffdf69d;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+
+
 }
 
 .input-area input {
@@ -249,20 +244,7 @@ body {
     margin-left: auto;
 }
 
-/* Media Queries for Responsiveness */
-@media only screen and (max-width: 600px) {
-    .messages-area {
-        max-width: 100%;  /* Allow it to take the full width on small screens */
-    }
-    .input-area {
-        flex-direction: column; /* Stack input and button vertically on small screens */
-    }
-    .input-area input, .input-area button {
-        width: 100%; /* Full width for input and button */
-        margin-right: 0; /* Remove margin-right */
-        margin-bottom: 5px; /* Add a little space between input and button */
-    }
-}
+
 
 .private-section {
     margin-bottom: 20px;
@@ -330,8 +312,8 @@ h3 {
 
 
 .list-details {
-    flex: 1;
-    padding-left: 10px;
+          /* Adjust based on your layout preference */
+    flex-grow: 1;
 }
 
 .list-details h4 {
@@ -344,6 +326,7 @@ h3 {
     margin: 5px 0 0;
     font-size: 12px; /* Adjust as needed */
     color: #666;
+    flex-grow: 1;
 }
 
 .container {
@@ -368,7 +351,145 @@ h3 {
 
 }
 
-.test {
-    margin-bottom: 5vh;
+.dropdown {
+    /*should be as wide as channels-container1*/
+    flex-grow: 0;
 }
+
+
+
+.channels-container1 {
+    background-color: #FFFDF6;  /* Creamy white background */
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);  /* Slight shadow for elevation */
+    height: auto;
+    overflow-y: auto; /* This will enable scrolling when the content height exceeds 400px */
+    min-height: 20vh;
+    flex-grow: 1;  /* This ensures it takes up maximum space */
+    min-height: 20vh;
+    max-width: 20vh;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+.channels-container1 h2 {
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.channels-container1 mat-list-option {
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.channels-container1 mat-list-option:hover {
+    background-color: #f2f2f2;  /* Slight gray on hover */
+}
+
+
+.chat-box {
+    border: 1px solid #e0e0e0;  /* Slight border */
+    background-color: #b8a45ebd;  /* Creamy white background */
+    border-radius: 15px;  /* Rounded corners */
+    padding:25px;  /* Padding around the content */
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);  /* Slight shadow for elevation */
+    height: 80vh;
+    min-height: 80vh;
+    position: relative; /* Set a context for absolute positioning for children if needed */
+    overflow: hidden;   /* Prevent overflow of children */
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.complete-chat {
+    border: 1px solid #e0e0e0;  /* Slight border */
+    border-radius: 15px;  /* Rounded corners */
+    padding:25px;  /* Padding around the content */
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);  /* Slight shadow for elevation */
+    display: inline-block; /* Make the container only as wide as its content */
+    max-width: 1000px; /* Optional: Ensure it doesn't get too wide on large screens */
+    width: 100%; /* Take full width up to the max-width */
+    background-color: #FFFDF6;
+
+    padding: 10px; /* Optional: Add some padding around the chat */
+    box-sizing: border-box; /* Include padding in width calculations */
+}
+
+.channel-name {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-bottom: 10px;  /* Space between the channel name and the chat content */
+    color: #333;  /* Dark text for contrast */
+}
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+
+
+/* Base Style for the Modern Button */
+.modern-btn {
+    background-color: #4a4a4a; /* Neutral color for the button */
+    color: white; /* White color for the icon */
+    border-radius: 4px; /* Rounded corners */
+    padding: 3px 3px; /* Padding around the button for a larger clickable area */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+/* Hover Effect */
+.modern-btn:hover {
+    background-color: #333; /* Slightly darker background on hover */
+    transform: translateY(-2px); /* Slight upward movement on hover for a dynamic effect */
+    cursor: pointer; /* Cursor indication for clickable elements */
+}
+
+/* Active State */
+.modern-btn:active {
+    transform: translateY(0px); /* Reset the position on active state (button press) */
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+/* Style for the Icon Inside the Button */
+.modern-btn mat-icon {
+    font-size: 20px; /* Adjust the size if needed */
+    vertical-align: middle; /* Centering the icon vertically */
+}
+
+
+
+.channel-users-list mat-list-option {
+    height: auto;           /* Allow the height to adjust based on content */
+    min-height: 10px;       /* Set a minimum height to ensure the list item is visible */
+    align-items: flex-start; /* Align content to the top of the list item */
+    padding: 10px;          /* Add some padding for spacing */
+    box-sizing: border-box; /* Ensure padding doesn't increase item size */
+}
+
+::ng-deep mat-selection-list mat-list-option {
+    min-height: auto;
+}
+
+
+
+.user-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+
+
+
 

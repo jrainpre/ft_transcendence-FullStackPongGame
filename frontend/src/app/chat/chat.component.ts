@@ -706,4 +706,24 @@ export class ChatComponent implements AfterViewChecked {
         }
         });
     }
+
+
+    getUserTooltip(user: ChannelUser): string {
+        let tooltip = '';
+    
+        if (user.owner) {
+            tooltip += 'Role: Owner\n';
+        }
+        else if (user.admin) {
+            tooltip += 'Role: Admin\n';
+        }
+        tooltip += 'Status: ' + user.status;
+    
+        return tooltip;
+    }
+    
+
+
+
+
 } 
