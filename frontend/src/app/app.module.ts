@@ -23,6 +23,12 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HeartbeatComponent } from './heartbeat/heartbeat.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+
+
 
 @NgModule({
   declarations: [
@@ -52,6 +58,10 @@ import { HeartbeatComponent } from './heartbeat/heartbeat.component';
     NgbModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatListModule,
   ],
   providers: [ProfileComponent],
   bootstrap: [AppComponent],

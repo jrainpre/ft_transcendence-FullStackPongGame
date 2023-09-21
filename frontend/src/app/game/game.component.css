@@ -1,4 +1,27 @@
-body {
+  button {
+	padding: 15px 30px;
+	font-size: 18px;
+	background-color: #0056b3;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+  } 
+
+  button:hover {
+	background-color: #0056b3;
+  }
+
+  .sidenav-container {
+	height: 100%;
+  }
+  
+  .sidenav {
+	width: 250px;
+  }
+  
+  .content {
 	font-family: Arial, sans-serif;
 	text-align: center;
 	background-color: #f0f0f0;
@@ -7,33 +30,13 @@ body {
 	align-items: center;
 	height: 95vh;
 	justify-content: center;
-  }
-
-  h1 {
-	font-size: 36px;
-	color: #333;
-  }
-
-  .center {
+}
+  
+  .button-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
 	gap: 200px;
 	margin-top: 20px;
-  }
-
-  button {
-	padding: 15px 30px;
-	font-size: 18px;
-	background-color: #007bff;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	transition: background-color 0.3s;
-  }
-
-  button:hover {
-	background-color: #0056b3;
   }
