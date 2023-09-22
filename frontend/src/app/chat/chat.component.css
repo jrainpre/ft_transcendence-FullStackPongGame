@@ -258,14 +258,7 @@ body {
     border-right: 1px solid #ddd; /* Optional: to distinguish it from adjacent content */
 }
 
-h3 {
-    padding: 10px;
-    height: 10vh;
-    background-color: #3a60b1;
-    color: white;
-    margin: 0;
-    border-radius: 5px;
-}
+
 
 
 
@@ -354,6 +347,8 @@ h3 {
 .dropdown {
     /*should be as wide as channels-container1*/
     flex-grow: 0;
+    max-width: 20vh;
+
 }
 
 
@@ -417,6 +412,7 @@ h3 {
 
     padding: 10px; /* Optional: Add some padding around the chat */
     box-sizing: border-box; /* Include padding in width calculations */
+    position: center;
 }
 
 .channel-name {
@@ -487,6 +483,54 @@ body {
     justify-content: space-between;
     width: 100%;
 }
+
+.channel-action-container {
+    width: 250px;  /* Reduced width */
+    margin: 20px auto;
+    padding: 10px;  /* Reduced padding */
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    background-color: #FFFDF6;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 15px;  /* Reduced margin */
+    color: #333;
+    font-size: 1.1em;  /* Reduced font size */
+}
+
+.full-width {
+    width: 100%;
+    margin-bottom: 10px;  /* Reduced margin */
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;  /* Reduced margin */
+    color: #555;
+}
+
+mat-form-field {
+    display: block;
+    width: 100%;
+    line-height: 1.5;  /* Adjusted line height */
+}
+
+mat-checkbox {
+    margin: 10px 0;  /* Reduced margin */
+    color: #333;
+}
+
+input[matInput] {
+    height: 30px;  /* Adjusted input height */
+    padding: 5px;  /* Adjusted input padding */
+}
+
 
 
 
