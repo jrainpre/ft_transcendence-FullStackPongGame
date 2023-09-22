@@ -34,6 +34,11 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { MatChipsModule } from '@angular/material/chips';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+ 
 
 
 
@@ -78,7 +83,11 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatIconModule,
     MatGridListModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatRadioModule,
+    MatSlideToggleModule,
+    MatInputModule,
+    MatCheckboxModule,
 
   ],
   exports: [MatExpansionModule,

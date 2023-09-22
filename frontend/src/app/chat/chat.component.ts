@@ -721,6 +721,16 @@ export class ChatComponent implements AfterViewChecked {
     
         return tooltip;
     }
+
+    isJoiningChannel : boolean = false;
+    channelData: Channel = {
+        id: 0,
+        name: '',
+        private_channel: false,
+        password: ''
+    }
+    performChannelAction()
+    {}
     
 
 
