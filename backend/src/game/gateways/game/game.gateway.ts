@@ -11,6 +11,7 @@ import { SendMessageDto } from 'src/messages/dto/send-message.dto';
 import { SendUserDto } from 'src/messages/dto/send-user.dto';
 import { MessagesService } from 'src/messages/messages.service';
 
+
 @WebSocketGateway({cors: '*'})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   public logger: Logger = new Logger();
@@ -37,8 +38,15 @@ const message = await this.messagesService.createNewMessage(messageDto, this.lob
 @SubscribeMessage('updateSocketId')
 async updateSocketId(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
 const user = await this.messagesService.updateSocketId(userDto, client.id);
+await this.messagesService.markConnected(client.id, client);
 const channel = await this.messagesService.joinChannels(user, client);
 }
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////
 
 
@@ -48,6 +56,7 @@ const channel = await this.messagesService.joinChannels(user, client);
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
+    this.messagesService.markDisconnected(client.id, client);
     this.logger.log('Client disconnected: ', client.id);
     for (const lobby of this.lobbyManager.lobbies.values()) {
       if (lobby.clients.has(client.id)) {

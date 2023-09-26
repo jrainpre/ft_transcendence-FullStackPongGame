@@ -34,3 +34,9 @@ export interface ChatData {
         name: string;
     }
   }
+
+  export enum UserStatus {
+    ONLINE = 'online',
+    OFFLINE = 'offline',
+    INGAME = 'ingame'
+}
