@@ -24,7 +24,7 @@
         <mat-tab-group>
             <mat-tab label="Chat">
                 <div class="complete-chat">
-                    <div class="container mt-4">
+                    <!-- <div class="container mt-4"> -->
                         <div class="flex-container">
                             <!-- User Channels -->
                             <div class="flex-child">
@@ -53,19 +53,20 @@
                             <div class="flex-child">
                                 <div class="chat-box">
                                     <!-- Current Channel Name Display -->
-                                    <div class="channel-name">
-                                        <mat-grid-list cols="2" rowHeight="2:1">
-                                            <mat-grid-tile>
+                                    <div class="channel-name" class="flex-container-current-channel">
+                                            <div class="flex-child">
                                             <div *ngIf="channel.id !== 0">{{ channel.name }}</div>
                                             <div *ngIf="channel.id == 0"> No channel selected</div>
-                                            </mat-grid-tile>    
-                                            <mat-grid-tile>
+                                            </div>  
+                                            <span *ngIf="channel.id !== 0" >
+                                            <div class="flex-child">
                                         <button mat-raised-button class="modern-btn" (click)="leaveChannel()" aria-label="Leave Channel">
                                             <mat-icon>logout</mat-icon>
                                         </button>
-                                        </mat-grid-tile>    
+                                        </div>
+                                    </span>
+
         
-                                        </mat-grid-list>
                                         
                                     </div>
                                 <!-- Messages Display Area -->
@@ -123,10 +124,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
             </mat-tab>
-            <mat-tab label="channel join"> 
+            <mat-tab label="New Chat"> 
+                <div class="complete-chat">
+                <div class="flex-container">
+                    <div class="chat-box">
                     <div class="channel-action-container">
                         <h3>Channel Action</h3>
                     
@@ -155,8 +159,10 @@
                                 {{ isJoiningChannel ? 'Join Channel' : 'Create Channel' }}
                             </button>
                         </form>
+                    </div>
 
             </div>
+            <div class="chat-box">
                     <div class="channel-action-container">
                         <h3>Start private Chat</h3>
                         
@@ -169,8 +175,76 @@
                             <button mat-raised-button type="submit" class="modern-btn">Start chat</button>
                         </form>
                     </div>
+                </div>
+                </div>
+            </div>
                  </mat-tab>
-            <mat-tab label="create Channel"> 
+            <mat-tab label="Chat Actions"> 
+                <div class="complete-chat">
+                    <div class="flex-container">
+                        <div class="chat-box">
+                            <div class="channel-action-container">
+                                <h3>Admin Actions</h3>
+                                <form (ngSubmit)="performAction()">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>User</mat-label>
+                                        <input matInput type="text" name="username" [(ngModel)]="selectedUser.name" required>
+                                    </mat-form-field>
+                        
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>Action</mat-label>
+                                        <mat-select name="actionName" [(ngModel)]="slectedAdminAction">
+                                            <mat-option value="promote">Promote to Admin</mat-option>
+                                            <mat-option value="kick">Kick</mat-option>
+                                            <mat-option value="ban">Ban</mat-option>
+                                            <mat-option value="mute">Mute</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                        
+                                    <button mat-raised-button type="submit" class="modern-btn">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="chat-box">
+                            <div class="channel-action-container">
+                                <h3>Set new channel password</h3>
+                                <form (ngSubmit)="setPassword()">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>New password</mat-label>
+                                        <input matInput type="password" name="newPassword" [(ngModel)]="channel.password" required>
+                                    </mat-form-field>
+                                    <button mat-raised-button type="submit" class="modern-btn">Set new Password</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="chat-box">
+                            <div class="channel-action-container">
+                                <h3>Block / Unblock Users</h3>
+                        
+                                <!-- Block User Form -->
+                                <form (ngSubmit)="blockUser()">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>User to Block</mat-label>
+                                        <input matInput type="text" name="blockUserName" [(ngModel)]="userToBlock.name" required>
+                                    </mat-form-field>
+                                    <button mat-raised-button type="submit" class="modern-btn">Block User</button>
+                                </form>
+                        
+                                <!-- Unblock User Form -->
+                                <form (ngSubmit)="unblockUser()">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>User to Unblock</mat-label>
+                                        <input matInput type="text" name="unblockUserName" [(ngModel)]="userToUnblock.name" required>
+                                    </mat-form-field>
+                                    <button mat-raised-button type="submit" class="modern-btn">Unblock User</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
              </mat-tab>
           </mat-tab-group>
 
@@ -180,106 +254,24 @@
          
  
  
-            <div class="create-channel-container">
-                <h3>Set new channel password</h3>
-                <form (ngSubmit)="setPassword()">
-                    <label>New password:
-                        <input type="password" name="newPassword"
-                            [(ngModel)]="channel.password" required>
-                    </label>
-                    <button type="submit" >Set new Password</button>
-                </form>
-            </div>
  
-            <div class="create-channel-container">
-                <form (ngSubmit)="performAction()">
-                    <label>User:
-                        <input type="text" name="username" [(ngModel)]="selectedUser.name" required>
-                    </label>
-                    <label>Action:
-                        <select name="actionName" [(ngModel)]="slectedAdminAction">
-                            <option value="promote">Promote to Admin</option>
-                            <option value="kick">Kick</option>
-                            <option value="ban">Ban</option>
-                            <option value="mute">Mute</option>
-                        </select>
-                    </label>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
+ 
         </div>   
  
         <div class="flex-container">
-            <div class="create-channel-container">
-                <h3>Create a New Channel</h3>
-                <form (ngSubmit)="createChannel()">
-                    <label>Channel Name:
-                        <input type="text" name="channelName"
-                            [(ngModel)]="channelToCreate.name" required>
-                    </label>
-                    <div class="private-section">
-                        <label>
-                            <input type="checkbox" name="isPrivate"
-                                [(ngModel)]="channelToCreate.private_channel">
-                            Private Channel (Tick if private)
-                        </label>
-                    </div>
-                    <label>Password:
-                        <input type="password" name="channelPassword"
-                            [(ngModel)]="channelToCreate.password"
-                            placeholder="Required if private channel is ticked">
-                    </label>
-                    <button type="submit">Create Channel</button>
-                </form>
-            </div>
  
-            <div class="create-channel-container">
-                <h3>Start private Chat</h3>
-                <form (ngSubmit)="startPrivateChat()">
-                    <label>User to Chat with:
-                        <input type="text" name="nameChatUser"
-                            [(ngModel)]="userPrvtchat.name" required>
-                    </label>
-                    <button type="submit">Start chat</button>
-                </form>
-            </div>
+
  
-            <div class="create-channel-container">
-                <h3>Join a Channel</h3>
-                <form (ngSubmit)="joinChannel()">
-                    <label>Channel Name:
-                        <input type="text" name="channelName"
-                            [(ngModel)]="channelToJoin.name" required>
-                    </label>
-                    <label>Password:
-                        <input type="password" name="channelPassword"
-                            [(ngModel)]="channelToJoin.password"
-                            placeholder="leave blank if the channel has no password">
-                    </label>
-                    <button type="submit">Join Channel</button>
-                </form>
-            </div>
+
  
-            <div class="create-channel-container">
-                <form (ngSubmit)="blockUser()">
-                    <label>User to Block:
-                        <input type="text" name="blockUserName"
-                            [(ngModel)]="userToBlock.name" required>
-                    </label>
-                    <button type="submit">Block User</button>
-                </form>
-                <form (ngSubmit)="unblockUser()">
-                    <label>User to Unblock:
-                        <input type="text" name="unblockUserName"
-                            [(ngModel)]="userToUnblock.name" required>
-                    </label>
-                    <button type="submit">Unblock User</button>
-                </form>
-            </div>
+
  
         </div>
  
     </div>
+
+
+   
 
 
 

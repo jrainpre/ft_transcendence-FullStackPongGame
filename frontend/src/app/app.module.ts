@@ -38,6 +38,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatMenuModule} from '@angular/material/menu';
  
 
 
@@ -88,6 +89,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatSlideToggleModule,
     MatInputModule,
     MatCheckboxModule,
+    MatMenuModule,
 
   ],
   exports: [MatExpansionModule,

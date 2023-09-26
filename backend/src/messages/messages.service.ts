@@ -195,13 +195,14 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       const client = this.getSocketForUser(user, server, true);
       this.sendLeftChannelMessage(channel, user, client);
       await this.channelUserRepository.delete({ user: user, channel: channel });
-    }
+    
     channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
     if (channel.channelUsers.every(cu => cu.banned)) {
       await this.deleteAllUsersFromChannel(channel);
       await this.channelRepository.delete(channel.id);
       return;
     }
+  }
   }
 
   async updateChannelOwner(channel: Channel, user: User) {

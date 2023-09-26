@@ -364,6 +364,7 @@ body {
     flex-grow: 1;  /* This ensures it takes up maximum space */
     min-height: 20vh;
     max-width: 20vh;
+    min-width: 20vh;
 }
 ::-webkit-scrollbar {
     display: none;
@@ -401,20 +402,12 @@ body {
 }
 
 .complete-chat {
-    border: 1px solid #e0e0e0;  /* Slight border */
-    border-radius: 15px;  /* Rounded corners */
-    padding:25px;  /* Padding around the content */
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);  /* Slight shadow for elevation */
-    display: inline-block; /* Make the container only as wide as its content */
-    max-width: 1000px; /* Optional: Ensure it doesn't get too wide on large screens */
-    width: 100%; /* Take full width up to the max-width */
+    border: 1px solid #e0e0e0;  
+    border-radius: 15px;  
+    padding: 25px;  
+    display: block; 
     background-color: #FFFDF6;
-
-    padding: 10px; /* Optional: Add some padding around the chat */
-    box-sizing: border-box; /* Include padding in width calculations */
-    position: center;
 }
-
 .channel-name {
     font-size: 1.5em;
     font-weight: 500;
@@ -534,8 +527,15 @@ input[matInput] {
 
 .flex-container {
     display: flex;
-    justify-content: space-between; /* Add space between flex children */
+    justify-content: center;
+    padding-bottom: 2vh;
 }
+.flex-container-current-channel {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2vh;
+}
+
 
 
 

@@ -273,8 +273,8 @@ export class ChatComponent implements AfterViewChecked {
 
 
     async joinChannelWrapper(channel: Channel): Promise<void> {
-        this.channelToJoin.name = channel.name;
-        this.joinChannel();
+        this.channelData.name = channel.name;
+        this.joinChannel(this.channelData);
     }
 
     private saveUserData(data: { user: User; publicChannels: Channel[]; userChannels: Channel[]; blockedUsers: User[]; }) {
@@ -322,12 +322,12 @@ export class ChatComponent implements AfterViewChecked {
 
 
 
-    createChannel(): void {
-        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
+    createChannel(channel: Channel): void {
+        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/create-channel`, { channel: channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
-                    this.flushChannelToCreate();
+                    this.flushChannelData();
                     this.snackBar.open('Error creating channel: ' + error.error.message, 'Close', { duration: 5000, });
                     return throwError(error);
                 })
@@ -345,12 +345,12 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
-    joinChannel(): void {
-        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
+    joinChannel(channel: Channel): void {
+        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/join-channel`, { channel: channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
-                    this.flushChannelToJoin();
+                    this.flushChannelData();
                     this.snackBar.open('Error joining channel: ' + error.error.message, 'Close', { duration: 5000, });
                     return throwError(error);
                 })
@@ -615,18 +615,11 @@ export class ChatComponent implements AfterViewChecked {
         this.channel.password = '';
     }
 
-    flushChannelToCreate() {
-        this.channelToCreate.id = 0;
-        this.channelToCreate.name = '';
-        this.channelToCreate.private_channel = false;
-        this.channelToCreate.password = '';
-    }
-
-    flushChannelToJoin() {
-        this.channelToJoin.id = 0;
-        this.channelToJoin.name = '';
-        this.channelToJoin.private_channel = false;
-        this.channelToJoin.password = '';
+    flushChannelData() {
+        this.channelData.id = 0;
+        this.channelData.name = '';
+        this.channelData.private_channel = false;
+        this.channelData.password = '';
     }
 
     flushMessage() {
@@ -727,9 +720,13 @@ export class ChatComponent implements AfterViewChecked {
         private_channel: false,
         password: ''
     }
-    performChannelAction()
-    {}
-    
+    performChannelAction() {
+        if (this.isJoiningChannel) {
+          this.joinChannel(this.channelData);
+        } else {
+          this.createChannel(this.channelData);
+        }
+      }
 
 
 
