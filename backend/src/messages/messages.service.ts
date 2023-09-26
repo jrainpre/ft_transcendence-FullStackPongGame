@@ -17,6 +17,8 @@ import { Server, Socket } from 'socket.io';
 import { SendChannelDto } from './dto/send-channel.dto';
 import { BlockedUser } from '../entities/blocked_user.entity';
 import * as bcrypt from 'bcrypt';
+import { UserStatus } from '../entities/user.entity';
+import { ColumnNumericOptions } from 'typeorm/decorator/options/ColumnNumericOptions';
 
 
 @Injectable()
@@ -72,8 +74,8 @@ export class MessagesService {
     if (userOut) {
       userOut.socket_id = socket_id;
       await this.userRepository.save(userOut);
+      return userOut;
     }
-    return userOut;
   }
 
   validateChannelName(channel: SendChannelDto): boolean {
@@ -547,4 +549,49 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const user = await this.userRepository.findOne({ where: { name: userDto.name }, });
     return user;
   }
+
+
+
+async markConnected(socket_id: string, client:Socket)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.ONLINE;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    client.broadcast.emit('userStatus', userDto,  UserStatus.ONLINE);
+  }
+}
+
+async markDisconnected(socket_id: string, client:Socket)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.OFFLINE;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    client.broadcast.emit('userStatus', userDto, UserStatus.OFFLINE);
+  }
+}
+
+async markInGame(socket_id: string, client: Socket)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.INGAME;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    client.broadcast.emit('userStatus', userDto, UserStatus.INGAME);
+  }
+}
+
+
+
+
+
+
+
+
+
+
 }

@@ -10,7 +10,7 @@ export class AppComponent{
   constructor(private heartbeat: HeartbeatService) {}
 
   ngOnInit(){
-    console.log("OnInit");
-    this.heartbeat.startHeartbeat();
+    // console.log("OnInit");
+    // this.heartbeat.startHeartbeat();
   }
 }

@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Router } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
+import { WebSocketService } from '../game/websocket/websocket.service';
+import { User, UserStatus } from '../chat/interfaces/message';
+
 
 
 @Component({
@@ -10,9 +13,16 @@ import { ProfileComponent } from '../profile/profile.component';
   styleUrls: ['./friendlist.component.css']
 })
 export class FriendlistComponent {
-  constructor(private api: ApiService, private router: Router,private profileComponent: ProfileComponent) {}
+  constructor(private api: ApiService, private router: Router,private profileComponent: ProfileComponent, private webservice: WebSocketService) {
 
-  friends: { username: string; id_42: string; status: string }[] = [];
+    this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
+      this.updateFriendStatus(user, status);
+    });  
+
+
+  }
+
+  friends: { username: string; id_42: number; status: string }[] = [];
   onlineFriends: any[] = [];
   offlineFriends: any[] = [];
 
@@ -40,7 +50,6 @@ export class FriendlistComponent {
     this.onlineFriends = [];
     this.offlineFriends = [];
     this.api.getFriends(id).then((response: any) => {
-      console.log(response);
       for (let i = 0; i < response.length; i++) {
         // Determine whether the current user is userOne or userTwo
         // and populate the friends array accordingly
@@ -64,6 +73,17 @@ export class FriendlistComponent {
     });
   }
 
+  updateFriendStatus(user: User, status: UserStatus) {
+    // Find the friend in the friends array and update their status
+    const friend = this.friends.find(friend => friend.id_42 === user.id_42);
+    if (friend) {
+      friend.status = status;
+    }
+    // Split the sorted friends into online and offline arrays
+    this.onlineFriends = this.friends.filter(friend => (friend.status === 'online' || friend.status === 'ingame' || friend.status === 'inqueue'));
+    this.offlineFriends = this.friends.filter(friend => friend.status === 'offline');
+  }
+
   
 
   goToProfile(id_42: string) {
@@ -84,4 +104,9 @@ export class FriendlistComponent {
       return 'online-status';
     }
   }
+
+
+
+
+
 }  

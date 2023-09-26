@@ -3,7 +3,7 @@ import { Component, Injectable } from '@angular/core';
 import { delay } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
-import { Message, User, Channel, ChannelUser, ChatData } from './interfaces/message';
+import { Message, User, Channel, ChannelUser, ChatData, UserStatus } from './interfaces/message';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -229,8 +229,22 @@ export class ChatComponent implements AfterViewChecked {
             this.blockedUsers = users;
         });
 
+        this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
+            this.updateChannelUser(user, status);
+          });  
+      
+
     }
 
+
+    updateChannelUser(user: User, status: UserStatus) {
+        if (this.channelUsers.some(channelUser => channelUser.id_42 === user.id_42)) {
+            const channelUser = this.channelUsers.find(channelUser => channelUser.id_42 === user.id_42);
+            if (channelUser)
+                channelUser.status = status;
+        }
+    }
+    
     async ngOnInit(): Promise<void> {
         this.loadUserData();
     };

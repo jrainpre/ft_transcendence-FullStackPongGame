@@ -32,7 +32,6 @@ export class SidebarComponent {
         id_42: id,
       }
       this.webservice.socket.emit('updateSocketId', { user: user });
-      console.log("Updated SocketID");
     }
 
   async routProfile(): Promise<any>{
