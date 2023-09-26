@@ -334,13 +334,11 @@ export class ChatComponent implements AfterViewChecked {
             )
             .subscribe(data => {
                 if (data) {
-                    console.log("test1");
                     this.saveChannelData(data);
+                    this.userChannels.push(data.channel)
                     if (this.channel.private_channel) {
                         this.snackBar.open('Private channel created successfully', 'Close', { duration: 5000, });
                     } else {
-                    console.log("test3");
-
                         this.snackBar.open('Public channel created successfully', 'Close', { duration: 5000, });
                     }
                 }
