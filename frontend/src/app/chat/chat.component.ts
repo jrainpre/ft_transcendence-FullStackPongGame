@@ -225,8 +225,8 @@ export class ChatComponent implements AfterViewChecked {
             this.snackBar.open('You were unblocked by ' + data.user.name, 'Close', { duration: 5000, });
         });
 
-        this.webservice.socket.on('updateBlockedUsers', (users: User[]) => {
-            this.blockedUsers = users;
+        this.webservice.socket.on('updateBlockedUsers', (data: {blockedUsers: User[]}) => {
+            this.blockedUsers = data.blockedUsers;
         });
 
         this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
@@ -432,6 +432,9 @@ export class ChatComponent implements AfterViewChecked {
                 if (data) {
                     this.userToUnblock = this.flushUser(this.userToUnblock);
                     this.blockedUsers = data.blockedUsers;
+                    if (!data.blockedUsers)
+                        this.blockedUsers = [];
+                    console.log(JSON.stringify(this.blockedUsers));
                     this.snackBar.open('User unblocked successfully', 'Close', { duration: 5000, });
                 }
             })
@@ -663,6 +666,10 @@ export class ChatComponent implements AfterViewChecked {
         if(this.user.id_42 === user.id_42)
         {
             this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+            return;
+        }
+        if (user.status === 'ingame' || user.status === 'offline') {
+            this.snackBar.open('User is not available', 'Close', { duration: 5000, });
             return;
         }
         let curUser: {
