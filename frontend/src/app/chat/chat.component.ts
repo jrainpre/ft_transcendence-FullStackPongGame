@@ -231,7 +231,11 @@ export class ChatComponent implements AfterViewChecked {
 
         this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
             this.updateChannelUser(user, status);
-          });  
+          });
+
+        this.webservice.socket.on('gameInvite', (user: User) => {
+            this.openSnackBarInvite(user);
+        });
       
 
     }
@@ -663,15 +667,15 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     oneVsOne(user: any){
-        if(this.user.id_42 === user.id_42)
-        {
-            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
-            return;
-        }
-        if (user.status === 'ingame' || user.status === 'offline') {
-            this.snackBar.open('User is not available', 'Close', { duration: 5000, });
-            return;
-        }
+        // if(this.user.id_42 === user.id_42)
+        // {
+        //     this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+        //     return;
+        // }
+        // if (user.status === 'ingame' || user.status === 'offline') {
+        //     this.snackBar.open('User is not available', 'Close', { duration: 5000, });
+        //     return;
+        // }
         let curUser: {
             id_42: number;
             socketId: string;
@@ -747,6 +751,21 @@ export class ChatComponent implements AfterViewChecked {
         } else {
           this.createChannel(this.channelData);
         }
+      }
+
+
+      openSnackBarInvite(user: User) {
+        let snackBarRef = this.snackBar.open(`$user.name invited you to a game`, 'Accept', {
+          duration: 10000,  
+        });
+      
+        snackBarRef.onAction().subscribe(() => {
+            this.oneVsOne(user);
+        });
+      }
+
+      requestOneVsOne(user: User) {
+        this.webservice.socket.emit('gameInvite', { user: user });
       }
 
 
