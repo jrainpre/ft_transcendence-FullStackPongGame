@@ -19,6 +19,7 @@ import { BlockedUser } from '../entities/blocked_user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserStatus } from '../entities/user.entity';
 import { ColumnNumericOptions } from 'typeorm/decorator/options/ColumnNumericOptions';
+import { Send } from 'express';
 
 
 @Injectable()
@@ -132,6 +133,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     }
     return socket;
   }
+
 
 
   async addUserToChannel(user: User, channel: Channel, server: Server) {
@@ -584,6 +586,20 @@ async markInGame(socket_id: string, client: Socket)
     client.broadcast.emit('userStatus', userDto, UserStatus.INGAME);
   }
 }
+
+async sendInvite(user: SendUserDto, client: Socket, server: Server)
+{
+  const sender = await this.userRepository.findOne({ where: { socket_id: client.id }});
+  const senderDto = mapUserToDto(sender);
+  const partner = await this.userRepository.findOne({ where: { name: user.name }, });
+  const partner_socket = this.getSocketForUser(partner, server, false);
+  if (partner_socket)
+    partner_socket.emit('gameInvite', senderDto);
+}
+
+
+
+
 
 
 

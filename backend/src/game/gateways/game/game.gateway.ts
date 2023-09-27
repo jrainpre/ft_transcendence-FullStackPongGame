@@ -10,6 +10,7 @@ import { User } from 'src/entities/user.entity';
 import { SendMessageDto } from 'src/messages/dto/send-message.dto';
 import { SendUserDto } from 'src/messages/dto/send-user.dto';
 import { MessagesService } from 'src/messages/messages.service';
+import { send } from 'process';
 
 
 @WebSocketGateway({cors: '*'})
@@ -40,6 +41,11 @@ async updateSocketId(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket(
 const user = await this.messagesService.updateSocketId(userDto, client.id);
 await this.messagesService.markConnected(client.id, client);
 const channel = await this.messagesService.joinChannels(user, client);
+}
+
+@SubscribeMessage('gameInvite')
+async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+  this.messagesService.sendInvite(userDto, client, this.lobbyManager.server);
 }
 
 
