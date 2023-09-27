@@ -63,9 +63,11 @@ export class LobbyService {
           this.logger.log('DELETE LOBBY');
           client.leave(lobby.id);
           lobby.instance.terminate();
+          delete lobby.instance;
           lobby.instance = null;
           lobby.clients.delete(client_id);
           this.lobbies.delete(lobby.id);
+          lobby = null;
           return;
         }
       }

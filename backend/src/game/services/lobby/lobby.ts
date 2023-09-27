@@ -18,6 +18,7 @@ export class Lobby
   public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<Socket['id'], AuthenticatedSocket>();
   public instance: any;
   public hasFinished: boolean = false;
+  public games = new Games();
   
   constructor(
     readonly user: Repository<User>,
@@ -64,8 +65,7 @@ export class Lobby
     }
   }
 
-  public async updateGameStats(score: Score, winner: string): Promise<void> {
-    const games = new Games();
+  public async updateGameStats(score: Score, winner: string, games: Games): Promise<void> {
     games.player_one_score = score.playerLeft;
     games.player_two_score = score.playerRight;
 
@@ -73,7 +73,6 @@ export class Lobby
       const user = await this.user.findOne({where: { id_42: socket.data.id }});
 
       if(socket.data.position === 'left'){
-        games.playerOne = user;
         if(winner === 'left') {
           if(socket.data.modus === 'normal'){
             user.win_normal += 1;
@@ -94,7 +93,6 @@ export class Lobby
         }
       }
       else if (socket.data.position === 'right'){
-        games.playerTwo = user;
         if(winner === 'right') {
           if(socket.data.modus === 'normal'){
             user.win_normal += 1;
@@ -135,6 +133,21 @@ export class Lobby
   }
 
   public async finishQueue(){
+    let userOne: User = new User;
+    let userTwo: User = new User;
+
+    const authenticatedSockets: AuthenticatedSocket[] = Array.from(this.clients.values());
+    if(authenticatedSockets[0].data.position === 'left'){
+      userOne = await this.user.findOne({where: { id_42: authenticatedSockets[0].data.id }});
+      userTwo = await this.user.findOne({where: { id_42: authenticatedSockets[1].data.id }});
+    } else {
+      userOne = await this.user.findOne({where: { id_42: authenticatedSockets[1].data.id }});
+      userTwo = await this.user.findOne({where: { id_42: authenticatedSockets[0].data.id }});
+    }
+
+    this.games.playerOne = userOne;
+    this.games.playerTwo = userTwo;
+    await this.game.save(this.games);
 
     const room = this.server.sockets.adapter.rooms.get(this.id);
 
@@ -147,7 +160,7 @@ export class Lobby
 
     this.server.to(this.id).emit('finishedQueue');
     await new Promise(resolve => setTimeout(resolve, 3000));
-    this.instance.startRound(this.id);
+    this.instance.startRound(this.id, this.games);
 
     while(1) {
       if(this.hasFinished === true) {
