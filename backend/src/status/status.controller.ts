@@ -34,17 +34,7 @@ export class StatusController {
         res.status(200).json(); 
     }
 
-    @Post('ingame')
-    async setIngame(@Req() req, @Res() res): Promise<any>{
-        try{
-            const jwtUser = await this.auth.getUserFromJwtCookie(req);
-            await this.status.setStatus(jwtUser, UserStatus.INGAME);
-        }
-        catch(error){
-            throw new BadRequestException();
-        }
-        res.status(200).json(); 
-    }
+ 
 
     @UseGuards(JwtAuthGuard)
     @Post('heartbeat')

@@ -536,6 +536,11 @@ input[matInput] {
     padding-bottom: 2vh;
 }
 
+.testflex{
+    width: --webkit-fill-available;
+
+}
+
 
 
 
