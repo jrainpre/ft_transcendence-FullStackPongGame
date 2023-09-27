@@ -542,6 +542,49 @@ input[matInput] {
 }
 
 
+@media (max-width: 1300px) {
+    .flex-container {
+        flex-direction: column;
+    }
+    .flex-child {
+        width: 100%;  /* Ensure each child takes the full width on narrow screens */
+        margin-bottom: 20px;  /* Add some spacing between stacked containers */
+    }
+    .messages-area {
+        max-width: 60%;  /* Set a max-width for the messages area */
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+
+    .input-area{
+        width: 60%;  /* Make the input take the full width of its container */
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+    .flex-container-current-channel{
+        width: 60%;
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+    .chat-box{
+        width: 100%;
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+
+    .channels-container1{
+        width: 100%;
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+
+    .dropdown{
+        width: 100%;
+        margin-left: auto;  /* Center the messages area */
+        margin-right: auto;
+    }
+}
+
 
 
 

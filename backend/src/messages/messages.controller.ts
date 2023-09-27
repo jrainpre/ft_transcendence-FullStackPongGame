@@ -85,7 +85,7 @@ export class MessagesController {
             res.status(200).json({ userChannels: userChannelsDto });
             const channel = await this.messagesService.findChannelNoThrow(channelDto);
             if(channel){
-                console.log("channel found");
+                // console.log("channel found");
                 const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
                 this.messagesGateway.lobbyManager.server.to(channelDto.name).emit('updateChannelUsers', {channel: channelDto, channelUsers: channelUsersDto});
             }
