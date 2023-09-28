@@ -18,14 +18,19 @@
   <!-- Net -->
   <line id="net" x1="50%" y1="9px" x2="50%" y2="100%" />
 
-  <!-- Player Scores -->
-  <text x="23%" y="48">{{ scorePlayerLeft }}</text>
-  <text x="75%" y="48">{{ scorePlayerRight }}</text>
-
   <!-- Paddles -->
   <rect class="paddle" [attr.width]="paddleWidth + '%'" [attr.height]="paddleHeight + '%'" [attr.x]="playerLeftX + '%'" [attr.y]="playerLeftY + '%'" />
   <rect class="paddle" [attr.width]="paddleWidth + '%'" [attr.height]="paddleHeight + '%'" [attr.x]="playerRightX + '%'" [attr.y]="playerRightY + '%'" />
 
   <!-- Ball -->
-  <rect id="ball" [attr.width]="ballWidth + '%'" [attr.height]="ballHeight + '%'" [attr.x]="ballX + '%'" [attr.y]="ballY + '%'" />
+  <!-- <rect id="ball" [attr.width]="ballWidth + '%'" [attr.height]="ballHeight + '%'" [attr.x]="ballX + '%'" [attr.y]="ballY + '%'" /> -->
+  <circle id="ball" [attr.r]="ballRadius + '%'" [attr.cx]="ballX + '%'" [attr.cy]="ballY + '%'" />
+
+  <!-- Player Names -->
+  <text x="10%" y="15%" font-size="4vh">{{ userOne }}</text>
+  <text x="80%" y="15%" font-size="4vh">{{ userTwo }}</text>
+
+  <!-- Player Scores -->
+  <text x="23%" y="85%" font-size="4vh">{{ scorePlayerLeft }}</text>
+  <text x="75%" y="85%" font-size="4vh">{{ scorePlayerRight }}</text>
 </svg>

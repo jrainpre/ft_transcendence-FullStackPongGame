@@ -127,9 +127,9 @@ export class Lobby
     this.server.to(this.id).emit(event);
   }
 
-  public dispatchToClient(game: Game, loobyId: string): void
+  public dispatchToClient(game: Game, loobyId: string, userOne: User, userTwo: User): void
   {
-    this.server.to(loobyId).emit('updateGame', game);
+    this.server.to(loobyId).emit('updateGame', game, userOne.name, userTwo.name);
   }
 
   public async finishQueue(){
@@ -160,7 +160,7 @@ export class Lobby
 
     this.server.to(this.id).emit('finishedQueue');
     await new Promise(resolve => setTimeout(resolve, 3000));
-    this.instance.startRound(this.id, this.games);
+    this.instance.startRound(this.id, this.games, userOne, userTwo);
 
     while(1) {
       if(this.hasFinished === true) {
