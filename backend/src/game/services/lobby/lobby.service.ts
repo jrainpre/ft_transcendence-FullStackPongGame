@@ -82,11 +82,11 @@ export class LobbyService {
 
     if(first == true) {
 
-      // for (const [lobbyId, lobby] of this.lobbies) {
-      //   for (const [key, client] of lobby.clients.entries()) {
-      //     if (client.data.id === player.data.id){return;}
-      //   }
-      // }
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
 
       this.logger.log('FIRST');
       const newLobby = this.createLobby(modus);
@@ -99,11 +99,11 @@ export class LobbyService {
       return newLobby.id;
     } else if (first == false){
 
-      // for (const [lobbyId, lobby] of this.lobbies) {
-      //   for (const [key, client] of lobby.clients.entries()) {
-      //     if (client.data.id === player.data.id){return;}
-      //   }
-      // }
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
 
       this.logger.log('SECOND');
       const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.id === lobby_id);
@@ -133,15 +133,15 @@ export class LobbyService {
         return;
       }
 
-      // for (const [key, client] of availableLobby.clients.entries()) {
-      //   if(client.data.id === player.data.id) {return;}
-      // }
+      for (const [key, client] of availableLobby.clients.entries()) {
+        if(client.data.id === player.data.id) {return;}
+      }
 
-      // for (const [lobbyId, lobby] of this.lobbies) {
-      //   for (const [key, client] of lobby.clients.entries()) {
-      //     if (client.data.id === player.data.id){return;}
-      //   }
-      // }
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
 
       player.data.position = 'right';
       availableLobby.addClient(player);
@@ -156,11 +156,11 @@ export class LobbyService {
         return;
       }
 
-      // for (const [lobbyId, lobby] of this.lobbies) {
-      //   for (const [key, client] of lobby.clients.entries()) {
-      //     if (client.data.id === player.data.id){return;}
-      //   }
-      // }
+      for (const [lobbyId, lobby] of this.lobbies) {
+        for (const [key, client] of lobby.clients.entries()) {
+          if (client.data.id === player.data.id){return;}
+        }
+      }
 
       const newLobby = this.createLobby(modus);
       player.data.position = 'left';
