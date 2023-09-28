@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { ChatComponent } from '../chat/chat.component';
 
 
 @Component({
@@ -14,9 +15,10 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit{
-  constructor(private router: Router, private websocketService: WebSocketService, private http: HttpClient) {}
+  constructor(private router: Router, private websocketService: WebSocketService, private http: HttpClient, private readonly chat: ChatComponent) {}
 
   async ngOnInit(): Promise<void> {
+    this.chat.updateSocketId();
     this.setStatusOnline();
   }
 

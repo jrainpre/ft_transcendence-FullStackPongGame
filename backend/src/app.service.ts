@@ -11,7 +11,7 @@ export class AppService {
 
   @Cron('0/3 * * * * *')
   handleCron(){
-    this.status.setUserOnlineTimestamp();
-    this.status.setUserOfflineAfterTimeout();
+    // this.status.setUserOnlineTimestamp();
+    // this.status.setUserOfflineAfterTimeout();
   }
 }

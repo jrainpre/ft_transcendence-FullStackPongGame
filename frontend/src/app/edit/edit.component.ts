@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ChatComponent } from '../chat/chat.component';
+
 
 
 @Component({
@@ -12,7 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 export class EditComponent {
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar, private readonly chat: ChatComponent) {}
   id: string = '';
   profileUrl: string = '';
   curTFA: boolean = true;
@@ -24,6 +26,7 @@ export class EditComponent {
   errorMessage: string = '';
 
   async ngOnInit(): Promise<any>{
+    this.chat.updateSocketId();
     this.route.params.subscribe(params => {
       this.id = params['id'];
     });
