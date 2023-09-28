@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject } from 'rxjs';
 
-
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.svg',
@@ -21,8 +20,8 @@ export class MatchComponent implements OnInit {
 
     this.websocketService.sendStartGame();
 
-    websocketService.socket.on('updateGame', (game: Game) => {
-      this.updateGame(game);
+    websocketService.socket.on('updateGame', (game: Game, userOne: string, userTwo: string) => {
+      this.updateGame(game, userOne, userTwo);
     });
   }
 
@@ -47,6 +46,7 @@ export class MatchComponent implements OnInit {
   // }
 
   // constants
+  ballRadius = 1;
   ballWidth = 2;
   ballHeight = 3;
   paddleWidth = 1;
@@ -66,7 +66,8 @@ export class MatchComponent implements OnInit {
   // canMoveRackets = true;
   // racket0Increment = 0;
   // racket1Increment = 0;
-
+  userOne: string = '';
+  userTwo: string = '';
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
@@ -78,7 +79,7 @@ export class MatchComponent implements OnInit {
     this.websocketService.sendKeyUp({ key: event.code });
   }
 
-  updateGame(game: Game) {
+  updateGame(game: Game, userOne: string, userTwo: string) {
     this.ballX = game.ballPosition.x;
     this.ballY = game.ballPosition.y;
     this.scorePlayerLeft = game.score.playerLeft;
@@ -92,5 +93,7 @@ export class MatchComponent implements OnInit {
     this.paddleWidth = game.paddleDimension.width;
     this.paddleHeight = game.paddleDimension.height;
     this.paddleMargin = game.margin;
+    this.userOne = userOne;
+    this.userTwo = userTwo;
   }
 }

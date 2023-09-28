@@ -1,21 +1,29 @@
+:root {
+  --font-family: 'Atomic Age', cursive;
+  --text-color: silver;
+  --ball-color: black;
+  --net-color: silver;
+  --paddle-color: white;
+}
+
 text {
-  font-family: 'Atomic Age', cursive;
-  font-size: 48px;
-  fill: silver;
+  font-family: var(--font-family);
+  font-size: 4vh;
+  fill: var(--text-color);
 }
 
 #ball {
-  fill: silver;
+  fill: var(--ball-color);
 }
 
 #net {
-  stroke: silver;
+  stroke: var(--net-color);
   stroke-width: 2%;
   stroke-dasharray: 4%, 4%;
 }
 
 .paddle {
-  fill: white;
+  fill: var(--paddle-color);
 }
 
 #app-game {
@@ -25,10 +33,14 @@ text {
   transform: translate(-50%, -50%);
   display: block;
   margin: auto;
-  width: 900px; 
-  height: 600px;
+  width: 98%;
+  height: 85vh;
+  background-color: #7a7a7a;
+  border: 10px solid black;
 }
 
 h1 {
   text-align: center;
 }
+
+

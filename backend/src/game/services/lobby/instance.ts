@@ -2,6 +2,8 @@ import { Lobby } from './lobby';
 import { Logger } from '@nestjs/common';
 import { Paddle, Referee, Game } from '../../ecs/entities';
 import { AuthenticatedSocket } from '../../services/lobby/types';
+import { Games } from 'src/entities/games.entity';
+import { User } from 'src/entities/user.entity';
 
 export class NormalInstance
 {
@@ -21,6 +23,7 @@ export class NormalInstance
 	game: Game = new Game();
 	loopIncrementX: number;
 	loopIncrementY: number;
+  verticalOverlap: number;
 
 	private gameLoopInterval: NodeJS.Timeout | null = null;
 
@@ -52,7 +55,7 @@ export class NormalInstance
 		this.loopIncrementY = 0;
 	}
 
-  startRound(lobbyId: string): void {
+  startRound(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     this.setBall();
     this.loopIncrementX = this.getRandomIncrement();
     this.loopIncrementY = this.getRandomIncrement();
@@ -60,12 +63,12 @@ export class NormalInstance
     this.referee.movePaddle = true;
     this.moveLeftPaddle(this.playerLeft.increment);
     this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    this.gameLoop(lobbyId);
+    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+    this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
+    this.gameLoop(lobbyId, games, userOne, userTwo);
   }
 
-  gameLoop(lobbyId: string): void {
+  gameLoop(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     // Clear any existing game loop interval
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
@@ -74,8 +77,8 @@ export class NormalInstance
     this.gameLoopInterval = setInterval(() => {
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
-      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-      this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+      this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
 
@@ -155,7 +158,7 @@ export class NormalInstance
     );
   }
 
-  async moveBall(xIncrement: number, yIncrement: number, id: any): Promise<void> {
+  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games, userOne: User, userTwo: User): Promise<void> {
     if (!this.referee.moveBall) {
       return;
     }
@@ -176,13 +179,13 @@ export class NormalInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id);
+        this.startRound(id, games, userOne, userTwo);
       }
       else {
-        this.lobby.updateGameStats(this.game.score, 'left');
+        this.lobby.updateGameStats(this.game.score, 'left', games);
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
@@ -193,13 +196,13 @@ export class NormalInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id);
+        this.startRound(id, games, userOne, userTwo);
       }
       else{ 
-        this.lobby.updateGameStats(this.game.score, 'right');
+        this.lobby.updateGameStats(this.game.score, 'right', games);
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
@@ -289,7 +292,6 @@ export class NormalInstance
 export class RankedInstance
 {
 	public hasStarted: boolean = false;
-
 	public hasFinished: boolean = false;
 
 	constructor(private readonly lobby: Lobby)
@@ -305,6 +307,7 @@ export class RankedInstance
 	game: Game = new Game();
 	loopIncrementX: number;
 	loopIncrementY: number;
+  verticalOverlap: number;
 
 	private gameLoopInterval: NodeJS.Timeout | null = null;
 
@@ -336,7 +339,7 @@ export class RankedInstance
 		this.loopIncrementY = 0;
 	}
 
-  startRound(lobbyId: string): void {
+  startRound(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     this.setBall();
     this.loopIncrementX = this.getRandomIncrement();
     this.loopIncrementY = this.getRandomIncrement();
@@ -344,12 +347,12 @@ export class RankedInstance
     this.referee.movePaddle = true;
     this.moveLeftPaddle(this.playerLeft.increment);
     this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    this.gameLoop(lobbyId);
+    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+    this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
+    this.gameLoop(lobbyId, games, userOne, userTwo);
   }
 
-  gameLoop(lobbyId: string): void {
+  gameLoop(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     // Clear any existing game loop interval
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
@@ -357,8 +360,8 @@ export class RankedInstance
     this.gameLoopInterval = setInterval(() => {
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
-      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId);
-      this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+      this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
 
@@ -438,7 +441,7 @@ export class RankedInstance
     );
   }
 
-  async moveBall(xIncrement: number, yIncrement: number, id: any): Promise<void> {
+  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games, userOne: User, userTwo: User): Promise<void> {
     if (!this.referee.moveBall) {
       return;
     }
@@ -468,13 +471,13 @@ export class RankedInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id);
+        this.startRound(id, games, userOne, userTwo);
       }
       else {
-        this.lobby.updateGameStats(this.game.score, 'left');
+        this.lobby.updateGameStats(this.game.score, 'left', games);
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;
@@ -485,13 +488,13 @@ export class RankedInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id);
+        this.startRound(id, games, userOne, userTwo);
       }
       else{ 
-        this.lobby.updateGameStats(this.game.score, 'right');
+        this.lobby.updateGameStats(this.game.score, 'right', games);
         this.resetAll();
         this.stopGameLoop();
         this.lobby.hasFinished = true;

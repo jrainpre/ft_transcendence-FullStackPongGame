@@ -23,6 +23,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { PersonalMatchHistoryComponent } from './personal-match-history/personal-match-history.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HeartbeatComponent } from './heartbeat/heartbeat.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatSelectModule } from '@angular/material/select';
@@ -40,11 +42,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatMenuModule} from '@angular/material/menu';
  
-
-
-
-
-
 
 @NgModule({
   declarations: [
@@ -74,6 +71,9 @@ import {MatMenuModule} from '@angular/material/menu';
     NgbModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
     NgbDropdownModule,
     MatSelectModule,
     MatListModule,
@@ -90,7 +90,6 @@ import {MatMenuModule} from '@angular/material/menu';
     MatInputModule,
     MatCheckboxModule,
     MatMenuModule,
-
   ],
   exports: [MatExpansionModule,
     MatCardModule,
