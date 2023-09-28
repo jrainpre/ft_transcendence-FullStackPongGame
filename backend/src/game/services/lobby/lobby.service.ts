@@ -132,7 +132,7 @@ export class LobbyService {
     
     if (availableLobby) {
       if(player.data.id > 2147483647) {
-        this.server.emit('returnToStart');
+        this.server.to(availableLobby.id).emit('returnToStart');
         return;
       }
 
@@ -155,7 +155,7 @@ export class LobbyService {
       this.lobbies.delete(availableLobby.id);
     } else {
       if(player.data.id > 2147483647) {
-        this.server.emit('returnToStart');
+        this.server.to(availableLobby.id).emit('returnToStart');
         return;
       }
 
