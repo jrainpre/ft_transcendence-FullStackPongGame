@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Router } from '@angular/router';
+import { ChatComponent } from '../chat/chat.component';
+
 
 @Component({
   selector: 'app-match-history',
@@ -16,9 +18,10 @@ export class MatchHistoryComponent {
   displayedGames: any[] = [];
   dataLoaded = false; // Flag to track data loading
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router, private readonly chat: ChatComponent) {}
 
   async ngOnInit(): Promise<void> {
+    this.chat.updateSocketId();
     try {
       await this.loadMatches();
       this.dataLoaded = true; // Set the flag to indicate data is loaded

@@ -93,7 +93,7 @@ export class LobbyService {
       newLobby.addClient(player);
       player.data.position = 'left';
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      this.messagesService.markInGame(player.id, player);
+      this.messagesService.markInGame(player.id, this.server);
       // user.status = UserStatus.INGAME;
       // await this.user.save(user);
       this.logger.log(newLobby.id);
@@ -111,7 +111,7 @@ export class LobbyService {
       availableLobby.addClient(player);
       player.data.position = 'right';
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      this.messagesService.markInGame(player.id, player);
+      this.messagesService.markInGame(player.id, this.server);
 
 
       for (const [key, client] of availableLobby.clients.entries()) {
@@ -147,7 +147,7 @@ export class LobbyService {
       player.data.position = 'right';
       availableLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      this.messagesService.markInGame(player.id, player);
+      this.messagesService.markInGame(player.id, this.server);
 
       await availableLobby.finishQueue();
       this.lobbies.delete(availableLobby.id);
@@ -167,7 +167,7 @@ export class LobbyService {
       player.data.position = 'left';
       newLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      this.messagesService.markInGame(player.id, player);
+      this.messagesService.markInGame(player.id, this.server);
 
     }
   }

@@ -95,7 +95,7 @@ import {MatMenuModule} from '@angular/material/menu';
   exports: [MatExpansionModule,
     MatCardModule,
     MatChipsModule],
-  providers: [ProfileComponent],
+  providers: [ProfileComponent, ChatComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

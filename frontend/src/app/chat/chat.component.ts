@@ -14,6 +14,7 @@ import { FriendlistComponent} from '../friendlist/friendlist.component';
 import { WebSocketService } from '../game/websocket/websocket.service';
 import { environment } from 'src/environments/environment';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 
 @Injectable()
 
@@ -58,6 +59,7 @@ export class ChatComponent implements AfterViewChecked {
     isRegistered: boolean = false;
     messages: Message[] = [];
     typingDisplay: string = '';
+    status: string = '';
 
 
 
@@ -140,25 +142,16 @@ export class ChatComponent implements AfterViewChecked {
         private snackBar: MatSnackBar,
         private webservice: WebSocketService) {
 
-        // this.socket = io('http://localhost:3001');
 
         this.webservice.socket.on('message', (message: Message) => {
-            // ////console.log(JSON.stringify(message));
-            // ////console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
-            // if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was banned from channel`))
-            //     location.reload();
-            // if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was kicked from channel`))
-            //     location.reload();
         });
 
         this.webservice.socket.on('ChannelMessages', (messageArray: Message[]) => {
             const filteredMessages = messageArray.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id));
             this.messages.push(...filteredMessages);
-            // ////console.log(JSON.stringify(this.messages));
-
         });
 
 
@@ -231,11 +224,19 @@ export class ChatComponent implements AfterViewChecked {
 
         this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
             this.updateChannelUser(user, status);
+            this.updateOwnUser(user, status);
           });
 
         this.webservice.socket.on('gameInvite', (user: User) => {
             this.openSnackBarInvite(user);
         });
+
+        this.webservice.socket.on('userAlreadyConnected', (user: User) => {
+            this.snackBar.open('User already connected', 'Close', { duration: 5000, });
+            this.router.navigate([`/login`]);
+
+        });
+
       
 
     }
@@ -248,7 +249,13 @@ export class ChatComponent implements AfterViewChecked {
                 channelUser.status = status;
         }
     }
-    
+
+    updateOwnUser(user: User, status: UserStatus) {
+        if (this.user.id_42 === user.id_42) {
+            this.status = status;
+        }
+    }
+
     async ngOnInit(): Promise<void> {
         this.loadUserData();
     };
@@ -279,16 +286,6 @@ export class ChatComponent implements AfterViewChecked {
                 break;
         }
     }
-
-
-
-
-
-
-
-
-
-
 
     async joinChannelWrapper(channel: Channel): Promise<void> {
         this.channelData.name = channel.name;
@@ -755,19 +752,44 @@ export class ChatComponent implements AfterViewChecked {
 
 
       openSnackBarInvite(user: User) {
-        let snackBarRef = this.snackBar.open(`$user.name invited you to a game`, 'Accept', {
-          duration: 10000,  
-        });
+
+        let snackBarRef = this.snackBar.open(`${user.name} invited you to a game`, 'Accept', {
+            duration: 10000,  
+          });
       
         snackBarRef.onAction().subscribe(() => {
             this.oneVsOne(user);
         });
+
+        snackBarRef.afterDismissed().subscribe(info => {
+            if (!info.dismissedByAction) {
+              this.markOnline(user);
+            }
+          });
       }
 
-      requestOneVsOne(user: User) {
+      requestOneVsOne(user: ChannelUser) {
+        if(this.user.id_42 === user.id_42)
+        {
+            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+            return;
+        }
+        if (user.status === 'ingame' || user.status === 'offline') {
+            this.snackBar.open('User is not available', 'Close', { duration: 5000, });
+            return;
+        }
+        if (this.status === 'ingame') {
+            this.snackBar.open('You are already in a game', 'Close', { duration: 5000, });
+            return;
+        }
+        this.snackBar.open('Game request sent', 'Close', { duration: 5000, });
         this.webservice.socket.emit('gameInvite', { user: user });
       }
 
+
+    markOnline(user: User) {
+        this.webservice.socket.emit('markOnline', { user: user });
+    }
 
 
 

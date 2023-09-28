@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { ChatComponent } from '../chat/chat.component';
+
 
 @Component({
   selector: 'app-enable-tfa',
@@ -10,7 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 export class EnableTFAComponent {
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private readonly chat: ChatComponent) {}
 
   qrCodeUrl: string = '';
   userId: string = '';
@@ -18,6 +20,7 @@ export class EnableTFAComponent {
   errorMessage: string = '';
 
   async ngOnInit(): Promise<void> {
+    this.chat.updateSocketId();
     this.route.params.subscribe(params => {
       this.userId = params['id'];
       console.log(this.userId);
