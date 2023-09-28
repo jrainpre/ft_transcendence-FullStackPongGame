@@ -17,6 +17,10 @@ import { Server, Socket } from 'socket.io';
 import { SendChannelDto } from './dto/send-channel.dto';
 import { BlockedUser } from '../entities/blocked_user.entity';
 import * as bcrypt from 'bcrypt';
+import { UserStatus } from '../entities/user.entity';
+import { ColumnNumericOptions } from 'typeorm/decorator/options/ColumnNumericOptions';
+import { Send } from 'express';
+import { get } from 'http';
 
 
 @Injectable()
@@ -67,13 +71,21 @@ export class MessagesService {
     return blockedUsersDto;
   }
 
-  async updateSocketId(user: SendUserDto, socket_id: string) {
+  async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
     let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"] });
+    if (socket_id === userOut.socket_id)
+      return userOut;
+    const socket = this.getSocketForUser(userOut, server, false);
+    if (socket)
+    {
+      server.to(socket_id).emit('userAlreadyConnected');
+      return null;
+    }
     if (userOut) {
       userOut.socket_id = socket_id;
       await this.userRepository.save(userOut);
+      return userOut;
     }
-    return userOut;
   }
 
   validateChannelName(channel: SendChannelDto): boolean {
@@ -132,6 +144,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
   }
 
 
+
   async addUserToChannel(user: User, channel: Channel, server: Server) {
 
     let isBanned = channel.channelUsers.some(cu => cu.user.id_42 === user.id_42 && cu.banned);
@@ -150,9 +163,13 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const client = this.getSocketForUser(user, server, true);
 
     client.join(channel.name);
-    this.sendJoinedChannelMessage(channel, user, client);
+    this.sendJoinedChannelMessage(channel, user, server);
   }
 
+
+  findChannelNoThrow(channeldto: SendChannelDto): Promise<Channel> {
+    return this.channelRepository.findOne({ where: { name: channeldto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel",], });
+  }
 
   async findChannel(channeldto: SendChannelDto, pw_check: boolean): Promise<Channel> {
     const channel = await this.channelRepository.findOne({ where: { name: channeldto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel",], });
@@ -176,6 +193,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Channel not found');
     }
     if (channel.direct_message === true) {
+      server.to(channel.name).emit('channelDeleted', channelDto);
       await this.deleteAllUsersFromChannel(channel);
       await this.channelRepository.delete(channel.id);
       return;
@@ -190,13 +208,14 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       const client = this.getSocketForUser(user, server, true);
       this.sendLeftChannelMessage(channel, user, client);
       await this.channelUserRepository.delete({ user: user, channel: channel });
-    }
+    
     channel = await this.channelRepository.findOne({ where: { name: channelDto.name }, relations: ["channelUsers", "channelUsers.user", "channelUsers.channel"], });
     if (channel.channelUsers.every(cu => cu.banned)) {
       await this.deleteAllUsersFromChannel(channel);
       await this.channelRepository.delete(channel.id);
       return;
     }
+  }
   }
 
   async updateChannelOwner(channel: Channel, user: User) {
@@ -350,21 +369,21 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     if (channel.pw_hashed === null)
       channel.private_channel = false;
     await this.channelRepository.save(channel);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, 'owner set new password');
+    this.sendInfoMessage(channel, user, server, 'owner set new password');
     return channel;
   }
 
-  async sendInfoMessage(channel: Channel, user: User, client: Socket, content: string) {
+  async sendInfoMessage(channel: Channel, user: User, server: Server, content: string) {
     let message = this.messageRepository.create({ content: content, owner: user, channel: channel, isSystemMessage: true });
     this.messageRepository.save(message);
     const dtoMessage = mapMessageToDto(message);
-    client.to(channel.name).emit('message', dtoMessage);
+    server.to(channel.name).emit('message', dtoMessage);
   }
 
   async getChannelUsersDto(channel: Channel) {
     channel = await this.channelRepository.findOne({ where: { name: channel.name }, relations: ["channelUsers", "channelUsers.user",], });
-    const channelUsersDto = channel.channelUsers.map(mapChannelUserToDto);
+    const channelUsers = channel.channelUsers.filter(cu => !cu.banned);
+    const channelUsersDto = channelUsers.map(mapChannelUserToDto);
     return channelUsersDto;
   }
 
@@ -387,15 +406,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('User already owner of channel');
     toPromoteChannelUser.admin = true;
     await this.channelUserRepository.save(toPromoteChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toPromoteUser.name} was promoted to admin`);
-    this.updateChannelUserforChannel(channel, user, client);
+    this.sendInfoMessage(channel, user, server, `${toPromoteUser.name} was promoted to admin`);
+    const socket = this.getSocketForUser(toPromoteUser, server, false);
+    if (socket)
+      socket.emit('gotPromoted', channelDto);
     return channel;
-  }
-
-  async updateChannelUserforChannel(channel: Channel, user: User, client: Socket) {
-    const channelUsersDto = await this.getChannelUsersDto(channel);
-    client.to(channel.name).emit('channelUsers', channelUsersDto);
   }
 
   async kickUser(user: User, toKickUserDto: SendUserDto, channelDto: SendChannelDto, server: Server) {
@@ -416,12 +431,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     if (toKickChannelUser.owner)
       throw new Error('Cannot kick owner of channel');
     await this.channelUserRepository.delete(toKickChannelUser.id);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toKickUser.name} was kicked from channel`);
+    this.sendInfoMessage(channel, user, server, `${toKickUser.name} was kicked from channel`);
     const socket = this.getSocketForUser(toKickUser, server, false);
     if (socket)
+      socket.emit('gotKicked', channelDto);
       socket.leave(channel.name);
-    this.updateChannelUserforChannel(channel, user, client);
     return channel;
   }
 
@@ -444,12 +458,13 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Cannot ban owner of channel');
     toBanChannelUser.banned = true;
     await this.channelUserRepository.save(toBanChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toBanUser.name} was banned from channel`);
+    this.sendInfoMessage(channel, user, server, `${toBanUser.name} was banned from channel`);
     const socket = this.getSocketForUser(toBanUser, server, false);
     if (socket)
+    {
       socket.leave(channel.name);
-    this.updateChannelUserforChannel(channel, user, client);
+      socket.emit('gotBanned', channelDto)
+    }
     return channel;
   }
 
@@ -472,9 +487,10 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       throw new Error('Cannot mute owner of channel');
     toMuteChannelUser.mute = new Date(Date.now() + 3 * 60 * 1000);
     await this.channelUserRepository.save(toMuteChannelUser);
-    const client = this.getSocketForUser(user, server, true);
-    this.sendInfoMessage(channel, user, client, `${toMuteUser.name} is muted for 3 minutes`);
-    this.updateChannelUserforChannel(channel, user, client);
+    this.sendInfoMessage(channel, user, server, `${toMuteUser.name} is muted for 3 minutes`);
+    const socket = this.getSocketForUser(toMuteUser, server, false);
+    if (socket)
+      socket.emit('gotMuted', channelDto);
     return channel;
   }
 
@@ -500,11 +516,11 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     return messagesDto;
   }
 
-  async sendJoinedChannelMessage(channel: Channel, user: User, client: Socket) {
+  async sendJoinedChannelMessage(channel: Channel, user: User, server: Server) {
     let message = this.messageRepository.create({ content: `${user.name} joined the channel`, owner: user, channel: channel, isSystemMessage: true });
     await this.messageRepository.save(message);
     const dtoMessage = mapMessageToDto(message);
-    client.to(channel.name).emit('message', dtoMessage);
+    server.to(channel.name).emit('message', dtoMessage);
   }
 
   async sendChannelInfo(channel: Channel, client: Socket) {
@@ -539,4 +555,79 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
     const blockedUserDto = blockedUser.map(mapUserToDto);
     client.emit('blockedUsers', blockedUserDto);
   }
+
+  async findUserByName(userDto: SendUserDto) {
+    const user = await this.userRepository.findOne({ where: { name: userDto.name }, });
+    return user;
+  }
+
+
+
+async markConnected(socket_id: string, server: Server)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.ONLINE;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    server.emit('userStatus', userDto,  UserStatus.ONLINE);
+  }
+}
+
+async markOnline(user: SendUserDto, server: Server){
+  let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
+  if (userOut) {
+    userOut.status = UserStatus.ONLINE;
+    await this.userRepository.save(userOut);
+    const userDto = mapUserToDto(userOut);
+    server.emit('userStatus', userDto, UserStatus.ONLINE);
+  }
+}
+
+
+async markDisconnected(socket_id: string, server: Server)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.OFFLINE;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    server.emit('userStatus', userDto, UserStatus.OFFLINE);
+  }
+}
+
+async markInGame(socket_id: string, server: Server)
+{
+  let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  if (user) {
+    user.status = UserStatus.INGAME;
+    await this.userRepository.save(user);
+    const userDto = mapUserToDto(user);
+    server.emit('userStatus', userDto, UserStatus.INGAME);
+  }
+}
+
+async sendInvite(user: SendUserDto, client: Socket, server: Server)
+{
+  const sender = await this.userRepository.findOne({ where: { socket_id: client.id }});
+  const senderDto = mapUserToDto(sender);
+  const partner = await this.userRepository.findOne({ where: { name: user.name }, });
+  const partner_socket = this.getSocketForUser(partner, server, false);
+  if (partner_socket)
+    partner_socket.emit('gameInvite', senderDto);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

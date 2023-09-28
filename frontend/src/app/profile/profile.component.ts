@@ -11,7 +11,7 @@ import { ChatComponent } from '../chat/chat.component';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
-  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(private route: ActivatedRoute, private api: ApiService, private router: Router, private snackBar: MatSnackBar, private readonly chat: ChatComponent) {}
   id: string = '';
   profileUrl:string = '';
   username: string = '';
@@ -26,6 +26,7 @@ export class ProfileComponent {
   public reloadFriendList$ = new Subject<void>();
 
   async loadData() {
+    this.chat.updateSocketId();
     let user;
     try{
       user = await this.api.getProfileInfo(this.id);

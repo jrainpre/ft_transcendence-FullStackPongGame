@@ -3,7 +3,7 @@ import { Component, Injectable } from '@angular/core';
 import { delay } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
-import { Message, User, Channel, ChannelUser, ChatData } from './interfaces/message';
+import { Message, User, Channel, ChannelUser, ChatData, UserStatus } from './interfaces/message';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -13,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FriendlistComponent} from '../friendlist/friendlist.component';
 import { WebSocketService } from '../game/websocket/websocket.service';
 import { environment } from 'src/environments/environment';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 
 @Injectable()
 
@@ -57,6 +59,7 @@ export class ChatComponent implements AfterViewChecked {
     isRegistered: boolean = false;
     messages: Message[] = [];
     typingDisplay: string = '';
+    status: string = '';
 
 
 
@@ -115,6 +118,13 @@ export class ChatComponent implements AfterViewChecked {
         password: ''
     }
 
+    selectedChannel: Channel = {
+        id: 0,
+        name: '',
+        private_channel: false,
+        password: ''
+    }
+
 
     user: User = {
         id_42: 0,
@@ -132,25 +142,21 @@ export class ChatComponent implements AfterViewChecked {
         private snackBar: MatSnackBar,
         private webservice: WebSocketService) {
 
-        // this.socket = io('http://localhost:3001');
 
         this.webservice.socket.on('message', (message: Message) => {
-            // ////console.log(JSON.stringify(message));
-            // ////console.log('Message called');
             if (!this.blockedUsers.some(user => user.id_42 === message.owner_id) && message.channel_id === this.channel.id) {
                 this.messages.push(message);
             }
-            if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was banned from channel`))
-                location.reload();
-            if(message.isSystemMessage === true &&  message.content.includes(`${this.user.name} was kicked from channel`))
-                location.reload();
         });
 
         this.webservice.socket.on('ChannelMessages', (messageArray: Message[]) => {
             const filteredMessages = messageArray.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id));
             this.messages.push(...filteredMessages);
-            // ////console.log(JSON.stringify(this.messages));
+        });
 
+
+        this.webservice.socket.on('updatePublicChannels', (data: { publicChannels: Channel[] }) => {
+                this.publicChannels = data.publicChannels;
         });
 
         this.webservice.socket.on('userChannels', (channels: any[]) => {
@@ -170,19 +176,120 @@ export class ChatComponent implements AfterViewChecked {
             this.channel = channel;
         });
 
-        this.webservice.socket.on('channelUsers', (channelUsers: ChannelUser[]) => {
-            this.channelUsers = channelUsers;
+        this.webservice.socket.on('updateChannelUsers', (data: {channel: Channel, channelUsers: ChannelUser[]}) => {
+            if (data.channel.id === this.channel.id)
+                this.channelUsers = data.channelUsers;
         });
 
+        this.webservice.socket.on('channelDeleted', (channel: Channel) => {
+            this.userChannels = this.userChannels.filter(channel => channel.id !== channel.id);
+            this.snackBar.open('Channel ' + channel.name + ' was deleted', 'Close', { duration: 5000, });
+            if (channel.id === this.channel.id)
+                this.flushChannel();
+        });
+
+        this.webservice.socket.on('gotBanned', (channelIn: Channel) => {
+            this.userChannels = this.userChannels.filter(channel => channel.id !== channelIn.id);
+            this.snackBar.open('You were banned from channel ' + channelIn.name, 'Close', { duration: 5000, });
+            if (channelIn.id === this.channel.id)
+                this.flushChannel();
+        });
+
+        this.webservice.socket.on('gotKicked', (channelIn: Channel) => {
+            this.userChannels = this.userChannels.filter(channel => channel.id !== channelIn.id);
+            this.snackBar.open('You were kicked from channel ' + channelIn.name, 'Close', { duration: 5000, });
+            if (channelIn.id === this.channel.id)
+                this.flushChannel();
+        });
+
+        this.webservice.socket.on('gotMuted', (channelIn: Channel) => {
+            this.snackBar.open('You were muted from channel ' + channelIn.name, 'Close', { duration: 5000, });
+        });
+
+        this.webservice.socket.on('gotPromoted', (channelIn: Channel) => {
+            this.snackBar.open('You were promoted in channel ' + channelIn.name, 'Close', { duration: 5000, });
+        });
+
+        this.webservice.socket.on('gotBlocked', (data: {user: User}) => {
+            this.snackBar.open('You were blocked by ' + data.user.name, 'Close', { duration: 5000, });
+        });
+
+        this.webservice.socket.on('gotUnblocked', (data: {user: User}) => {
+            this.snackBar.open('You were unblocked by ' + data.user.name, 'Close', { duration: 5000, });
+        });
+
+        this.webservice.socket.on('updateBlockedUsers', (data: {blockedUsers: User[]}) => {
+            this.blockedUsers = data.blockedUsers;
+        });
+
+        this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
+            this.updateChannelUser(user, status);
+            this.updateOwnUser(user, status);
+          });
+
+        this.webservice.socket.on('gameInvite', (user: User) => {
+            this.openSnackBarInvite(user);
+        });
+
+        this.webservice.socket.on('userAlreadyConnected', (user: User) => {
+            this.snackBar.open('User already connected', 'Close', { duration: 5000, });
+            this.router.navigate([`/login`]);
+
+        });
+
+      
+
+    }
+
+
+    updateChannelUser(user: User, status: UserStatus) {
+        if (this.channelUsers.some(channelUser => channelUser.id_42 === user.id_42)) {
+            const channelUser = this.channelUsers.find(channelUser => channelUser.id_42 === user.id_42);
+            if (channelUser)
+                channelUser.status = status;
+        }
+    }
+
+    updateOwnUser(user: User, status: UserStatus) {
+        if (this.user.id_42 === user.id_42) {
+            this.status = status;
+        }
     }
 
     async ngOnInit(): Promise<void> {
         this.loadUserData();
     };
 
+
+
+ slectedAdminAction: string = '';
+    selectedUser: User = {
+        id_42: 0,
+        name: ''
+    };
+    performAction() {
+        switch (this.slectedAdminAction) {
+            case 'promote':
+                this.promoteUser(this.selectedUser);
+                break;
+            case 'kick':
+                this.kickUser(this.selectedUser);
+                break;
+            case 'ban':
+                this.banUser(this.selectedUser);
+                break;
+            case 'mute':
+                this.muteUser(this.selectedUser);
+                break;
+            default:
+                this.snackBar.open('Please select an action', 'Close', { duration: 5000, });
+                break;
+        }
+    }
+
     async joinChannelWrapper(channel: Channel): Promise<void> {
-        this.channelToJoin.name = channel.name;
-        this.joinChannel();
+        this.channelData.name = channel.name;
+        this.joinChannel(this.channelData);
     }
 
     private saveUserData(data: { user: User; publicChannels: Channel[]; userChannels: Channel[]; blockedUsers: User[]; }) {
@@ -196,31 +303,21 @@ export class ChatComponent implements AfterViewChecked {
         //////console.log(data.userChannels);
     }
 
-    private saveCreatedChannel(data: { channel: Channel; }) {
-        this.flushChannelToCreate();
+    private saveChannelData(data: { channel: Channel; channelUsers: ChannelUser[]; messages: Message[]; }) {
         this.flushChannel();
-        this.channel = data.channel;
-        this.userChannels.push(this.channel);
-        if (this.channel.private_channel) {
-            this.snackBar.open('Private channel created successfully', 'Close', { duration: 5000, });
-        } else {
-            this.publicChannels.push(this.channel);
-            this.snackBar.open('Public channel created successfully', 'Close', { duration: 5000, });
+        if (data.channel)
+            this.channel = data.channel;
+        if (data.channelUsers)
+            this.channelUsers = data.channelUsers;
+        if (data.messages)
+        {
+            const filteredMessages = data.messages.filter(message => !this.blockedUsers.some(user => user.id_42 === message.owner_id));
+            this.messages = filteredMessages;
         }
     }
 
 
-    private saveJoinedChannel(data: { channel: Channel; }) {
-        this.flushChannelToJoin();
-        this.flushChannel();
-        this.channel = data.channel;
-        this.userChannels.push(this.channel);
-        this.snackBar.open('Channel joined successfully', 'Close', { duration: 5000, });
-    }
-
-
     loadUserData(): void {
-        //////console.log('loadUserData');
         this.http.get<{ user: User, publicChannels: Channel[], userChannels: Channel[], blockedUsers: User[] }>(environment.apiUrl + `chat/get-user-data`, { withCredentials: true })
             .pipe(
                 catchError((error: any) => {
@@ -240,38 +337,44 @@ export class ChatComponent implements AfterViewChecked {
 
 
 
-    createChannel(): void {
-        ////console.log(JSON.stringify(this.channelToCreate));
-        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/create-channel`, { channel: this.channelToCreate }, { withCredentials: true })
+    createChannel(channel: Channel): void {
+        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/create-channel`, { channel: channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
-                    this.flushChannelToCreate();
+                    this.flushChannelData();
                     this.snackBar.open('Error creating channel: ' + error.error.message, 'Close', { duration: 5000, });
                     return throwError(error);
                 })
             )
             .subscribe(data => {
-                if (data) { 
-                    this.saveCreatedChannel(data);
+                if (data) {
+                    this.saveChannelData(data);
+                    this.userChannels.push(data.channel)
+                    if (this.channel.private_channel) {
+                        this.snackBar.open('Private channel created successfully', 'Close', { duration: 5000, });
+                    } else {
+                        this.snackBar.open('Public channel created successfully', 'Close', { duration: 5000, });
+                    }
                 }
             })
     }
 
-    joinChannel(): void {
-        ////console.log(JSON.stringify(this.channelToJoin));
-        this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/join-channel`, { channel: this.channelToJoin }, { withCredentials: true })
+    joinChannel(channel: Channel): void {
+        this.http.post<{channel: Channel, channelUsers: ChannelUser[], messages: Message[]  }>(environment.apiUrl + `chat/join-channel`, { channel: channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
-                    this.flushChannelToJoin();
+                    this.flushChannelData();
                     this.snackBar.open('Error joining channel: ' + error.error.message, 'Close', { duration: 5000, });
                     return throwError(error);
                 })
             )
             .subscribe(data => {
                 if (data) {
-                    this.saveJoinedChannel(data);
+                    this.saveChannelData(data);
+                    this.userChannels.push(this.channel);
+                    this.snackBar.open('Channel joined successfully', 'Close', { duration: 5000, });
                 }
             })
     }
@@ -330,6 +433,9 @@ export class ChatComponent implements AfterViewChecked {
                 if (data) {
                     this.userToUnblock = this.flushUser(this.userToUnblock);
                     this.blockedUsers = data.blockedUsers;
+                    if (!data.blockedUsers)
+                        this.blockedUsers = [];
+                    console.log(JSON.stringify(this.blockedUsers));
                     this.snackBar.open('User unblocked successfully', 'Close', { duration: 5000, });
                 }
             })
@@ -373,9 +479,9 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
-    promoteUser(): void {
+    promoteUser(slectedUser: User): void {
         ////console.log(JSON.stringify(this.userToPromote));
-        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: this.userToPromote, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -393,9 +499,9 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
-    kickUser(): void {
+    kickUser(slectedUser: User): void {
         ////console.log(JSON.stringify(this.userToKick));
-        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: this.userToKick, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -412,9 +518,9 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
-    banUser(): void {
+    banUser(slectedUser: User): void {
         ////console.log(JSON.stringify(this.userToBan));
-        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: this.userToBan, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -431,9 +537,9 @@ export class ChatComponent implements AfterViewChecked {
             })
     }
 
-    muteUser(): void {
+    muteUser(slectedUser: User): void {
         ////console.log(JSON.stringify(this.userToMute));
-        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: this.userToMute, channel: this.channel }, { withCredentials: true })
+        this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -477,7 +583,7 @@ export class ChatComponent implements AfterViewChecked {
                     return throwError(error);
                 }))
             .subscribe(data => {
-                this.flushChannel();
+                // this.flushChannel();
                 if (data) {
                     if (data.channel)
                         this.channel = data.channel;
@@ -527,18 +633,11 @@ export class ChatComponent implements AfterViewChecked {
         this.channel.password = '';
     }
 
-    flushChannelToCreate() {
-        this.channelToCreate.id = 0;
-        this.channelToCreate.name = '';
-        this.channelToCreate.private_channel = false;
-        this.channelToCreate.password = '';
-    }
-
-    flushChannelToJoin() {
-        this.channelToJoin.id = 0;
-        this.channelToJoin.name = '';
-        this.channelToJoin.private_channel = false;
-        this.channelToJoin.password = '';
+    flushChannelData() {
+        this.channelData.id = 0;
+        this.channelData.name = '';
+        this.channelData.private_channel = false;
+        this.channelData.password = '';
     }
 
     flushMessage() {
@@ -565,11 +664,15 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     oneVsOne(user: any){
-        if(this.user.id_42 === user.id_42)
-        {
-            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
-            return;
-        }
+        // if(this.user.id_42 === user.id_42)
+        // {
+        //     this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+        //     return;
+        // }
+        // if (user.status === 'ingame' || user.status === 'offline') {
+        //     this.snackBar.open('User is not available', 'Close', { duration: 5000, });
+        //     return;
+        // }
         let curUser: {
             id_42: number;
             socketId: string;
@@ -616,4 +719,78 @@ export class ChatComponent implements AfterViewChecked {
         }
         });
     }
+
+
+    getUserTooltip(user: ChannelUser): string {
+        let tooltip = '';
+    
+        if (user.owner) {
+            tooltip += 'Role: Owner\n';
+        }
+        else if (user.admin) {
+            tooltip += 'Role: Admin\n';
+        }
+        tooltip += 'Status: ' + user.status;
+    
+        return tooltip;
+    }
+
+    isJoiningChannel : boolean = false;
+    channelData: Channel = {
+        id: 0,
+        name: '',
+        private_channel: false,
+        password: ''
+    }
+    performChannelAction() {
+        if (this.isJoiningChannel) {
+          this.joinChannel(this.channelData);
+        } else {
+          this.createChannel(this.channelData);
+        }
+      }
+
+
+      openSnackBarInvite(user: User) {
+
+        let snackBarRef = this.snackBar.open(`${user.name} invited you to a game`, 'Accept', {
+            duration: 10000,  
+          });
+      
+        snackBarRef.onAction().subscribe(() => {
+            this.oneVsOne(user);
+        });
+
+        snackBarRef.afterDismissed().subscribe(info => {
+            if (!info.dismissedByAction) {
+              this.markOnline(user);
+            }
+          });
+      }
+
+      requestOneVsOne(user: ChannelUser) {
+        if(this.user.id_42 === user.id_42)
+        {
+            this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
+            return;
+        }
+        if (user.status === 'ingame' || user.status === 'offline') {
+            this.snackBar.open('User is not available', 'Close', { duration: 5000, });
+            return;
+        }
+        if (this.status === 'ingame') {
+            this.snackBar.open('You are already in a game', 'Close', { duration: 5000, });
+            return;
+        }
+        this.snackBar.open('Game request sent', 'Close', { duration: 5000, });
+        this.webservice.socket.emit('gameInvite', { user: user });
+      }
+
+
+    markOnline(user: User) {
+        this.webservice.socket.emit('markOnline', { user: user });
+    }
+
+
+
 } 

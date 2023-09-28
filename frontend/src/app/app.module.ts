@@ -25,10 +25,23 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HeartbeatComponent } from './heartbeat/heartbeat.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
-
-
+import { MatExpansionModule, } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatIconModule} from '@angular/material/icon';
+import {MatGridListModule} from '@angular/material/grid-list';
+import { MatChipsModule } from '@angular/material/chips';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatMenuModule} from '@angular/material/menu';
+ 
 
 @NgModule({
   declarations: [
@@ -61,9 +74,27 @@ import { MatListModule } from '@angular/material/list';
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
+    NgbDropdownModule,
+    MatSelectModule,
     MatListModule,
+    MatExpansionModule,
+    MatCardModule,
+    MatCardModule,
+    MatTabsModule,
+    MatIconModule,
+    MatGridListModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatRadioModule,
+    MatSlideToggleModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatMenuModule,
   ],
-  providers: [ProfileComponent],
+  exports: [MatExpansionModule,
+    MatCardModule,
+    MatChipsModule],
+  providers: [ProfileComponent, ChatComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

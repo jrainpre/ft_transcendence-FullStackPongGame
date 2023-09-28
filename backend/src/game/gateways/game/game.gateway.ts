@@ -10,6 +10,8 @@ import { User } from 'src/entities/user.entity';
 import { SendMessageDto } from 'src/messages/dto/send-message.dto';
 import { SendUserDto } from 'src/messages/dto/send-user.dto';
 import { MessagesService } from 'src/messages/messages.service';
+import { send } from 'process';
+
 
 @WebSocketGateway({cors: '*'})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -36,9 +38,30 @@ const message = await this.messagesService.createNewMessage(messageDto, this.lob
 
 @SubscribeMessage('updateSocketId')
 async updateSocketId(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
-const user = await this.messagesService.updateSocketId(userDto, client.id);
-const channel = await this.messagesService.joinChannels(user, client);
+const user = await this.messagesService.updateSocketId(userDto, client.id, this.lobbyManager.server);
+if (user)
+{
+  await this.messagesService.markConnected(client.id, this.lobbyManager.server);
+  const channel = await this.messagesService.joinChannels(user, client);
 }
+}
+
+@SubscribeMessage('gameInvite')
+async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+  this.messagesService.markInGame(client.id, this.lobbyManager.server);
+  this.messagesService.sendInvite(userDto, client, this.lobbyManager.server);
+}
+
+@SubscribeMessage('markOnline')
+async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+  this.messagesService.markOnline(userDto, this.lobbyManager.server);
+}
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////
 
 
@@ -48,6 +71,7 @@ const channel = await this.messagesService.joinChannels(user, client);
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
+    this.messagesService.markDisconnected(client.id, this.lobbyManager.server);
     this.logger.log('Client disconnected: ', client.id);
     const temp = client.id;
     for (const lobby of this.lobbyManager.lobbies.values()) {

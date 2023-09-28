@@ -14,4 +14,9 @@ COPY . .
 
 EXPOSE 4200
 
+RUN chmod 600 /app/env-to-angular.js
+
+# Run the environment script
+RUN node env-to-angular.js
+
 CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200"]

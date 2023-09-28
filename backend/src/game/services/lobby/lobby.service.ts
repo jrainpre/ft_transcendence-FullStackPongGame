@@ -8,6 +8,7 @@ import { User, UserStatus } from 'src/entities/user.entity';
 import { Games, GameType} from 'src/entities/games.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ReturnDocument } from 'typeorm';
+import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class LobbyService {
@@ -17,6 +18,7 @@ export class LobbyService {
     readonly user: Repository<User>,
     @InjectRepository(Games)
     readonly game: Repository<Games>,
+    private readonly messagesService: MessagesService
   ){}
 
   public logger: Logger = new Logger();
@@ -93,8 +95,9 @@ export class LobbyService {
       newLobby.addClient(player);
       player.data.position = 'left';
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      user.status = UserStatus.INGAME;
-      await this.user.save(user);
+      this.messagesService.markInGame(player.id, this.server);
+      // user.status = UserStatus.INGAME;
+      // await this.user.save(user);
       this.logger.log(newLobby.id);
       return newLobby.id;
     } else if (first == false){
@@ -110,8 +113,8 @@ export class LobbyService {
       availableLobby.addClient(player);
       player.data.position = 'right';
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      user.status = UserStatus.INGAME;
-      await this.user.save(user);
+      this.messagesService.markInGame(player.id, this.server);
+
 
       for (const [key, client] of availableLobby.clients.entries()) {
         this.logger.log(key, 'CLIENTS_IN_LOBBY');
@@ -146,8 +149,8 @@ export class LobbyService {
       player.data.position = 'right';
       availableLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      user.status = UserStatus.INGAME;
-      await this.user.save(user);
+      this.messagesService.markInGame(player.id, this.server);
+
       await availableLobby.finishQueue();
       this.lobbies.delete(availableLobby.id);
     } else {
@@ -166,8 +169,8 @@ export class LobbyService {
       player.data.position = 'left';
       newLobby.addClient(player);
       const user = await this.user.findOne({where: { id_42: player.data.id}});
-      user.status = UserStatus.INGAME;
-      await this.user.save(user);
+      this.messagesService.markInGame(player.id, this.server);
+
     }
   }
 
