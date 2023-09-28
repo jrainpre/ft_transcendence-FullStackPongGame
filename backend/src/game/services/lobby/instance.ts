@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Paddle, Referee, Game } from '../../ecs/entities';
 import { AuthenticatedSocket } from '../../services/lobby/types';
 import { Games } from 'src/entities/games.entity';
+import { User } from 'src/entities/user.entity';
 
 export class NormalInstance
 {
@@ -52,10 +53,9 @@ export class NormalInstance
 
 		this.loopIncrementX = 0;
 		this.loopIncrementY = 0;
-    this.verticalOverlap = 20;
 	}
 
-  startRound(lobbyId: string, games: Games): void {
+  startRound(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     this.setBall();
     this.loopIncrementX = this.getRandomIncrement();
     this.loopIncrementY = this.getRandomIncrement();
@@ -63,12 +63,12 @@ export class NormalInstance
     this.referee.movePaddle = true;
     this.moveLeftPaddle(this.playerLeft.increment);
     this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    this.gameLoop(lobbyId, games);
+    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+    this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
+    this.gameLoop(lobbyId, games, userOne, userTwo);
   }
 
-  gameLoop(lobbyId: string, games: Games): void {
+  gameLoop(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     // Clear any existing game loop interval
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
@@ -77,8 +77,8 @@ export class NormalInstance
     this.gameLoopInterval = setInterval(() => {
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
-      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games);
-      this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+      this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
 
@@ -135,40 +135,14 @@ export class NormalInstance
     this.game.rightPlayerPosition.y = newY;
   }
 
-  // leftPaddleHit(): boolean {
-  //   const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
-  //   const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-  //   return (
-  //   this.game.ballPosition.x <= leftPaddleBorder &&
-  //   this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-  //   ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
-  //   ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
-  //   );
-  // }
-
-  // rightPaddleHit(): boolean {
-  //   const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
-  //   const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
-  //   const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-  //   return (
-  //   ballRightX >= this.game.rightPlayerPosition.x &&
-  //   ballRightX < paddleRightRightX &&
-  //   ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
-  //   ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
-  //   );
-  // }
-
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    const paddleCenterY = this.game.leftPlayerPosition.y + this.game.paddleDimension.height / 2;
-  
     return (
-      this.game.ballPosition.x <= leftPaddleBorder &&
-      this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-      ballCenterY >= this.game.leftPlayerPosition.y &&
-      ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height &&
-      Math.abs(ballCenterY - paddleCenterY) <= this.verticalOverlap
+    this.game.ballPosition.x <= leftPaddleBorder &&
+    this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -176,18 +150,15 @@ export class NormalInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    const paddleCenterY = this.game.rightPlayerPosition.y + this.game.paddleDimension.height / 2;
-  
     return (
-      ballRightX >= this.game.rightPlayerPosition.x &&
-      ballRightX < paddleRightRightX &&
-      ballCenterY >= this.game.rightPlayerPosition.y &&
-      ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height &&
-      Math.abs(ballCenterY - paddleCenterY) <= this.verticalOverlap
+    ballRightX >= this.game.rightPlayerPosition.x &&
+    ballRightX < paddleRightRightX &&
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
-  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games): Promise<void> {
+  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games, userOne: User, userTwo: User): Promise<void> {
     if (!this.referee.moveBall) {
       return;
     }
@@ -208,10 +179,10 @@ export class NormalInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id, games);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id, games);
+        this.startRound(id, games, userOne, userTwo);
       }
       else {
         this.lobby.updateGameStats(this.game.score, 'left', games);
@@ -225,10 +196,10 @@ export class NormalInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id, games);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id, games);
+        this.startRound(id, games, userOne, userTwo);
       }
       else{ 
         this.lobby.updateGameStats(this.game.score, 'right', games);
@@ -366,10 +337,9 @@ export class RankedInstance
 
 		this.loopIncrementX = 0;
 		this.loopIncrementY = 0;
-    this.verticalOverlap = 20;
 	}
 
-  startRound(lobbyId: string, games: Games): void {
+  startRound(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     this.setBall();
     this.loopIncrementX = this.getRandomIncrement();
     this.loopIncrementY = this.getRandomIncrement();
@@ -377,12 +347,12 @@ export class RankedInstance
     this.referee.movePaddle = true;
     this.moveLeftPaddle(this.playerLeft.increment);
     this.moveRightPaddle(this.playerRight.increment);
-    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games);
-    this.lobby.dispatchToClient(this.game, lobbyId);
-    this.gameLoop(lobbyId, games);
+    this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+    this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
+    this.gameLoop(lobbyId, games, userOne, userTwo);
   }
 
-  gameLoop(lobbyId: string, games: Games): void {
+  gameLoop(lobbyId: string, games: Games, userOne: User, userTwo: User): void {
     // Clear any existing game loop interval
     if (this.gameLoopInterval !== null) {
       clearInterval(this.gameLoopInterval);
@@ -390,8 +360,8 @@ export class RankedInstance
     this.gameLoopInterval = setInterval(() => {
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
-      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games);
-      this.lobby.dispatchToClient(this.game, lobbyId);
+      this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+      this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
 
@@ -448,40 +418,14 @@ export class RankedInstance
     this.game.rightPlayerPosition.y = newY;
   }
 
-  // leftPaddleHit(): boolean {
-  //   const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
-  //   const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-  //   return (
-  //   this.game.ballPosition.x <= leftPaddleBorder &&
-  //   this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-  //   ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
-  //   ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
-  //   );
-  // }
-
-  // rightPaddleHit(): boolean {
-  //   const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
-  //   const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
-  //   const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-  //   return (
-  //   ballRightX >= this.game.rightPlayerPosition.x &&
-  //   ballRightX < paddleRightRightX &&
-  //   ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
-  //   ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
-  //   );
-  // }
-
   leftPaddleHit(): boolean {
     const leftPaddleBorder = this.game.leftPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    const paddleCenterY = this.game.leftPlayerPosition.y + this.game.paddleDimension.height / 2;
-  
     return (
-      this.game.ballPosition.x <= leftPaddleBorder &&
-      this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
-      ballCenterY >= this.game.leftPlayerPosition.y &&
-      ballCenterY <= this.game.leftPlayerPosition.y + this.game.paddleDimension.height &&
-      Math.abs(ballCenterY - paddleCenterY) <= this.verticalOverlap
+    this.game.ballPosition.x <= leftPaddleBorder &&
+    this.game.ballPosition.x > this.game.leftPlayerPosition.x &&
+    ballCenterY >= (this.game.leftPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.leftPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
@@ -489,18 +433,15 @@ export class RankedInstance
     const ballRightX = this.game.ballPosition.x + this.game.ballDimension.width;
     const paddleRightRightX = this.game.rightPlayerPosition.x + this.game.paddleDimension.width;
     const ballCenterY = this.game.ballPosition.y + this.game.ballDimension.height / 2;
-    const paddleCenterY = this.game.rightPlayerPosition.y + this.game.paddleDimension.height / 2;
-  
     return (
-      ballRightX >= this.game.rightPlayerPosition.x &&
-      ballRightX < paddleRightRightX &&
-      ballCenterY >= this.game.rightPlayerPosition.y &&
-      ballCenterY <= this.game.rightPlayerPosition.y + this.game.paddleDimension.height &&
-      Math.abs(ballCenterY - paddleCenterY) <= this.verticalOverlap
+    ballRightX >= this.game.rightPlayerPosition.x &&
+    ballRightX < paddleRightRightX &&
+    ballCenterY >= (this.game.rightPlayerPosition.y - 3) &&
+    ballCenterY <= this.game.rightPlayerPosition.y + (this.game.paddleDimension.height + 3)
     );
   }
 
-  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games): Promise<void> {
+  async moveBall(xIncrement: number, yIncrement: number, id: any, games: Games, userOne: User, userTwo: User): Promise<void> {
     if (!this.referee.moveBall) {
       return;
     }
@@ -530,10 +471,10 @@ export class RankedInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id, games);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id, games);
+        this.startRound(id, games, userOne, userTwo);
       }
       else {
         this.lobby.updateGameStats(this.game.score, 'left', games);
@@ -547,10 +488,10 @@ export class RankedInstance
       this.stopGameLoop();
       this.resetBallAndRackets();
       await new Promise(resolve => setTimeout(resolve, 2000));
-      this.gameLoop(this.lobby.id, games);
+      this.gameLoop(this.lobby.id, games, userOne, userTwo);
       if (!this.PlayerLeftWin() && !this.PlayerRightWin()) {
         this.stopGameLoop();
-        this.startRound(id, games);
+        this.startRound(id, games, userOne, userTwo);
       }
       else{ 
         this.lobby.updateGameStats(this.game.score, 'right', games);
