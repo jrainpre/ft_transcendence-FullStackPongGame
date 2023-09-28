@@ -23,8 +23,8 @@
   <rect class="paddle" [attr.width]="paddleWidth + '%'" [attr.height]="paddleHeight + '%'" [attr.x]="playerRightX + '%'" [attr.y]="playerRightY + '%'" />
 
   <!-- Ball -->
-  <!-- <rect id="ball" [attr.width]="ballWidth + '%'" [attr.height]="ballHeight + '%'" [attr.x]="ballX + '%'" [attr.y]="ballY + '%'" /> -->
-  <circle id="ball" [attr.r]="ballRadius + '%'" [attr.cx]="ballX + '%'" [attr.cy]="ballY + '%'" />
+  <rect id="ball" [attr.width]="ballWidth + '%'" [attr.height]="ballHeight + '%'" [attr.x]="ballX + '%'" [attr.y]="ballY + '%'" />
+  <!-- <circle id="ball" [attr.r]="ballRadius + '%'" [attr.cx]="ballX + '%'" [attr.cy]="ballY + '%'" /> -->
 
   <!-- Player Names -->
   <text x="10%" y="15%" font-size="4vh">{{ userOne }}</text>
