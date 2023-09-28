@@ -20,6 +20,7 @@ import * as bcrypt from 'bcrypt';
 import { UserStatus } from '../entities/user.entity';
 import { ColumnNumericOptions } from 'typeorm/decorator/options/ColumnNumericOptions';
 import { Send } from 'express';
+import { get } from 'http';
 
 
 @Injectable()
@@ -70,8 +71,16 @@ export class MessagesService {
     return blockedUsersDto;
   }
 
-  async updateSocketId(user: SendUserDto, socket_id: string) {
+  async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
     let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"] });
+    if (socket_id === userOut.socket_id)
+      return userOut;
+    const socket = this.getSocketForUser(userOut, server, false);
+    if (socket)
+    {
+      server.to(socket_id).emit('userAlreadyConnected');
+      return null;
+    }
     if (userOut) {
       userOut.socket_id = socket_id;
       await this.userRepository.save(userOut);
@@ -554,36 +563,47 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
 
 
 
-async markConnected(socket_id: string, client:Socket)
+async markConnected(socket_id: string, server: Server)
 {
   let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
   if (user) {
     user.status = UserStatus.ONLINE;
     await this.userRepository.save(user);
     const userDto = mapUserToDto(user);
-    client.broadcast.emit('userStatus', userDto,  UserStatus.ONLINE);
+    server.emit('userStatus', userDto,  UserStatus.ONLINE);
   }
 }
 
-async markDisconnected(socket_id: string, client:Socket)
+async markOnline(user: SendUserDto, server: Server){
+  let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
+  if (userOut) {
+    userOut.status = UserStatus.ONLINE;
+    await this.userRepository.save(userOut);
+    const userDto = mapUserToDto(userOut);
+    server.emit('userStatus', userDto, UserStatus.ONLINE);
+  }
+}
+
+
+async markDisconnected(socket_id: string, server: Server)
 {
   let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
   if (user) {
     user.status = UserStatus.OFFLINE;
     await this.userRepository.save(user);
     const userDto = mapUserToDto(user);
-    client.broadcast.emit('userStatus', userDto, UserStatus.OFFLINE);
+    server.emit('userStatus', userDto, UserStatus.OFFLINE);
   }
 }
 
-async markInGame(socket_id: string, client: Socket)
+async markInGame(socket_id: string, server: Server)
 {
   let user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
   if (user) {
     user.status = UserStatus.INGAME;
     await this.userRepository.save(user);
     const userDto = mapUserToDto(user);
-    client.broadcast.emit('userStatus', userDto, UserStatus.INGAME);
+    server.emit('userStatus', userDto, UserStatus.INGAME);
   }
 }
 

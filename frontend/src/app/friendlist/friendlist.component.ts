@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
 import { WebSocketService } from '../game/websocket/websocket.service';
 import { User, UserStatus } from '../chat/interfaces/message';
+import { ChatComponent } from '../chat/chat.component';
+
 
 
 
@@ -13,7 +15,7 @@ import { User, UserStatus } from '../chat/interfaces/message';
   styleUrls: ['./friendlist.component.css']
 })
 export class FriendlistComponent {
-  constructor(private api: ApiService, private router: Router,private profileComponent: ProfileComponent, private webservice: WebSocketService) {
+  constructor(private api: ApiService, private router: Router,private profileComponent: ProfileComponent, private webservice: WebSocketService, private chat: ChatComponent) {
 
     this.webservice.socket.on('userStatus', (user: User, status: UserStatus) => {
       this.updateFriendStatus(user, status);
@@ -28,6 +30,7 @@ export class FriendlistComponent {
 
   // on init fetch list and sort it
   ngOnInit() {
+    this.chat.updateSocketId();
     this.loadFriends();
 
     this.profileComponent.reloadFriendList$.subscribe(async () => {

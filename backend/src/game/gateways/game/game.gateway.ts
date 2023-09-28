@@ -38,14 +38,23 @@ const message = await this.messagesService.createNewMessage(messageDto, this.lob
 
 @SubscribeMessage('updateSocketId')
 async updateSocketId(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
-const user = await this.messagesService.updateSocketId(userDto, client.id);
-await this.messagesService.markConnected(client.id, client);
-const channel = await this.messagesService.joinChannels(user, client);
+const user = await this.messagesService.updateSocketId(userDto, client.id, this.lobbyManager.server);
+if (user)
+{
+  await this.messagesService.markConnected(client.id, this.lobbyManager.server);
+  const channel = await this.messagesService.joinChannels(user, client);
+}
 }
 
 @SubscribeMessage('gameInvite')
 async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+  this.messagesService.markInGame(client.id, this.lobbyManager.server);
   this.messagesService.sendInvite(userDto, client, this.lobbyManager.server);
+}
+
+@SubscribeMessage('markOnline')
+async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
+  this.messagesService.markOnline(userDto, this.lobbyManager.server);
 }
 
 
@@ -62,7 +71,7 @@ async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
-    this.messagesService.markDisconnected(client.id, client);
+    this.messagesService.markDisconnected(client.id, this.lobbyManager.server);
     this.logger.log('Client disconnected: ', client.id);
     for (const lobby of this.lobbyManager.lobbies.values()) {
       if (lobby.clients.has(client.id)) {
