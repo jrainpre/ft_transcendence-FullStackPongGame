@@ -1,4 +1,12 @@
-body {
+  .sidenav-container {
+	height: 100%;
+  }
+  
+  .sidenav {
+	width: 250px;
+  }
+  
+  .content {
 	font-family: Arial, sans-serif;
 	text-align: center;
 	background-color: #f0f0f0;
@@ -7,14 +15,9 @@ body {
 	align-items: center;
 	height: 95vh;
 	justify-content: center;
-  }
-
-  h1 {
-	font-size: 36px;
-	color: #333;
-  }
-
-  .center {
+}
+  
+  .button-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
@@ -23,17 +26,30 @@ body {
 	margin-top: 20px;
   }
 
+  @keyframes pulsate {
+	0% {
+	  transform: scale(1);
+	}
+	50% {
+	  transform: scale(1.05);
+	}
+	100% {
+	  transform: scale(1);
+	}
+  }
+
   button {
 	padding: 15px 30px;
 	font-size: 18px;
-	background-color: #007bff;
+	background-color: #0056b3;
 	color: #fff;
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
-	transition: background-color 0.3s;
+	transition: background-color 0.3s, transform 0.3s;
   }
-
+  
   button:hover {
 	background-color: #0056b3;
+	animation: pulsate 1s infinite;
   }

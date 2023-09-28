@@ -73,21 +73,22 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
   async handleDisconnect(client: Socket): Promise<void> {
     this.messagesService.markDisconnected(client.id, this.lobbyManager.server);
     this.logger.log('Client disconnected: ', client.id);
+    const temp = client.id;
     for (const lobby of this.lobbyManager.lobbies.values()) {
-      if (lobby.clients.has(client.id)) {
-        this.logger.log('deleted client');
-        lobby.clients.delete(client.id);
+      if (lobby.clients.has(temp)) {
+        const clientData = lobby.clients.get(temp);
+        if (clientData.data.position === 'right') {
+          lobby.updateGameStats({playerLeft: 10, playerRight: lobby.instance.game.score.playerRight}, 'left', lobby.games);
+        } else if (clientData.data.position === 'left') {
+          lobby.updateGameStats({playerLeft: lobby.instance.game.score.playerRight, playerRight: 10}, 'right', lobby.games);
+        }
         break;
       }
     }
 
-    for (const lobby of this.lobbyManager.lobbies.values()) {
-      if (lobby.clients.size === 0) {
-        this.lobbyManager.lobbies.delete(lobby.id);
-        break;
-      }
-    }
+    await this.lobbyManager.cleanUpBackButton(temp);
     this.lobbyManager.terminateSocket(client);
+    this.lobbyManager.server.emit('returnToStart');
   }
   
   @SubscribeMessage('backButton')
