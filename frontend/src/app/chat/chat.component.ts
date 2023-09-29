@@ -181,10 +181,10 @@ export class ChatComponent implements AfterViewChecked {
                 this.channelUsers = data.channelUsers;
         });
 
-        this.webservice.socket.on('channelDeleted', (channel: Channel) => {
-            this.userChannels = this.userChannels.filter(channel => channel.id !== channel.id);
-            this.snackBar.open('Channel ' + channel.name + ' was deleted', 'Close', { duration: 5000, });
-            if (channel.id === this.channel.id)
+        this.webservice.socket.on('channelDeleted', (channelDto: Channel) => {
+            this.userChannels = this.userChannels.filter(channel => channel.id !== channelDto.id);
+            this.snackBar.open('Channel ' + channelDto.name + ' was deleted', 'Close', { duration: 5000, });
+            if (channelDto.id === this.channel.id)
                 this.flushChannel();
         });
 
@@ -461,6 +461,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     setPassword(): void {
+        if (this.channel.id === 0)
+        {
+            this.snackBar.open('No channel selected', 'Close', { duration: 5000, });
+            return;
+        }
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/set-password`, { channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -477,6 +482,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     promoteUser(slectedUser: User): void {
+        if (this.channel.id === 0)
+        {
+            this.snackBar.open('No channel selected', 'Close', { duration: 5000, });
+            return;
+        }
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -495,6 +505,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     kickUser(slectedUser: User): void {
+        if (this.channel.id === 0)
+        {
+            this.snackBar.open('No channel selected', 'Close', { duration: 5000, });
+            return;
+        }
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -513,6 +528,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     banUser(slectedUser: User): void {
+        if (this.channel.id === 0)
+        {
+            this.snackBar.open('No channel selected', 'Close', { duration: 5000, });
+            return;
+        }
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -531,6 +551,11 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     muteUser(slectedUser: User): void {
+        if (this.channel.id === 0)
+        {
+            this.snackBar.open('No channel selected', 'Close', { duration: 5000, });
+            return;
+        }
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
