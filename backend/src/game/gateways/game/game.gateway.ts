@@ -33,6 +33,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 //////////////////////////////////////////////////////////////////
 @SubscribeMessage('createMessage')
 async createMessage(@MessageBody('message') messageDto: SendMessageDto,) {
+  this.logger.log('MESSAGE lets go');
 const message = await this.messagesService.createNewMessage(messageDto, this.lobbyManager.server);
 }
 
@@ -67,7 +68,7 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
 
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
     this.logger.log('Client connected: ', client.id);
-    this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
+    // this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
@@ -79,16 +80,20 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
         const clientData = lobby.clients.get(temp);
         if (clientData.data.position === 'right') {
           lobby.updateGameStats({playerLeft: 10, playerRight: lobby.instance.game.score.playerRight}, 'left', lobby.games);
+          await this.lobbyManager.cleanUpBackButton(temp);
+          this.lobbyManager.terminateSocket(client);
+          this.lobbyManager.server.to(lobby.id).emit('returnToStart');
         } else if (clientData.data.position === 'left') {
           lobby.updateGameStats({playerLeft: lobby.instance.game.score.playerRight, playerRight: 10}, 'right', lobby.games);
+          await this.lobbyManager.cleanUpBackButton(temp);
+          this.lobbyManager.terminateSocket(client);
+          this.lobbyManager.server.to(lobby.id).emit('returnToStart');
         }
         break;
       }
     }
 
-    await this.lobbyManager.cleanUpBackButton(temp);
-    this.lobbyManager.terminateSocket(client);
-    this.lobbyManager.server.emit('returnToStart');
+
   }
   
   @SubscribeMessage('backButton')

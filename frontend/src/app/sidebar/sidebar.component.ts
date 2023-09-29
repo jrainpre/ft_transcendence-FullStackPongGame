@@ -23,15 +23,26 @@ export class SidebarComponent {
     private snackBar: MatSnackBar, 
     private browserAnimationsModule: BrowserAnimationsModule,
     private cookie: CookieService,
-    private webservice: WebSocketService) {}
+    private webservice: WebSocketService,
+    private chat: ChatComponent) {}
 
-    async ngOnInit(): Promise<any>{
-      const id = await this.api.getIdByJwt();
-      const user = {
-        name: "dummy",
-        id_42: id,
+    ngOnInit(): void {
+      // Check if the page is in prerender state
+      if (document.visibilityState === 'hidden') {
+        // If the page is prerendered, listen for the visibilitychange event
+        document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+      } else {
+        // If the page is already visible, load user data immediately
+        this.chat.loadUserData();
       }
-      this.webservice.socket.emit('updateSocketId', { user: user });
+    }
+  
+    private onVisibilityChange(): void {
+      if (document.visibilityState === 'visible') {
+        this.chat.loadUserData();
+        // Optionally, remove the event listener to avoid multiple calls
+        document.removeEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+      }
     }
 
   async routProfile(): Promise<any>{
