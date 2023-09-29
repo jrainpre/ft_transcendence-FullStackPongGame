@@ -364,10 +364,10 @@ export class RankedInstance
 
       if(this.loopIncrementX > 0.10) {
         this.loopIncrementY = 0.10;
-        }
+      }
       else if (this.loopIncrementX < -0.10){
         this.loopIncrementY = -0.10;
-        }
+      }
         
       this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
@@ -461,20 +461,14 @@ export class RankedInstance
     }
 
     if (this.leftPaddleHit()) {
-      if(this.loopIncrementX <= 0.10) {
+      if(this.loopIncrementX <= 0.10 && this.loopIncrementX >= -0.10) {
         this.loopIncrementX *= 1.2;
-      }
-      else if(this.loopIncrementX > 0.10) {
-        this.loopIncrementY = 0.10;
       }
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-      if(this.loopIncrementX <= 0.10) {
+      if(this.loopIncrementX <= 0.10 && this.loopIncrementX >= -0.10) {
         this.loopIncrementX *= 1.2;
       }
-      else if(this.loopIncrementX > 0.10) {
-        this.loopIncrementY = 0.10;
-        }
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
