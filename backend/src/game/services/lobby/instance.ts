@@ -96,7 +96,7 @@ export class NormalInstance
 
   setBall(): void {
     this.game.ballPosition.x = 48.5;
-    this.game.ballPosition.y = Math.floor(Math.random() * (10 - this.game.ballDimension.height + 1));
+    this.game.ballPosition.y = Math.floor(Math.random() * (100 - this.game.ballDimension.height + 1));
   }
 
   resetAll(): void {
