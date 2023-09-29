@@ -30,7 +30,6 @@ export class LeaderboardComponent {
     try {
       // Fetch players from the API
       const playersData: Player[] = await this.api.getPlayers(); // Annotate the type here
-      console.log(playersData);
       // Map the data to extract only the needed properties
       this.players = playersData.map((player: Player) => ({ // Annotate the type here
         id_42: player.id_42,

@@ -59,7 +59,6 @@ export class PersonalMatchHistoryComponent {
     if (id !== null) {
       // Only call api.loadUserMatches(id) if 'id' is not null
       await this.api.loadUserMatches(id).then((response: any) => {
-        console.log(response);
         for (let i = 0; i < response.length; i++) {
           this.matches.push({
             id: response[i].id,
@@ -81,7 +80,6 @@ export class PersonalMatchHistoryComponent {
       });
     } else {
       // Handle the case where 'id' is null (e.g., show an error message)
-      console.log("ID is null. Handle the error case here.");
     }
   }
   
@@ -118,7 +116,6 @@ export class PersonalMatchHistoryComponent {
       const startIndex = (this.currentPage - 1) * this.gamesPerPage;
       const endIndex = startIndex + this.gamesPerPage;
       this.displayedGames = this.matches.slice(startIndex, endIndex);
-      console.log('Displayed Games:', this.displayedGames); // Debug statement
     }
   }
   

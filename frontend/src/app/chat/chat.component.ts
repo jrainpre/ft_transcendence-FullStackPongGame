@@ -257,7 +257,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     async ngOnInit(): Promise<void> {
-        this.loadUserData();
     };
 
 
@@ -300,7 +299,6 @@ export class ChatComponent implements AfterViewChecked {
             this.userChannels = data.userChannels;
         if (data.blockedUsers)
             this.blockedUsers = data.blockedUsers;
-        //////console.log(data.userChannels);
     }
 
     private saveChannelData(data: { channel: Channel; channelUsers: ChannelUser[]; messages: Message[]; }) {
@@ -393,7 +391,6 @@ export class ChatComponent implements AfterViewChecked {
                     this.flushChannel();
                     if (data.userChannels)
                         this.userChannels = data.userChannels;
-                        ////console.log(JSON.stringify(this.publicChannels));
                     this.snackBar.open('Channel left successfully', 'Close', { duration: 5000, });
                 }
             })
@@ -435,14 +432,12 @@ export class ChatComponent implements AfterViewChecked {
                     this.blockedUsers = data.blockedUsers;
                     if (!data.blockedUsers)
                         this.blockedUsers = [];
-                    console.log(JSON.stringify(this.blockedUsers));
                     this.snackBar.open('User unblocked successfully', 'Close', { duration: 5000, });
                 }
             })
     }
 
     startPrivateChat(): void {
-        ////console.log(JSON.stringify(this.userPrvtchat));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -463,7 +458,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     setPassword(): void {
-        ////console.log(JSON.stringify(this.channel));
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/set-password`, { channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -480,7 +474,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     promoteUser(slectedUser: User): void {
-        ////console.log(JSON.stringify(this.userToPromote));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/promote-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -493,14 +486,12 @@ export class ChatComponent implements AfterViewChecked {
                 if (data) {
                     this.userToPromote = this.flushUser(this.userToPromote);
                     this.channelUsers = data.channelUsers;
-                    ////console.log(JSON.stringify(this.channelUsers));
                     this.snackBar.open('User promoted successfully', 'Close', { duration: 5000, });
                 }
             })
     }
 
     kickUser(slectedUser: User): void {
-        ////console.log(JSON.stringify(this.userToKick));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/kick-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -519,7 +510,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     banUser(slectedUser: User): void {
-        ////console.log(JSON.stringify(this.userToBan));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/ban-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -538,7 +528,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     muteUser(slectedUser: User): void {
-        ////console.log(JSON.stringify(this.userToMute));
         this.http.post<{ channelUsers: ChannelUser[] }>(environment.apiUrl + `chat/mute-user`, { user: slectedUser, channel: this.channel }, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -557,7 +546,6 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     inviteUserToGame(): void {
-        ////console.log(JSON.stringify(this.userToGame));
         this.http.post<{ }>(environment.apiUrl + `chat/invite-user-to-game`, { user: this.userToGame}, { withCredentials: true })
             .pipe(
                 catchError((error) => {
@@ -664,15 +652,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     oneVsOne(user: any){
-        // if(this.user.id_42 === user.id_42)
-        // {
-        //     this.snackBar.open('Can`t play a game against yourself', 'Close', { duration: 5000, });
-        //     return;
-        // }
-        // if (user.status === 'ingame' || user.status === 'offline') {
-        //     this.snackBar.open('User is not available', 'Close', { duration: 5000, });
-        //     return;
-        // }
+
         let curUser: {
             id_42: number;
             socketId: string;
@@ -713,8 +693,6 @@ export class ChatComponent implements AfterViewChecked {
           if (challengedUserData) {
             challengedUser = challengedUserData.info;
  
-            ////console.log('challengedUser:', challengedUser);
-            ////console.log('curUser:', curUser);
             this.webservice.privateLobby('ranked', curUser.name, curUser.id_42.toString(), challengedUser.socketId, challengedUser.name, challengedUser.id_42.toString());
         }
         });

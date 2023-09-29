@@ -73,6 +73,10 @@ export class MessagesService {
 
   async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
     let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"] });
+    if (!userOut)
+    {
+      return null;
+    }
     if (socket_id === userOut.socket_id)
       return userOut;
     const socket = this.getSocketForUser(userOut, server, false);

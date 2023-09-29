@@ -23,15 +23,26 @@ export class SidebarComponent {
     private snackBar: MatSnackBar, 
     private browserAnimationsModule: BrowserAnimationsModule,
     private cookie: CookieService,
-    private webservice: WebSocketService) {}
+    private webservice: WebSocketService,
+    private chat: ChatComponent) {}
 
-    async ngOnInit(): Promise<any>{
-      const id = await this.api.getIdByJwt();
-      const user = {
-        name: "dummy",
-        id_42: id,
+    ngOnInit(): void {
+      // Check if the page is in prerender state
+      if (document.visibilityState === 'hidden') {
+        // If the page is prerendered, listen for the visibilitychange event
+        document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+      } else {
+        // If the page is already visible, load user data immediately
+        this.chat.loadUserData();
       }
-      this.webservice.socket.emit('updateSocketId', { user: user });
+    }
+  
+    private onVisibilityChange(): void {
+      if (document.visibilityState === 'visible') {
+        this.chat.loadUserData();
+        // Optionally, remove the event listener to avoid multiple calls
+        document.removeEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+      }
     }
 
   async routProfile(): Promise<any>{
@@ -52,7 +63,6 @@ export class SidebarComponent {
   }
 
   async logOut(): Promise<any> {
-    console.log("Logout");
     this.cookie.delete("jwtToken");
     this.router.navigate(['/login']);
     }
@@ -63,7 +73,6 @@ export class SidebarComponent {
       this.api.getUserByName(this.searchQuery).subscribe(
         (user: any) => {
           // Handle the user data returned from the backend
-          console.log('User Data:', user);
           const userId = user.id;
           this.router.navigate([`/profile/${userId}`]);
           // You can update your component state or perform any other actions with the user data

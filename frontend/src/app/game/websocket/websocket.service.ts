@@ -18,12 +18,10 @@ export class WebSocketService {
     // this.socket = io('http://192.168.32.68:3001');
 
     this.socket.on('establishConnection',(user: any) => {
-      console.log('HERER');
       this.socket.emit('privateLobby', user);
     });
 
     this.socket.on('finishedQueue', () => {
-      console.log("CONNECTED");
       this.router.navigate(['/match']);
     });
 
@@ -34,12 +32,10 @@ export class WebSocketService {
   }
 
   sendKeyUp(input: any){
-    // console.log(input);
     this.socket.emit('keyUp', input);
   }
 
   sendKeyDown(input: any){
-    // console.log(input);
     this.socket.emit('keyDown', input);
   }
 

@@ -101,7 +101,6 @@ export class AuthService {
       return user;
     } catch (error)
     {
-      // console.log('Couldnt get user from Cookie', error);
     }
     return null;
   }

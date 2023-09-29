@@ -26,7 +26,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   
   afterInit(server: Server): any {
     this.lobbyManager.server = server;
-    this.logger.log('Game server initialized !');
   }
 
 
@@ -66,7 +65,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
 
 
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
-    this.logger.log('Client connected: ', client.id);
     this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
@@ -79,21 +77,23 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
         const clientData = lobby.clients.get(temp);
         if (clientData.data.position === 'right') {
           lobby.updateGameStats({playerLeft: 10, playerRight: lobby.instance.game.score.playerRight}, 'left', lobby.games);
+          await this.lobbyManager.cleanUpBackButton(temp);
+          this.lobbyManager.terminateSocket(client);
+          this.lobbyManager.server.to(lobby.id).emit('returnToStart');
         } else if (clientData.data.position === 'left') {
           lobby.updateGameStats({playerLeft: lobby.instance.game.score.playerRight, playerRight: 10}, 'right', lobby.games);
+          await this.lobbyManager.cleanUpBackButton(temp);
+          this.lobbyManager.terminateSocket(client);
+          this.lobbyManager.server.to(lobby.id).emit('returnToStart');
         }
         break;
       }
     }
 
-    await this.lobbyManager.cleanUpBackButton(temp);
-    this.lobbyManager.terminateSocket(client);
-    this.lobbyManager.server.emit('returnToStart');
   }
   
   @SubscribeMessage('backButton')
   async button(@ConnectedSocket() client: Socket){
-    this.logger.log('BACKBUTTIN');
     await this.lobbyManager.cleanUpBackButton(client.id);
     this.lobbyManager.server.emit('returnToStart');
   }
@@ -101,7 +101,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
   @SubscribeMessage('abort')
   async abort(@ConnectedSocket() client: Socket) {
     this.lobbyManager.cleanUp(client.id);
-    this.logger.log('LOBBY_SUCCESFULLY_CLEANED');
   }
 
   @SubscribeMessage('privateLobby')
@@ -109,8 +108,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
     if(user.first == true) {
       user.first = false;
       this.lobby_id = await this.lobbyManager.privateLobby(client, user.modus, user.name, user.id_42, true, '');
-      this.logger.log(user.friend_socket_id, 'FRIEND');
-      this.logger.log(client.id, 'MAIN');
       this.lobbyManager.server.to(user.friend_socket_id).emit('establishConnection', user);
     } else if(user.first == false) {
       this.lobbyManager.privateLobby(client, user.modus, user.friend_name, user.friend_id_42, false, this.lobby_id);
@@ -119,7 +116,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
 
   @SubscribeMessage('requestLobby')
   entry(@ConnectedSocket() client: Socket, @MessageBody() user: any){
-    this.logger.log("JOINED");
     this.lobbyManager.joinLobby(client, user.modus, user.name, user.id_42);
   }
 
@@ -140,7 +136,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
       if (playerId) {
         targetLobby.instance.onKeyUp(client, key);
       } else {
-        this.logger.error(`PlayerId not found for client ${client.id}`);
       }
     }
   }
@@ -162,7 +157,6 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
       if (playerId) {
         targetLobby.instance.onKeyDown(client, key);
       } else {
-        this.logger.error(`PlayerId not found for client ${client.id}`);
       }
     } 
   }

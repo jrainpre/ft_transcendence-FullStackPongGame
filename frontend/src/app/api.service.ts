@@ -77,7 +77,6 @@ export class ApiService {
 
     const formData = new FormData();
     formData.append('avatar', file);
-    console.log(file, userId);
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
@@ -100,7 +99,6 @@ export class ApiService {
   }
 
   async setFirstLoginFalse() : Promise<any>{
-    console.log('called');
     this.http.get(`${this.apiUrl}user/first-login-false`, { withCredentials: true }).subscribe();
   }
 
@@ -109,13 +107,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}user/get-id-by-jwt`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            // console.log(response);
             resolve(response.message); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
             if (error.status === 401) 
             {
-              // console.log('rerout')
               this.router.navigate(['login']);
             }
             reject(error); // Reject the Promise with the error
@@ -130,14 +126,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}user/all-users`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('User doesnt exists');
             } else {
-              // console.log('User doesnt exists');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -150,7 +143,6 @@ export class ApiService {
       this.http.get(`${this.apiUrl}friends/${id}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            // console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
@@ -167,14 +159,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}history/all`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('cant load matches');
             } else {
-              // console.log('cant load matches');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -188,14 +177,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}history/user/${id}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('cant load matches');
             } else {
-              // console.log('cant load matches');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -213,14 +199,11 @@ export class ApiService {
       this.http.get(`${this.apiUrl}friends/is-friend/${id}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
-            console.log(response);
             resolve(response); // Resolve the Promise with the response data
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('User doesnt exists');
             } else {
-              // console.log('User doesnt exists');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -237,7 +220,6 @@ export class ApiService {
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('Cant add friend');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -254,7 +236,6 @@ export class ApiService {
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('Cant add friend');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -271,9 +252,7 @@ export class ApiService {
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('Cant add friend');
             } else {
-              // console.log('Cant add friend');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -290,9 +269,7 @@ export class ApiService {
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('User doesnt exists');
             } else {
-              // console.log('User doesnt exists');
             }
             reject(error); // Reject the Promise with the error
           }
@@ -341,7 +318,6 @@ export class ApiService {
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              // console.log('Cant Set Online');
             }
             reject(error); // Reject the Promise with the error
           }

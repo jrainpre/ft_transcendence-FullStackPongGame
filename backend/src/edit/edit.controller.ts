@@ -12,10 +12,8 @@ export class EditController {
     @UseGuards(JwtAuthGuard)
     @Post()
     async editProfile(@Body() changedInfo: UsernameIdDTO, @Req() req, @Res() res): Promise<any>{
-        // console.log('In Function');
         const user = await this.auth.getUserFromJwtCookie(req);
         await this.auth.compareUserToId(changedInfo.id_42, user);
-        // console.log('Passed Compare');
         await this.edit.changeUsername(changedInfo.id_42, changedInfo.name);
         res.json({ success: true });
     }

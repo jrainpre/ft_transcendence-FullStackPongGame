@@ -31,22 +31,17 @@ export class ProfileComponent {
     try{
       user = await this.api.getProfileInfo(this.id);
       this.isBlocked = await this.api.isBlocked(this.id);
-      console.log('Is Blocked: ', this.isBlocked);
     }
     catch(error){
-      console.log("error, wrong ID");
       return;
     }
     this.isFriend = await this.api.isFriend(this.id);
-    console.log("isFriend ", this.isFriend);
     this.setProfileVars(user);
   
     this.isUsersProfile = await this.api.isUser(this.id);
-    console.log('IsUser= ', this.isUsersProfile);
   }
   
   async ngOnInit(): Promise<any>{
-    console.log("OnInit");
     this.route.params.subscribe(params => {
       const newId = params['id'];
       if(newId != this.id){
@@ -131,7 +126,6 @@ export class ProfileComponent {
   }
   try{
     await this.api.blockUser(userToBlockDTO);
-    console.log("already done");
     this.ngOnInit();
   }
   catch(error){
