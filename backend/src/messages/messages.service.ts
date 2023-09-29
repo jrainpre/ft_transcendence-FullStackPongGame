@@ -73,7 +73,6 @@ export class MessagesService {
 
   async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
     let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
-    this.logger.debug(JSON.stringify(userOut));
     if (userOut && userOut.socket_id)
     {
       if (socket_id === userOut.socket_id)
@@ -296,7 +295,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       let message = this.messageRepository.create({ content: messageDto.content, owner: user, channel: channel, isSystemMessage: messageDto.isSystemMessage });
       await this.messageRepository.save(message);
       const dtoMessage = mapMessageToDto(message);
-      server.to(message.channel.name).emit('message', dtoMessage);
+      server.to(message.channel.name ).emit('message', dtoMessage);
       return message;
     }
   }
