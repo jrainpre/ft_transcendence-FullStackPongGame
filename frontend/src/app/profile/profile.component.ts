@@ -26,7 +26,6 @@ export class ProfileComponent {
   public reloadFriendList$ = new Subject<void>();
 
   async loadData() {
-    this.chat.updateSocketId();
     let user;
     try{
       user = await this.api.getProfileInfo(this.id);

@@ -257,6 +257,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     async ngOnInit(): Promise<void> {
+
     };
 
 
@@ -439,6 +440,7 @@ export class ChatComponent implements AfterViewChecked {
 
     startPrivateChat(): void {
         this.http.post<{ channel: Channel }>(environment.apiUrl + `chat/start-private-chat`, { user: this.userPrvtchat }, { withCredentials: true })
+
             .pipe(
                 catchError((error) => {
                     console.error( error);
@@ -452,6 +454,7 @@ export class ChatComponent implements AfterViewChecked {
                     this.userPrvtchat = this.flushUser(this.userPrvtchat);
                     this.channel = data.channel;
                     this.userChannels.push(this.channel);
+                    // this.channelUsers = data.channelUsers;
                     this.snackBar.open('Private chat started successfully', 'Close', { duration: 5000, });
                 }
             })
