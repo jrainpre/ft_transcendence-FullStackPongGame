@@ -72,14 +72,18 @@ export class MessagesService {
   }
 
   async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
-    let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"] });
-    if (socket_id === userOut.socket_id)
-      return userOut;
-    const socket = this.getSocketForUser(userOut, server, false);
-    if (socket)
+    let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
+    this.logger.debug(JSON.stringify(userOut));
+    if (userOut && userOut.socket_id)
     {
-      server.to(socket_id).emit('userAlreadyConnected');
-      return null;
+      if (socket_id === userOut.socket_id)
+      return userOut;
+      const socket = this.getSocketForUser(userOut, server, false);
+      if (socket)
+      {
+        server.to(socket_id).emit('userAlreadyConnected');
+        return null;
+      }
     }
     if (userOut) {
       userOut.socket_id = socket_id;
@@ -311,8 +315,17 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
 
 
   async joinChannels(user: User, client: Socket) {
-    const channels = user?.channelUsers.map(cu => cu.channel);
-    client.join(channels.map(c => c.name));
+    if (!user || !user.channelUsers) {
+      return [];  // or handle the error in another way
+    }
+    const channels = user.channelUsers.map(cu => cu.channel);
+    if (!channels || channels.length === 0) {
+      return [];  // or handle the error in another way
+    }
+    const channelNames = channels.map(c => c.name);
+    if (channelNames && channelNames.length > 0) {
+      client.join(channelNames);
+    }
     return channels;
   }
 
