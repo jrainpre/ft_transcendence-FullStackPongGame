@@ -94,8 +94,6 @@ export class LobbyService {
       player.data.position = 'left';
       const user = await this.user.findOne({where: { id_42: player.data.id}});
       this.messagesService.markInGame(player.id, this.server);
-      // user.status = UserStatus.INGAME;
-      // await this.user.save(user);
       return newLobby.id;
     } else if (first == false){
 
