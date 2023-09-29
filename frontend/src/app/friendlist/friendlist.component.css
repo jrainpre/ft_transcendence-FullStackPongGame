@@ -1,11 +1,6 @@
 /* friend-list.component.css */
 .friend-list-container {
-    position: fixed;
-    top: 5.5%;
-    right: 0;
-    width: 200px;
-    background-color: #b1abab;
-    padding: 20px;
+    padding: 5px;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
