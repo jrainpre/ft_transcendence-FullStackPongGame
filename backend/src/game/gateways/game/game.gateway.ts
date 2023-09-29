@@ -79,12 +79,12 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
       if (lobby.clients.has(temp)) {
         const clientData = lobby.clients.get(temp);
         if (clientData.data.position === 'right') {
-          lobby.updateGameStats({playerLeft: 10, playerRight: lobby.instance.game.score.playerRight}, 'left', lobby.games);
+          await lobby.updateGameStats({playerLeft: 10, playerRight: lobby.instance.game.score.playerRight}, 'left', lobby.games);
           await this.lobbyManager.cleanUpBackButton(temp);
           this.lobbyManager.terminateSocket(client);
           this.lobbyManager.server.to(lobby.id).emit('returnToStart');
         } else if (clientData.data.position === 'left') {
-          lobby.updateGameStats({playerLeft: lobby.instance.game.score.playerRight, playerRight: 10}, 'right', lobby.games);
+          await lobby.updateGameStats({playerLeft: lobby.instance.game.score.playerRight, playerRight: 10}, 'right', lobby.games);
           await this.lobbyManager.cleanUpBackButton(temp);
           this.lobbyManager.terminateSocket(client);
           this.lobbyManager.server.to(lobby.id).emit('returnToStart');
