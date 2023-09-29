@@ -1,20 +1,21 @@
-  .sidenav-container {
-	height: 100%;
-  }
-  
-  .sidenav {
-	width: 250px;
+body {
+	display: flex;
+	justify-content: space-between;
+	margin: 0;
+	padding: 0;
+	height: 100vh;
   }
   
   .content {
 	font-family: Arial, sans-serif;
 	text-align: center;
-	background-color: #f0f0f0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	height: 95vh;
+	height: 100%;
+	width: 60%;
 	justify-content: center;
+	background-color: #b8a45ebd;
 }
   
   .button-container {
@@ -22,7 +23,6 @@
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
-	gap: 200px;
 	margin-top: 20px;
   }
 
@@ -52,4 +52,33 @@
   button:hover {
 	background-color: #0056b3;
 	animation: pulsate 1s infinite;
+  }
+
+
+  .chat-sidebar {
+	flex: 1; /* Takes up one-third of available space */
+	min-width: 160px;
+	max-width: 220px;
+	background-color: #b8a45ebd;
+	padding: auto;
+  }
+  
+  .app-friendlist {
+	flex: 1; /* Takes up one-third of available space */
+	min-width: 150px;
+	max-width: 180px;
+	background-color: #b8a45ebd;
+	padding: auto;
+  }
+  
+  @media (max-width: 1000px) {
+	.app-friendlist {
+		display: none;
+	}
+  }
+  
+  @media (max-width: 600px) {
+	.chat-sidebar {
+		display: none;
+	}
   }

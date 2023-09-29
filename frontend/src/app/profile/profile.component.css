@@ -1,15 +1,15 @@
 body {
+  display: flex;
+  justify-content: space-between;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f0f4f7;
-  color: #1a202c;
+  height: 100vh;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  display: flex;
+  flex-direction: column; /* Stack child elements vertically */
+  position: relative; /* Make it a relative positioning context */
 }
 
 .main-body {
@@ -39,19 +39,34 @@ body {
   color: #1a202c;
 }
 
-.btn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+/* Base Style for the Modern Button */
+.modern-btn {
+  background-color: #4a4a4a; /* Neutral color for the button */
+  color: white; /* White color for the icon */
+  border-radius: 4px; /* Rounded corners */
+  padding: 3px 3px; /* Padding around the button for a larger clickable area */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
 }
 
-.btn:hover {
-  background-color: #0056b3;
+/* Hover Effect */
+.modern-btn:hover {
+  background-color: #333; /* Slightly darker background on hover */
+  transform: translateY(-2px); /* Slight upward movement on hover for a dynamic effect */
+  cursor: pointer; /* Cursor indication for clickable elements */
 }
+
+/* Active State */
+.modern-btn:active {
+  transform: translateY(0px); /* Reset the position on active state (button press) */
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+/* Style for the Icon Inside the Button */
+.modern-btn mat-icon {
+  font-size: 20px; /* Adjust the size if needed */
+  vertical-align: middle; /* Centering the icon vertically */
+}
+
 
 .list-group-item {
   border: none;
@@ -67,19 +82,30 @@ body {
   color: #6c757d;
 }
 
-/* Add more specific styles as needed for your elements */
+.chat-sidebar {
+  flex: 1; /* Takes up one-third of available space */
+  min-width: 160px;
+  max-width: 220px;
+  background-color: #b8a45ebd;
+  padding: auto;
+}
 
-/* Media query for responsiveness */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
+.app-friendlist {
+  flex: 1; /* Takes up one-third of available space */
+  min-width: 150px;
+  max-width: 180px;
+  background-color: #b8a45ebd;
+  padding: auto;
+}
+
+@media (max-width: 1000px) {
+  .app-friendlist {
+      display: none;
   }
+}
 
-  .main-body {
-    padding: 10px;
-  }
-
-  .card-body {
-    padding: 10px;
+@media (max-width: 600px) {
+  .chat-sidebar {
+      display: none;
   }
 }

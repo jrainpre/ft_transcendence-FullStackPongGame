@@ -1,21 +1,20 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav mode="side" opened class="sidenav">
-    <mat-toolbar color="primary">PONG</mat-toolbar>
-    <mat-nav-list>
-      <a mat-list-item (click)="loading('ranked')">Ranked Game</a>
-      <a mat-list-item (click)="loading('normal')">Normal Game</a>
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <span>Game Menu</span>
-    </mat-toolbar>
-    <div class="content">
-      <h1>Welcome to PONG</h1>
-      <div class="button-container">
-        <button mat-raised-button color="accent" (click)="loading('ranked')">Ranked Game</button>
-        <button mat-raised-button color="primary" (click)="loading('normal')">Normal Game</button>
-      </div>
+<body>
+
+
+  <div class="chat-sidebar">
+    <app-sidebar></app-sidebar>
+  </div>
+
+  <div class="content">
+    <h1>Welcome to PONG</h1>
+    <div class="button-container">
+      <button mat-raised-button color="accent" (click)="loading('ranked')">Ranked Game</button>
+      <button mat-raised-button color="primary" (click)="loading('normal')">Normal Game</button>
     </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+
+  <div class="app-friendlist">
+    <app-friendlist></app-friendlist>
+  </div>
+
+</body>
