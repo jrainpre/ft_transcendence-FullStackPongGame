@@ -91,7 +91,7 @@ export class NormalInstance
 
   getRandomIncrement(): number {
     const isNegative = Math.floor(Math.random() * 2) === 1;
-    return (0.05 * (isNegative ? -1 : 1));
+    return (0.08 * (isNegative ? -1 : 1));
   }
 
   setBall(): void {
