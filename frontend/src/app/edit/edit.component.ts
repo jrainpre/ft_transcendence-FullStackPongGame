@@ -35,7 +35,6 @@ export class EditComponent {
     }
     catch(error)
     {
-      console.log(error);
     }
     this.username = user.name;
     this.inputUsername = this.username;
@@ -46,7 +45,6 @@ export class EditComponent {
      this.curTFA = false;
    }
     this.profileUrl = user.profile_picture;
-    console.log('First login -', user.first_login)
     if(user.first_login == true || user.first_login == undefined)
     {
       this.first_login = true;
@@ -71,7 +69,6 @@ export class EditComponent {
   }
 
   async changeTFA() : Promise<any>{
-    console.log(this.inputTFA);
     if(this.curTFA == true && this.inputTFA == 'Enable'){
       this.errorMessage = 'Two Factor Authentication is already Enabled';
     }
@@ -91,7 +88,6 @@ export class EditComponent {
   }
 
   async onFileSelected(event: any): Promise<any> {
-    console.log('Called');
     const file: File = event.target.files[0]; // Get the selected file
     if(!file.type.startsWith('image/'))
      this.snackBar.open("Invalid Image format", "close", {duration: 3000,})

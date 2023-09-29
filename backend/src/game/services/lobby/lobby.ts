@@ -153,9 +153,7 @@ export class Lobby
 
     if (room) {
     const socketIds = Array.from(room);
-    this.logger.log(`Clients connected to room ${this.id}:`, socketIds);
     } else {
-      this.logger.log(`Room ${this.id} does not exist or has no clients.`);
     }
 
     this.server.to(this.id).emit('finishedQueue');
@@ -164,7 +162,6 @@ export class Lobby
 
     while(1) {
       if(this.hasFinished === true) {
-        this.logger.log("Finsihed");
         this.endGame();
         await new Promise(resolve => setTimeout(resolve, 3000));
         this.server.to(this.id).emit('returnToStart');

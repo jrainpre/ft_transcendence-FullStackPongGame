@@ -24,6 +24,5 @@ export class EditService {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         user.name = newName;
         await this.userRepository.save(user);
-        // console.log('Changed');
     }
 }
