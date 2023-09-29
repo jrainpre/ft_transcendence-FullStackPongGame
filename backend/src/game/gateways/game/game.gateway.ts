@@ -96,9 +96,16 @@ async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
   }
   
   @SubscribeMessage('backButton')
-  async button(@ConnectedSocket() client: Socket){
-    await this.lobbyManager.cleanUpBackButton(client.id);
-    this.lobbyManager.server.emit('returnToStart');
+  async button(@ConnectedSocket() player: Socket){
+    await this.lobbyManager.cleanUpBackButton(player.id);
+
+    for (const [lobbyId, lobby] of this.lobbyManager.lobbies) {
+      for (const [key, client] of lobby.clients.entries()) {
+        if (client.id === player.id) {
+          this.lobbyManager.server.to(lobby.id).emit('returnToStart');
+        }
+      }
+    }
   }
 
   @SubscribeMessage('abort')
