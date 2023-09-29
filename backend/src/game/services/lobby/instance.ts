@@ -361,14 +361,6 @@ export class RankedInstance
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
       this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
-
-      if(this.loopIncrementX > 0.10) {
-        this.loopIncrementY = 0.10;
-      }
-      else if (this.loopIncrementX < -0.10){
-        this.loopIncrementY = -0.10;
-      }
-        
       this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
