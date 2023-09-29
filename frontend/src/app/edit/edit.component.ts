@@ -26,7 +26,7 @@ export class EditComponent {
   errorMessage: string = '';
 
   async ngOnInit(): Promise<any>{
-    this.chat.updateSocketId();
+    this.chat.loadUserData();
     this.route.params.subscribe(params => {
       this.id = params['id'];
     });

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { WebSocketService } from './websocket/websocket.service';
 import { User } from '../chat/interfaces/message';
@@ -7,6 +7,7 @@ import { throwError, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { ChatComponent } from '../chat/chat.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class GameComponent implements OnInit{
   constructor(private router: Router, private websocketService: WebSocketService, private http: HttpClient, private readonly chat: ChatComponent) {}
 
   async ngOnInit(): Promise<void> {
-    this.chat.updateSocketId();
+    this.chat.loadUserData();
     this.setStatusOnline();
   }
 

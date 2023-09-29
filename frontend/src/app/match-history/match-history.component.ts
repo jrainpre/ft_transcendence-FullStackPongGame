@@ -21,7 +21,7 @@ export class MatchHistoryComponent {
   constructor(private api: ApiService, private router: Router, private readonly chat: ChatComponent) {}
 
   async ngOnInit(): Promise<void> {
-    this.chat.updateSocketId();
+    this.chat.loadUserData();
     try {
       await this.loadMatches();
       this.dataLoaded = true; // Set the flag to indicate data is loaded
