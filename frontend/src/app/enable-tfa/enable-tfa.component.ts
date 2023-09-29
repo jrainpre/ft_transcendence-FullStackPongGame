@@ -20,7 +20,6 @@ export class EnableTFAComponent {
   errorMessage: string = '';
 
   async ngOnInit(): Promise<void> {
-    this.chat.updateSocketId();
     this.route.params.subscribe(params => {
       this.userId = params['id'];
       (this.userId);

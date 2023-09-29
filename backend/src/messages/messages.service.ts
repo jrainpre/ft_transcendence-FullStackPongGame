@@ -296,7 +296,7 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
       let message = this.messageRepository.create({ content: messageDto.content, owner: user, channel: channel, isSystemMessage: messageDto.isSystemMessage });
       await this.messageRepository.save(message);
       const dtoMessage = mapMessageToDto(message);
-      server.to(message.channel.name).emit('message', dtoMessage);
+      server.to(message.channel.name ).emit('message', dtoMessage);
       return message;
     }
   }
@@ -315,8 +315,17 @@ async comparePasswords(plainPassword: string, hashedPassword: string): Promise<b
 
 
   async joinChannels(user: User, client: Socket) {
-    const channels = user?.channelUsers.map(cu => cu.channel);
-    client.join(channels.map(c => c.name));
+    if (!user || !user.channelUsers) {
+      return [];  // or handle the error in another way
+    }
+    const channels = user.channelUsers.map(cu => cu.channel);
+    if (!channels || channels.length === 0) {
+      return [];  // or handle the error in another way
+    }
+    const channelNames = channels.map(c => c.name);
+    if (channelNames && channelNames.length > 0) {
+      client.join(channelNames);
+    }
     return channels;
   }
 
