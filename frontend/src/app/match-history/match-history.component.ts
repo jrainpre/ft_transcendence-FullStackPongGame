@@ -35,7 +35,6 @@ export class MatchHistoryComponent {
 
   async loadMatches() {
     await this.api.loadAllMatches().then((response: any) => {
-      console.log(response);
       for (let i = 0; i < response.length; i++) {
         this.matches.push({
           id: response[i].id,
@@ -77,7 +76,6 @@ export class MatchHistoryComponent {
       const startIndex = (this.currentPage - 1) * this.gamesPerPage;
       const endIndex = startIndex + this.gamesPerPage;
       this.displayedGames = this.matches.slice(startIndex, endIndex);
-      console.log('Displayed Games:', this.displayedGames); // Debug statement
     }
   }
   

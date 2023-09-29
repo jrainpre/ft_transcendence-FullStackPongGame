@@ -26,7 +26,6 @@ export class GameComponent implements OnInit{
   const user = this.http.get<{user: User}>(environment.apiUrl +  `chat/get-user-data`, { withCredentials: true })
   .pipe(
     catchError((error: any) => {
-      // console.log(error);
       return of(null);
     }))
     .subscribe(data => {
@@ -44,7 +43,6 @@ export class GameComponent implements OnInit{
           },
           (error: HttpErrorResponse) => {
             if (error.status === 400) {
-              console.log('Cant Set Online');
             }
             reject(error); // Reject the Promise with the error
           }

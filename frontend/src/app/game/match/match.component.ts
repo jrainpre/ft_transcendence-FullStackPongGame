@@ -34,7 +34,6 @@ export class MatchComponent implements OnInit {
       takeUntil(this.unsubscriber)
     ).subscribe((_) => {
       history.pushState(null, '');
-      console.log('Socket disconected: ', this.websocketService.socket.id);
       this.websocketService.socket.emit('backButton');
     });
   }
