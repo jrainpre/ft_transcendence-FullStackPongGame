@@ -62,7 +62,6 @@ export class LobbyService {
     for (let [lobbyId, lobby] of this.lobbies) {
       for (let [key, client] of lobby.clients.entries()) {
         if (key === client_id){
-          this.logger.log('DELETE LOBBY');
           client.leave(lobby.id);
           lobby.instance.terminate();
           delete lobby.instance;
@@ -90,7 +89,6 @@ export class LobbyService {
         }
       }
 
-      this.logger.log('FIRST');
       const newLobby = this.createLobby(modus);
       newLobby.addClient(player);
       player.data.position = 'left';
@@ -98,7 +96,6 @@ export class LobbyService {
       this.messagesService.markInGame(player.id, this.server);
       // user.status = UserStatus.INGAME;
       // await this.user.save(user);
-      this.logger.log(newLobby.id);
       return newLobby.id;
     } else if (first == false){
 
@@ -108,7 +105,6 @@ export class LobbyService {
         }
       }
 
-      this.logger.log('SECOND');
       const availableLobby = Array.from(this.lobbies.values()).find((lobby) => lobby.id === lobby_id);
       availableLobby.addClient(player);
       player.data.position = 'right';
@@ -117,7 +113,6 @@ export class LobbyService {
 
 
       for (const [key, client] of availableLobby.clients.entries()) {
-        this.logger.log(key, 'CLIENTS_IN_LOBBY');
       }
 
       await availableLobby.finishQueue();

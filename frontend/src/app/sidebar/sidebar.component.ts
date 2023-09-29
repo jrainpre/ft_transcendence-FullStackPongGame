@@ -63,7 +63,6 @@ export class SidebarComponent {
   }
 
   async logOut(): Promise<any> {
-    console.log("Logout");
     this.cookie.delete("jwtToken");
     this.router.navigate(['/login']);
     }
@@ -74,7 +73,6 @@ export class SidebarComponent {
       this.api.getUserByName(this.searchQuery).subscribe(
         (user: any) => {
           // Handle the user data returned from the backend
-          console.log('User Data:', user);
           const userId = user.id;
           this.router.navigate([`/profile/${userId}`]);
           // You can update your component state or perform any other actions with the user data

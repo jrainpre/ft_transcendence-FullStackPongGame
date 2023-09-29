@@ -22,17 +22,15 @@ export class EnableTFAComponent {
   async ngOnInit(): Promise<void> {
     this.route.params.subscribe(params => {
       this.userId = params['id'];
-      console.log(this.userId);
+      (this.userId);
     });
     this.loadQRCode();
   }
 
   loadQRCode(): void {
     // Make API call to get QR code image URL
-    console.log(this.userId);
       this.http.get<{ qrCodeDataUri: string }>(environment.apiUrl + `auth/42/get-qr-code/${this.userId}`, { withCredentials: true }).subscribe(data => {
         this.qrCodeUrl = data.qrCodeDataUri;
-        console.log(this.qrCodeUrl);
   });
 }
 
@@ -40,18 +38,14 @@ enable2FA(){
   this.http.post(environment.apiUrl + `auth/42/enable-2FA`, { id: this.userId, code: this.inputCode }, { withCredentials: true })
   .subscribe(
     (response: any) => {
-      console.log('Response:', response); // Log the response to see its structure
       if (response.message === 'Success!') {
-        console.log('Verification successful');
         this.router.navigate([`/profile/${this.userId}`]); // Redirect to the profile
       }
     },
     (error: HttpErrorResponse) => {
       if (error.status === 400) {
-        console.log('Verification failed: Wrong code');
         this.errorMessage = 'Wrong code. Please try again.';
       } else {
-        console.log('An error occurred during verification');
         this.errorMessage = 'An error occurred during verification. Please try again later.';
       }
     }

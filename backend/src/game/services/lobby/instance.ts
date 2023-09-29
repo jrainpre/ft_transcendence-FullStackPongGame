@@ -361,6 +361,14 @@ export class RankedInstance
       this.moveLeftPaddle(this.playerLeft.increment);
       this.moveRightPaddle(this.playerRight.increment);
       this.moveBall(this.loopIncrementX, this.loopIncrementY, lobbyId, games, userOne, userTwo);
+
+      if(this.loopIncrementX > 0.10) {
+        this.loopIncrementY = 0.10;
+        }
+      else if (this.loopIncrementX < -0.10){
+        this.loopIncrementY = -0.10;
+        }
+        
       this.lobby.dispatchToClient(this.game, lobbyId, userOne, userTwo);
     }, 1);
   }
@@ -449,21 +457,24 @@ export class RankedInstance
     this.game.ballPosition.y += yIncrement;
 
     if (this.BallWallsCollision()) {
-      if(this.loopIncrementX <= 0.11) {
-        this.loopIncrementX *= 1.2;
-      }
       this.loopIncrementY *= -1;
     }
 
     if (this.leftPaddleHit()) {
-      if(this.loopIncrementX <= 0.11) {
+      if(this.loopIncrementX <= 0.10) {
         this.loopIncrementX *= 1.2;
+      }
+      else if(this.loopIncrementX > 0.10) {
+        this.loopIncrementY = 0.10;
       }
       this.loopIncrementX *= -1;
     } else if (this.rightPaddleHit()) {
-      if(this.loopIncrementX <= 0.11) {
+      if(this.loopIncrementX <= 0.10) {
         this.loopIncrementX *= 1.2;
       }
+      else if(this.loopIncrementX > 0.10) {
+        this.loopIncrementY = 0.10;
+        }
       this.loopIncrementX *= -1;
     }
     if (this.PlayerLeftScored()) {
