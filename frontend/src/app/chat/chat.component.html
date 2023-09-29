@@ -2,24 +2,14 @@
     <div class="chat-sidebar">
         <app-sidebar></app-sidebar>
     </div>
+
     <div class="chat-display">
- 
+        
         <div *ngIf="!isRegistered">
             <div class="registration">
                 <h3>is the jwt token working????????????????</h3>
             </div>
         </div>
-
-
-      
-        
- 
-
-
-
-
-
-
 
         <mat-tab-group>
             <mat-tab label="Chat">
@@ -242,42 +232,10 @@
                         </div>
                     </div>
                 </div>
-
-
-
              </mat-tab>
           </mat-tab-group>
-
- 
-        <div class="flex-container">
-            <!-- Main chat container -->
-         
- 
- 
- 
- 
-        </div>   
- 
-        <div class="flex-container">
- 
-
- 
-
- 
-
- 
-        </div>
- 
     </div>
 
-
-   
-
-
-
-
-    
- 
     <div class="app-friendlist">
         <app-friendlist></app-friendlist>
     </div>

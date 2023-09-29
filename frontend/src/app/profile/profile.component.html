@@ -1,99 +1,107 @@
-<app-sidebar></app-sidebar>
-<app-friendlist></app-friendlist>
-<div class="container">
-    <div class="main-body">
-        <button class="btn btn-info " (click)="routGamePage()">Game Page</button>
-          <div class="row gutters-sm">
-            <div class="col-md-4 mb-3">
-              <div class="card">
-                <div class="card-body">
-                  <div class="d-flex flex-column align-items-center text-center">
-                    <img [src]="profileUrl" alt="Picture" class="rounded-circle" width="150">
-                    <div class="mt-3">
-                      <h4>{{username}}</h4>
-                      <p class="text-secondary mb-1">42 User</p>
+<body>
+
+  <div class="chat-sidebar">
+    <app-sidebar></app-sidebar>
+  </div>
+
+  <div class="container">
+      <div class="main-body">
+            <div class="row gutters-sm">
+              <div class="col-md-4 mb-3">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-column align-items-center text-center">
+                      <img [src]="profileUrl" alt="Picture" class="rounded-circle" width="150">
+                      <div class="mt-3">
+                        <h4>{{username}}</h4>
+                        <p class="text-secondary mb-1">42 User</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div class="card mt-3">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins</h6>
+                      <span class="text-secondary">{{wins}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Losses</h6>
+                      <span class="text-secondary">{{losses}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins/Loss Ratio</h6>
+                      <span class="text-secondary">{{win_loss_ratio}}</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div class="card mt-3">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                    <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins</h6>
-                    <span class="text-secondary">{{wins}}</span>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                    <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Losses</h6>
-                    <span class="text-secondary">{{losses}}</span>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                    <h6 class="mb-0 custom-text-card"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Wins/Loss Ratio</h6>
-                    <span class="text-secondary">{{win_loss_ratio}}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-md-8">
-              <div class="card mb-3">
-                <div class="card-body">
-                  <div class="row">
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0 custom-text">42 ID</h6>
+              <div class="col-md-8">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div class="row">
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                      {{id}}
+                    <hr>
+                    <div class="row">
+                      <div class="col-sm-3">
+                        <h6 class="mb-0 custom-text">42 ID</h6>
+                      </div>
+                      <div class="col-sm-9 text-secondary">
+                        {{id}}
+                      </div>
                     </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0 custom-text">Username</h6>
+                    <hr>
+                    <div class="row">
+                      <div class="col-sm-3">
+                        <h6 class="mb-0 custom-text">Username</h6>
+                      </div>
+                      <div class="col-sm-9 text-secondary">
+                        {{username}}
+                      </div>
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                      {{username}}
+                    <hr [hidden]="!isUsersProfile">
+                    <div class="row" [hidden]="!isUsersProfile">
+                      <div class="col-sm-3">
+                        <h6 class="mb-0 custom-text">Two Factor Authentication</h6>
+                      </div>
+                      <div class="col-sm-9 text-secondary">
+                          {{tfa_enabled}}
+                      </div>
                     </div>
-                  </div>
-                  <hr [hidden]="!isUsersProfile">
-                  <div class="row" [hidden]="!isUsersProfile">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0 custom-text">Two Factor Authentication</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{tfa_enabled}}
-                    </div>
-                  </div>
-                  <hr>
-                  <div class=".row">
-                    <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
-                    </div>
-                    <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="addFriend()" [hidden]="!(isUsersProfile == false && isFriend == false)">Add Friend</button>
-                    </div>
-                    <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="removeFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Remove Friend</button>
-                    </div>
-                    <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="blockUser()" [hidden]="!(isUsersProfile == false && isBlocked == false)">Block</button>
-                    </div>
-                    <div class="col-sm-12">
-                      <button class="btn btn-info " style="margin-top: 5px;" (click)="unblockUser()" [hidden]="!(isUsersProfile == false && isBlocked == true)">Unblock</button>
+                    <hr>
+                    <div class=".row">
+                      <div class="col-sm-12">
+                        <button mat-raised-button class="modern-btn" (click)="routEditPage()" [hidden]="!isUsersProfile">Edit</button>
+                      </div>
+                      <div class="col-sm-12">
+                        <button mat-raised-button class="modern-btn" (click)="addFriend()" [hidden]="!(isUsersProfile == false && isFriend == false)">Add Friend</button>
+                      </div>
+                      <div class="col-sm-12">
+                        <button mat-raised-button class="modern-btn" (click)="removeFriend()" [hidden]="!(isUsersProfile == false && isFriend == true)">Remove Friend</button>
+                      </div>
+                      <div class="col-sm-12">
+                        <button mat-raised-button class="modern-btn" (click)="blockUser()" [hidden]="!(isUsersProfile == false && isBlocked == false)">Block</button>
+                      </div>
+                      <div class="col-sm-12">
+                        <button mat-raised-button class="modern-btn" (click)="unblockUser()" [hidden]="!(isUsersProfile == false && isBlocked == true)">Unblock</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="row gutters-sm">
-                  <div class="card h-100">
-                    <div class="card-body">
-                        <h6 class="d-flex align-items-center mb-3 te custom-text"><i class="material-icons text-info mr-2">assignment</i>Game History</h6>
-                        <app-personal-match-history></app-personal-match-history>
-                    </div>
+                <div class="row gutters-sm">
+                    <div class="card h-100">
+                      <div class="card-body">
+                          <h6 class="d-flex align-items-center mb-3 te custom-text">Game History</h6>
+                          <app-personal-match-history></app-personal-match-history>
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-    </div>
+      </div>
+
+      <div class="app-friendlist">
+        <app-friendlist></app-friendlist>
+      </div>
+</body>
