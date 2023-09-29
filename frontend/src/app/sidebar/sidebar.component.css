@@ -1,31 +1,26 @@
 /* Define the styles for the sidebar */
 .sidebar {
-    position: fixed;
-    top: 5.5%;
-    left: 0;
     height: 100%;
-    width: 200px;
-    background-color: #b1abab;
-    padding: 20px;
+    padding: 5px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: width 0.3s;
 }
 
+/* Search field */
 .sidebar input {
     margin-bottom: 10px;
     padding: 10px;
-    width: 100%;
 }
 
 /* Style the buttons */
 .sidebar button {
     margin-bottom: 10px;
     padding: 10px;
-    /* background-color: #555;
-    color: #fff; */
     border: none;
     cursor: pointer;
+    position: relative; /* Add relative positioning for pseudo-element */
 }
 
 /* Style the buttons on hover */
@@ -43,3 +38,9 @@
     margin-left: 220px; /* Adjust this value to match the sidebar width */
     padding: 20px;
 }
+
+/* Style the button icons */
+.sidebar button .button-icon {
+    font-size: 16px; /* Adjust the icon size */
+}
+

@@ -3,23 +3,6 @@
   <div class="content">
     <h2>Match History</h2>
     
-    <!-- Pagination Controls -->
-    <div class="table-controls">
-      <div class="page-size-selector">
-          <label for="pageSize"></label>
-          <select id="pageSize" [(ngModel)]="gamesPerPage" (change)="changePageSize($event)">
-              <option value="1">1</option>
-              <option value="3">3</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="all">All</option>
-          </select>
-      </div>
-      <div class="pagination">
-          <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
-          <button (click)="nextPage()" [disabled]="currentPage * gamesPerPage >= matches.length">Next</button>
-      </div>
-  </div>
     <div class="table-container">
       <table>
         <thead>
@@ -45,5 +28,23 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="table-controls">
+      <div class="page-size-selector">
+          <label for="pageSize"></label>
+          <select id="pageSize" [(ngModel)]="gamesPerPage" (change)="changePageSize($event)">
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="all">All</option>
+          </select>
+      </div>
+      <div class="pagination">
+          <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+          <button (click)="nextPage()" [disabled]="currentPage * gamesPerPage >= matches.length">Next</button>
+      </div>
+  </div>
   </div>
 </div>
