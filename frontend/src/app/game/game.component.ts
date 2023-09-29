@@ -19,7 +19,6 @@ export class GameComponent implements OnInit{
   constructor(private router: Router, private websocketService: WebSocketService, private http: HttpClient, private readonly chat: ChatComponent) {}
 
   async ngOnInit(): Promise<void> {
-    this.chat.loadUserData();
     this.setStatusOnline();
   }
 

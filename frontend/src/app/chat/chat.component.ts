@@ -257,7 +257,7 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     async ngOnInit(): Promise<void> {
-        this.loadUserData();
+
     };
 
 

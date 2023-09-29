@@ -30,7 +30,6 @@ export class FriendlistComponent {
 
   // on init fetch list and sort it
   ngOnInit() {
-    this.chat.loadUserData();
     this.loadFriends();
 
     this.profileComponent.reloadFriendList$.subscribe(async () => {

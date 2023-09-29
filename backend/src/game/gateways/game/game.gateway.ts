@@ -33,6 +33,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 //////////////////////////////////////////////////////////////////
 @SubscribeMessage('createMessage')
 async createMessage(@MessageBody('message') messageDto: SendMessageDto,) {
+  this.logger.log('MESSAGE lets go');
 const message = await this.messagesService.createNewMessage(messageDto, this.lobbyManager.server);
 }
 
