@@ -72,17 +72,18 @@ export class MessagesService {
   }
 
   async updateSocketId(user: SendUserDto, socket_id: string, server: Server) {
-    let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
-    if (userOut && userOut.socket_id)
+    let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 }, relations: ["channelUsers", "channelUsers.channel", "blockedUsers", "blockedUsers.blockedUser"] });
+    if (!userOut)
     {
-      if (socket_id === userOut.socket_id)
+      return null;
+    }
+    if (socket_id === userOut.socket_id)
       return userOut;
-      const socket = this.getSocketForUser(userOut, server, false);
-      if (socket)
-      {
-        server.to(socket_id).emit('userAlreadyConnected');
-        return null;
-      }
+    const socket = this.getSocketForUser(userOut, server, false);
+    if (socket)
+    {
+      server.to(socket_id).emit('userAlreadyConnected');
+      return null;
     }
     if (userOut) {
       userOut.socket_id = socket_id;

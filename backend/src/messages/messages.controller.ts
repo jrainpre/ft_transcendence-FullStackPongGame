@@ -131,8 +131,10 @@ export class MessagesController {
             if(user.name === userDto.name)
                 throw new Error(`Can't start private chat with yourself`);
             const channel = await this.messagesService.createPrivateChat(user, userDto, this.messagesGateway.lobbyManager.server);
+            const channelUsersDto = await this.messagesService.getChannelUsersDto(channel);
+
             const channelDto = mapChannelToDto(channel);
-            res.status(200).json({ channel: channelDto });
+            res.status(200).json({ channel: channelDto, channelUsers: channelUsersDto });
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
