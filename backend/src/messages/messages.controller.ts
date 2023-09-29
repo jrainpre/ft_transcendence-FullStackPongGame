@@ -242,4 +242,18 @@ export class MessagesController {
             return res.status(400).json({message: error.message});
         }
     }
+
+    @Post('get-status-from-user')
+    async getStatusFromUser(@Body('user') userDto: SendUserDto, @Req() req: any, @Res() res: Response) {
+        try {
+            const user = await this.messagesService.findUserByName(userDto);
+            res.status(200).json({ status: user.status });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+
+
+
 }
