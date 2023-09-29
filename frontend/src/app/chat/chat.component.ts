@@ -15,6 +15,8 @@ import { WebSocketService } from '../game/websocket/websocket.service';
 import { environment } from 'src/environments/environment';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
+import { tap } from 'rxjs/operators';
+
 
 @Injectable()
 
@@ -614,6 +616,25 @@ export class ChatComponent implements AfterViewChecked {
             })
         }
 
+
+        getStatusFromUser(user: User) {
+            return this.http.post<{ status: string }>(environment.apiUrl + `chat/get-status-from-user`, { user: user }, { withCredentials: true })
+                .pipe(
+                    catchError((error) => {
+                        console.error(error);
+                        this.snackBar.open('Error getting user status: ' + error.error.message, 'Close', { duration: 5000, });
+                        return throwError(error);
+                    }),
+                    tap(data => {
+                        if (data && data.status === 'online') {
+                            this.oneVsOne(user);
+                        } else {
+                            this.snackBar.open('User is not available', 'Close', { duration: 5000, });
+                        }
+                    })
+                );
+        }
+
         routeToUser(user: User) {
             this.router.navigate([`/profile/${user.id_42}`]);
         }
@@ -757,21 +778,15 @@ export class ChatComponent implements AfterViewChecked {
       }
 
 
-      openSnackBarInvite(user: User) {
+      async openSnackBarInvite(user: User) {
 
         let snackBarRef = this.snackBar.open(`${user.name} invited you to a game`, 'Accept', {
             duration: 10000,  
           });
-      
-        snackBarRef.onAction().subscribe(() => {
-            this.oneVsOne(user);
+          
+          snackBarRef.onAction().subscribe(() => {
+            this.getStatusFromUser(user).subscribe();
         });
-
-        snackBarRef.afterDismissed().subscribe(info => {
-            if (!info.dismissedByAction) {
-              this.markOnline(user);
-            }
-          });
       }
 
       requestOneVsOne(user: ChannelUser) {

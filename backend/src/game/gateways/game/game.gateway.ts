@@ -48,7 +48,7 @@ if (user)
 
 @SubscribeMessage('gameInvite')
 async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
-  this.messagesService.markInGame(client.id, this.lobbyManager.server);
+  // this.messagesService.markInGame(client.id, this.lobbyManager.server);
   this.messagesService.sendInvite(userDto, client, this.lobbyManager.server);
 }
 
