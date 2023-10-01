@@ -95,8 +95,12 @@ export class NormalInstance
   }
 
   setBall(): void {
+    const margin = 10;
+    const minY = margin;
+    const maxY = 100 - this.game.ballDimension.height - margin;
+
     this.game.ballPosition.x = 48.5;
-    this.game.ballPosition.y = Math.floor(Math.random() * (100 - this.game.ballDimension.height + 1));
+    this.game.ballPosition.y = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
   }
 
   resetAll(): void {
@@ -168,11 +172,12 @@ export class NormalInstance
     if (this.BallWallsCollision()) {
       this.loopIncrementY *= -1;
     }
-
     if (this.leftPaddleHit()) {
       this.loopIncrementX *= -1;
+      this.game.ballPosition.x += 1;
     } else if (this.rightPaddleHit()) {
       this.loopIncrementX *= -1;
+      this.game.ballPosition.x -= 1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
@@ -378,8 +383,12 @@ export class RankedInstance
   }
 
   setBall(): void {
+    const margin = 10;
+    const minY = margin;
+    const maxY = 100 - this.game.ballDimension.height - margin;
+
     this.game.ballPosition.x = 48.5;
-    this.game.ballPosition.y = Math.floor(Math.random() * (100 - this.game.ballDimension.height + 1));
+    this.game.ballPosition.y = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
   }
 
   resetAll(): void {
@@ -451,17 +460,18 @@ export class RankedInstance
     if (this.BallWallsCollision()) {
       this.loopIncrementY *= -1;
     }
-
     if (this.leftPaddleHit()) {
       if(this.loopIncrementX <= 0.15 && this.loopIncrementX >= -0.15) {
         this.loopIncrementX *= 1.2;
       }
       this.loopIncrementX *= -1;
+      this.game.ballPosition.x += 1;
     } else if (this.rightPaddleHit()) {
       if(this.loopIncrementX <= 0.15 && this.loopIncrementX >= -0.15) {
         this.loopIncrementX *= 1.2;
       }
       this.loopIncrementX *= -1;
+      this.game.ballPosition.x -= 1;
     }
     if (this.PlayerLeftScored()) {
       this.game.score.playerLeft++;
