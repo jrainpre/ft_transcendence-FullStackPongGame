@@ -1,8 +1,4 @@
-backend/.env
-frontend/.env
 .vscode
 node_modules
-.env
-docker/backend.env
-docker/db.env
+
  
