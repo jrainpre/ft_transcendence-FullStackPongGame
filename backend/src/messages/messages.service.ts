@@ -597,6 +597,16 @@ async markOnline(user: SendUserDto, server: Server){
   }
 }
 
+async markOffline(user: SendUserDto, server: Server){
+  let userOut = await this.userRepository.findOne({ where: { id_42: user.id_42 },});
+  if (userOut) {
+    userOut.status = UserStatus.OFFLINE;
+    await this.userRepository.save(userOut);
+    const userDto = mapUserToDto(userOut);
+    server.emit('userStatus', userDto, UserStatus.OFFLINE);
+  }
+}
+
 
 async markDisconnected(socket_id: string, server: Server)
 {
@@ -628,6 +638,12 @@ async sendInvite(user: SendUserDto, client: Socket, server: Server)
   const partner_socket = this.getSocketForUser(partner, server, false);
   if (partner_socket)
     partner_socket.emit('gameInvite', senderDto);
+}
+
+
+async getUserBySocketId(socket_id: string): Promise<User> {
+  const user = await this.userRepository.findOne({ where: { socket_id: socket_id }, });
+  return user;
 }
 
 

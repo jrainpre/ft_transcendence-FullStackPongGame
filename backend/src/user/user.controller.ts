@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserService } from './user.service';
+import { MessagesService } from 'src/messages/messages.service';
 
 @Controller('user')
 export class UserController {
@@ -12,6 +13,7 @@ export class UserController {
     constructor(private readonly AuthService: AuthService,  
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         private user: UserService,
+        private chat: MessagesService,
     ) {}
  
     @UseGuards(JwtAuthGuard)
@@ -92,8 +94,8 @@ export class UserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('logout')
-    logout(@Res() res){
-        res.clearCookie('jwtToken');
+    async logout(@Res() res,){
+
     }
 
     @UseGuards(JwtAuthGuard)
