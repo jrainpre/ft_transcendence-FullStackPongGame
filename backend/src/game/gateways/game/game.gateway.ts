@@ -11,6 +11,7 @@ import { SendMessageDto } from 'src/messages/dto/send-message.dto';
 import { SendUserDto } from 'src/messages/dto/send-user.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { send } from 'process';
+import { mapUserToDto } from 'src/messages/helpers/helpers';
 
 
 @WebSocketGateway({cors: '*'})
@@ -55,6 +56,13 @@ async inviteGame(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() cl
 @SubscribeMessage('markOnline')
 async markOnline(@MessageBody('user') userDto: SendUserDto,@ConnectedSocket() client: Socket,) {
   this.messagesService.markOnline(userDto, this.lobbyManager.server);
+}
+
+@SubscribeMessage('markOffline')
+async markOffline(@ConnectedSocket() client: Socket,) {
+  const user = await this.messagesService.getUserBySocketId(client.id);
+  const userDto = mapUserToDto(user);
+  this.messagesService.markOffline(userDto, this.lobbyManager.server);
 }
 
 
