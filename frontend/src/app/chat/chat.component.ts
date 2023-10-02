@@ -812,6 +812,10 @@ export class ChatComponent implements AfterViewChecked {
         this.webservice.socket.emit('markOnline', { user: user });
     }
 
+    markOffline() {
+        this.webservice.socket.emit('markOffline', {});
+    }
+
 
 
 } 

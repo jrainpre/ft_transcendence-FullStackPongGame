@@ -63,6 +63,7 @@ export class SidebarComponent {
   }
 
   async logOut(): Promise<any> {
+    this.chat.markOffline();
     this.cookie.delete("jwtToken");
     this.router.navigate(['/login']);
     }
